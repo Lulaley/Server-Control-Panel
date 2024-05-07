@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Server Control</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/serveur.png') }}">
+    <style type="text/css">
+        body {
+            background-color: #333;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        #percentages-container {
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            min-height: max-content;
+            flex-grow: 1;
+            min-width: 200px;
+            margin-right: 10px;
+        }
+
+        #console-container {
+            position: absolute; /* Change the position to absolute */
+            top: 70px; /* Set the top position to 70px */
+            left: 50%; /* Set the left position to 50% to center horizontally */
+            transform: translateX(-50%); /* Move the container left by 50% of its own width to center it */
+            width: 100%; /* Set the width to 100% */
+            max-width: 1100px; /* Set the maximum width to 1100px */
+            height: calc(100vh - 120px); /* Set the height to fill the remaining space vertically (subtracting the top position and the cat bar height) */
+            box-sizing: border-box;
+        }
+
+        #services-container {
+            position: fixed;
+            top: 300px;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            min-height: max-content;
+            flex-grow: 1;
+            min-width: 200px;
+            margin-right: 10px;
+        }
+
+        .status-indicator {
+          display: inline-block;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: bold;
+        }
+
+        .status-indicator.active {
+          background-color: green;
+          color: white;
+        }
+
+        .status-indicator.inactive {
+          background-color: red;
+          color: white;
+        }
+
+        .service-button {
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 8px 16px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+
+        .service-button.stop-button {
+          background-color: red;
+        }
+
+        .service-button:hover {
+          background-color: #3e8e41;
+        }
+
+        #main-container {
+            position: relative; /* Set the position to relative */
+            height: 100%; /* Set the height to 100% */
+            width: 100%; /* Set the width to 100% */
+            flex-grow: 1;
+            min-width: 200px;
+            margin-left: 10px;
+        }
+
+        #control-container {
+            position: fixed;
+            top: 70px;
+            right: 10px;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            flex-grow: 3;
+            min-width: min-content;
+            margin: 0 10px;
+        }
+
+        #server-control-button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #server-control-button:hover {
+            background-color: #45a049;
+        }
+
+        #console-box {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid #fff;
+            border-radius: 5px;
+            padding: 10px;
+            min-height: 500px;
+            max-height: 700px;
+            min-width: 900px;
+            max-width: 1100px;
+            overflow-y: auto;
+            font-family: monospace;
+            width: 100%;
+            box-sizing: border-box;
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+
+        /* Style INFO messages */
+        .console-box span.info {
+            color: #0066cc;
+        }
+
+        /* Style WARN messages */
+        .console-box span.warn {
+            color: coral;
+        }
+
+        /* Style ERROR messages */
+        .console-box span.error {
+            color: darkred;
+        }
+
+        /* Style RCON messages */
+        .console-box span.rcon {
+            color: aquamarine;
+        }
+
+        #console {
+            height: calc(100% - 40px); /* Subtract the height of the input and some extra space for padding */
+            overflow-y: auto;
+        }
+
+        #command-form {
+            width: 100%;
+            vertical-align: top;
+            box-sizing: border-box;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid #fff;
+            border-radius: 5px;
+            padding: 1px;
+        }
+
+        #command-input {
+            width: 100%;
+            padding: 5px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: green;
+            border-radius: 5px;
+            margin: 5px 0;
+            padding: 0 5px;
+            line-height: 20px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar.orange {
+            background-color: orange;
+        }
+
+        .progress-bar.red {
+            background-color: red;
+        }
+        .plain-bar {
+            border-bottom: 1px solid #ddd;
+            margin: 10px 0;
+        }
+
+        #command-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .folder-select-container {
+            position: fixed;
+            top: 140px; /* Adjust this value to place the container below the control-container */
+            right: 10px;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .cat-image {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: auto; /* Adjust the width and height as needed */
+            height: auto;
+            animation: move-cat 10s linear infinite; /* Adjust the duration as needed */
+        }
+        .folder-select-container label {
+            margin-right: 10px;
+        }
+
+        .folder-select-container select {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 14px;
+        }
+        .cat-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px; /* Adjust the height as needed */
+            background-color: #333; /* Adjust the background color as needed */
+            z-index: 999; /* Ensure the cat bar is displayed above other elements */
+        }
+
+        .cat-image {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            top: 5px;
+            width: 3%; /* Adjust the width and height as needed */
+            height: 100%;
+            animation: move-cat 10s linear infinite; /* Adjust the duration as needed */
+        }
+
+        @keyframes move-cat {
+            0% {
+                left: 0;
+            }
+            100% {
+                left: calc(100% + 50px); /* Subtract the cat image's width to make it stop at the right edge */
+            }
+        }
+
+        #java-version-container {
+            position: fixed;
+            top: 200px;
+            right: 10px;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+<div class="cat-bar">
+    <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
+</div>
+<div id="percentages-container">
+    <div id="java-version"></div>
+    <div class="plain-bar"></div>
+
+    <div id="cpu-percentage"></div>
+    <div class="progress-bar" id="cpu-progress-bar"></div>
+
+    <div id="memory-percentage"></div>
+    <div class="progress-bar" id="memory-progress-bar"></div>
+
+    <div id="disk-percentage"></div>
+    <div class="progress-bar" id="disk-progress-bar"></div>
+</div>
+<div id="services-container">
+    <table>
+        <thead>
+        <tr>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for service, info in services.items() %}
+        <tr>
+            <td>{{ service }}</td>
+            <td>
+                <span style="display: inline-block; width: 20px; height: 20px; background-color: {{ 'green' if info['status'] == 'active' else 'red' }};margin-left: 10px;"></span>
+            </td>
+            <td>
+                {% if info['status'] == 'active' %}
+                <button type="button" class="btn btn-danger" onclick="stop_service('{{ service }}')">Stop</button>
+                {% else %}
+                <button type="button" class="btn btn-success" onclick="start_service('{{ service }}')">Start</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id="control-container">
+    <button id="server-control-button">Start Server</button>
+    <div class="folder-select-container">
+        <label for="folder-select">Select a folder:</label>
+        <select id="folder-select">
+            <option value="">Select...</option>
+        </select>
+    </div>
+    <div id="java-version-container" class="folder-select-container">
+        <label for="java-version-select">Select Java version:</label>
+        <select id="java-version-select">
+            <option value="">Select...</option>
+        </select>
+    </div>
+</div>
+<div id="main-container">
+    <div id="console-container">
+        <div id="console-box">
+            <div id="console" class="console-box"></div>
+        </div>
+
+        <form id="command-form">
+            <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
+            <div id="command-error"></div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    function bytesToSize(bytes) {
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes === 0) return '0 Bytes';
+        const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+    }
+
+    async function fetchSystemInfo() {
+        try {
+            const response = await fetch('/system_info');
+            const data = await response.json();
+
+            setProgressBar('#cpu-progress-bar', data.cpu_percent);
+            setProgressBar('#memory-progress-bar', data.memory_percent);
+            setProgressBar('#disk-progress-bar', data.disk_percent);
+
+            document.getElementById('java-version').innerText = `Java Version: ${data.java_version}`;
+            document.getElementById('cpu-percentage').innerText = `CPU: ${data.cpu_percent}%`;
+            document.getElementById('memory-percentage').innerText = `Memory: ${data.memory_percent}% (${bytesToSize(data.current_ram_used)} used / ${bytesToSize(data.total_ram)} total)`;
+            document.getElementById('disk-percentage').innerText = `Disk: ${data.disk_percent}% (${bytesToSize(data.current_disk_used)} used / ${bytesToSize(data.total_disk)} total)`;
+
+        } catch (error) {
+            console.error('Error fetching system info:', error);
+        }
+    }
+
+    function setProgressBar(selector, percent) {
+        const progressBarFill = document.querySelector(selector);
+        progressBarFill.style.width = `${percent}%`;
+
+        if (percent > 80) {
+            progressBarFill.style.backgroundColor = 'red';
+        } else if (percent > 60) {
+            progressBarFill.style.backgroundColor = 'orange';
+        } else {
+            progressBarFill.style.backgroundColor = 'green';
+        }
+    }
+
+    // Call the fetchSystemInfo function every minutes
+    setInterval(fetchSystemInfo, 3800);
+
+    // Call the fetchSystemInfo function once on page load
+    fetchSystemInfo();
+
+    async function fetchMinecraftLog() {
+        try {
+            const response = await fetch('/minecraft_log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ log_path: log_path })
+            });
+            const data = await response.json();
+
+            const console = document.getElementById('console');
+            console.innerHTML = data.log;
+
+            // Scroll to the bottom of the console
+            console.scrollTop = console.scrollHeight;
+        } catch (error) {
+            console.error('Error fetching Minecraft log:', error);
+        }
+    }
+
+
+    // Call the fetchMinecraftLog function every minutes
+    setInterval(fetchMinecraftLog, 3800);
+
+    // Call the fetchMinecraftLog function once on page load
+    fetchMinecraftLog();
+
+    document.getElementById('command-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const command = document.getElementById('command-input').value;
+
+        try {
+            const response = await fetch('/send_command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `command=${encodeURIComponent(command)}`
+            });
+
+            const data = await response.json();
+
+            if ('response' in data) {
+                document.getElementById('console').innerText += '\n' + data.response;
+                document.getElementById('command-error').innerText = '';
+            } else if ('error' in data) {
+                document.getElementById('command-error').innerText = data.error;
+            } else {
+                document.getElementById('command-error').innerText = 'Unknown error';
+            }
+        } catch (error) {
+            document.getElementById('command-error').innerText = 'Error sending command: ' + error;
+        }
+
+        document.getElementById('command-input').value = '';
+    });
+
+    async function fetchFolders() {
+        try {
+            const response = await fetch('/folders');
+            const data = await response.json();
+
+            const folderSelect = document.getElementById('folder-select');
+
+            data.folders.forEach(folder => {
+                const option = document.createElement('option');
+                option.value = folder;
+                option.textContent = folder;
+                folderSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching folders:', error);
+        }
+    }
+    fetchFolders();
+    document.getElementById('folder-select').addEventListener('change', function(event) {
+        const selectedFolder = event.target.value;
+        log_path = `/home/chimea/Bureau/${selectedFolder}/logs`;
+        console.log(`Log path changed to: ${log_path}`);
+        fetchMinecraftLog();
+    });
+
+    async function fetchServerStatus() {
+        const selectedFolder = document.getElementById('folder-select').value;
+
+        try {
+            const response = await fetch('/server_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ folder: selectedFolder })
+            });
+            const data = await response.json();
+
+            console.log("Server is running: ", data.is_running);
+            return data.is_running;
+        } catch (error) {
+            console.error('Error fetching server status:', error);
+            return false;
+        }
+    }
+
+    async function updateServerControlButton() {
+        console.log("Updating server control button...");
+        const isRunning = await fetchServerStatus();
+        const button = document.getElementById('server-control-button');
+
+        if (isRunning) {
+            button.innerText = 'Stop Server';
+            button.style.backgroundColor = 'red';
+        } else {
+            button.innerText = 'Start Server';
+            button.style.backgroundColor = '#4caf50';
+        }
+    }
+    // Call the updateServerControlButton function every 5 seconds
+    setInterval(updateServerControlButton, 3800);
+
+    // Call the updateServerControlButton function once on page load
+    updateServerControlButton();
+
+    async function fetchJavaVersions() {
+        try {
+            const response = await fetch('/java_versions');
+            const javaVersions = await response.json();
+            const javaVersionSelect = document.getElementById('java-version-select');
+
+            // Check if latest.log exists and has a modified date of today for all Minecraft servers
+            const logPaths = document.querySelectorAll('.log-path');
+            let allLogsModifiedToday = true;
+            for (const logPath of logPaths) {
+                const path = logPath.textContent.trim();
+                const logResponse = await fetch(path);
+                if (logResponse.ok) {
+                    const logModifiedDate = new Date(logResponse.headers.get('Last-Modified')).setHours(0, 0, 0, 0);
+                    const today = new Date().setHours(0, 0, 0, 0);
+                    if (logModifiedDate !== today) {
+                        allLogsModifiedToday = false;
+                        break;
+                    }
+                } else {
+                    console.log(`${path} does not exist`);
+                    allLogsModifiedToday = false;
+                    break;
+                }
+            }
+            console.log(javaVersions);
+            if (allLogsModifiedToday) {
+                // Populate the java version select element with the available versions
+                for (const version of javaVersions) {
+                    const option = document.createElement('option');
+                    option.value = version.path;
+                    option.textContent = version.version;
+                    javaVersionSelect.appendChild(option);
+                }
+            } else {
+                console.log('Not all latest.log files have a modified date of today');
+            }
+        } catch (error) {
+            console.error('Error fetching Java versions:', error);
+        }
+    }
+
+    fetchJavaVersions();
+
+    document.getElementById('java-version-select').addEventListener('change', function(event) {
+        const selectedVersion = event.target.value;
+        console.log(`Java version wanted : ${selectedVersion}`);
+        changeJavaVersion(selectedVersion);
+    });
+
+    async function changeJavaVersion(selectedVersion) {
+        try {
+            const response = await fetch('/change_java_version', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `version=${encodeURIComponent(selectedVersion)}`
+            });
+            const data = await response.json();
+            if (data.success) {
+                console.log(`Java version changed to ${selectedVersion}`);
+                // Reload the page to apply the changes
+                location.reload();
+            } else {
+                console.error('Error changing Java version:', data.error);
+            }
+        } catch (error) {
+            console.error('Error changing Java version:', error);
+        }
+    }
+
+    async function fetchServices() {
+      try {
+        const response = await fetch('/services');
+        const services = await response.json();
+        const servicesList = document.getElementById('services-list');
+        services.forEach(service => {
+          const li = document.createElement('li');
+          li.textContent = service;
+          servicesList.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    }
+
+    fetchServices();
+
+    async function stopService(service) {
+      try {
+        const response = await fetch(`/stop-service/${service}`, { method: 'POST' });
+        const data = await response.json();
+        if (data.success) {
+          // Update the UI to reflect the new service status
+        } else {
+          console.error(`Failed to stop service: ${data.message}`);
+        }
+      } catch (error) {
+        console.error(`Error stopping service: ${error}`);
+      }
+    }
+
+    async function startService(service) {
+      try {
+        const response = await fetch(`/start-service/${service}`, { method: 'POST' });
+        const data = await response.json();
+        if (data.success) {
+          // Update the UI to reflect the new service status
+        } else {
+          console.error(`Failed to start service: ${data.message}`);
+        }
+      } catch (error) {
+        console.error(`Error starting service: ${error}`);
+      }
+    }
+</script>
+</body>
+</html>
