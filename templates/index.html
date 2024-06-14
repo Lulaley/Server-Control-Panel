@@ -52,42 +52,6 @@
             margin-right: 10px;
         }
 
-        .status-indicator {
-          display: inline-block;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-weight: bold;
-        }
-
-        .status-indicator.active {
-          background-color: green;
-          color: white;
-        }
-
-        .status-indicator.inactive {
-          background-color: red;
-          color: white;
-        }
-
-        .service-button {
-          background-color: #4CAF50;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          padding: 8px 16px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: background-color 0.3s;
-        }
-
-        .service-button.stop-button {
-          background-color: red;
-        }
-
-        .service-button:hover {
-          background-color: #3e8e41;
-        }
-
         #main-container {
             position: relative; /* Set the position to relative */
             height: 100%; /* Set the height to 100% */
@@ -145,26 +109,6 @@
             font-size: 14px;
         }
 
-        /* Style INFO messages */
-        .console-box span.info {
-            color: #0066cc;
-        }
-
-        /* Style WARN messages */
-        .console-box span.warn {
-            color: coral;
-        }
-
-        /* Style ERROR messages */
-        .console-box span.error {
-            color: darkred;
-        }
-
-        /* Style RCON messages */
-        .console-box span.rcon {
-            color: aquamarine;
-        }
-
         #console {
             height: calc(100% - 40px); /* Subtract the height of the input and some extra space for padding */
             overflow-y: auto;
@@ -199,13 +143,6 @@
             overflow: hidden;
         }
 
-        .progress-bar.orange {
-            background-color: orange;
-        }
-
-        .progress-bar.red {
-            background-color: red;
-        }
         .plain-bar {
             border-bottom: 1px solid #ddd;
             margin: 10px 0;
@@ -417,7 +354,25 @@
             const data = await response.json();
 
             const console = document.getElementById('console');
-            console.innerHTML = data.log;
+            const parsedLog = data.log.replace(/&(#([0-9a-fA-F]{6})|([0-9a-fA-F]{3}))|[a-zA-Z0-9]{2}/g, ''); // Remove color codes and special characters
+            const logLines = parsedLog.split('\n'); // Split the log into lines
+
+            let formattedLog = '';
+            for (const line of logLines) {
+                if (line.trim() !== '' && !line.includes('[RCON Listener #')) { // Ignore empty lines and RCON listener messages
+                    const nameMatch = line.match(/<([^>]+)>/); // Find the player's name using a regular expression
+                    const name = nameMatch ? nameMatch[1] : ''; // Extract the name (without the chevrons)
+                    const message = nameMatch ? line.substring(nameMatch.index + nameMatch[0].length).trim() : line; // Extract the message
+
+                    // Replace the player's name in the message with a placeholder
+                    const messageWithPlaceholder = message.replace(new RegExp(`\\b${name}\\b`, 'g'), '__NAME__');
+
+                    // Format the log line with the chevrons and the placeholder
+                    formattedLog += `<span class="player-name">${nameMatch[0]}</span><span class="player-message">${messageWithPlaceholder.replace('__NAME__', name)}</span>\n`;
+                }
+            }
+
+            console.innerHTML = formattedLog;
 
             // Scroll to the bottom of the console
             console.scrollTop = console.scrollHeight;
@@ -425,7 +380,6 @@
             console.error('Error fetching Minecraft log:', error);
         }
     }
-
 
     // Call the fetchMinecraftLog function every minutes
     setInterval(fetchMinecraftLog, 3800);
