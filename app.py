@@ -83,9 +83,12 @@ def fetch_minecraft_log():
             # Filter out RCON listener and client messages
             filtered_lines = [line for line in log_lines if not ('[RCON Listener #1/INFO]' in line or '[RCON Client /127.0.0.1' in line)]
 
-            # Colorize the log messages
+            # Colorize and escape the log messages
             colored_lines = []
             for line in filtered_lines:
+                # Escape < and >
+                line = line.replace('<', '&lt;').replace('>', '&gt;')
+
                 if '/INFO]' in line:
                     colored_lines.append('<span class="info">' + line.strip() + '</span>\n')
                 elif '/WARN]' in line:
