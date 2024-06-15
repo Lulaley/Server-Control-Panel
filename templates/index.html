@@ -410,6 +410,11 @@
     fetchSystemInfo();
 
     let currentFilterType = 'all'; // Default filter type
+    
+    function setFilterType(filterType) {
+        currentFilterType = filterType;
+        fetchMinecraftLogFiltered();
+    }
 
     function highlightSelectedButton(filterType) {
         const buttons = document.querySelectorAll('#filter-buttons button');
@@ -422,8 +427,7 @@
         });
     }
     
-    async function fetchMinecraftLogFiltered(filterType) {
-        highlightSelectedButton(filterType);
+    async function fetchMinecraftLogFiltered() {
         try {
             const response = await fetch('/minecraft_log', {
                 method: 'POST',
@@ -433,8 +437,6 @@
                 body: JSON.stringify({ log_path: log_path, filter_type: filterType })
             });
             const data = await response.json();
-
-            console.log(data);
 
             const consoleElement = document.getElementById('console');
             consoleElement.innerHTML = ''; // Clear existing logs
