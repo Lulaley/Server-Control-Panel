@@ -527,7 +527,8 @@
             });
 
             // Optionally, update the online players list if your API also returns this information            
-            const playerList = document.getElementById('player-list');
+            const playerList = document.getElementById('players-list');
+            playerList.rzzz = ''; // Clear existing list
             for (const player of data.online_players) {
                 console.log(player);
                 console.log(playerList);
