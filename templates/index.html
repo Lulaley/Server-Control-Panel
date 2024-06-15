@@ -525,8 +525,9 @@
                 consoleElement.appendChild(span);
                 consoleElement.appendChild(document.createElement('br')); // New line
             });
-            
+
             // Optionally, update the online players list if your API also returns this information
+            console.log(data.online_players);
             if (data.online_players) {
                 const playerList = document.getElementById('player-list');
                 playerList.innerHTML = ''; // Clear existing list
