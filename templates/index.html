@@ -341,9 +341,10 @@
     <div id="console-container">
         <div id="console-box">
             <div id="console" class="console-box"></div>
-        
-            <div id="command-error"></div>
-        </form>   <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
+        </div>
+
+        <form id="command-form">
+            <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
             <div id="command-error"></div>
         </form>
     </div>
@@ -421,7 +422,7 @@
     // Call the fetchMinecraftLog function once on page load
     fetchMinecraftLog();
 
-    document.getElementById('command-input').addEventListener('submit', async function(event) {
+    document.getElementById('command-form').addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const command = document.getElementById('command-input').value;
