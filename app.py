@@ -98,6 +98,7 @@ def fetch_minecraft_log():
             # Colorize and escape the log messages
             colored_lines = [line.replace('<', '&lt;').replace('>', '&gt;') for line in filtered_lines]
             log_content = ''.join(colored_lines)
+            logging.debug(log_content)
             return jsonify({'log': log_content})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
