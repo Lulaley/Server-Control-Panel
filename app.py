@@ -75,31 +75,28 @@ def system_info():
 def fetch_minecraft_log():
     data = request.get_json()
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
+    filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
     try:
         with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
             log_lines = log_file.readlines()[-50:]  # Get the last 50 lines of the log
 
-            # Filter out RCON listener and client messages
-            filtered_lines = [line for line in log_lines if not ('[RCON Listener #1/INFO]' in line or '[RCON Client /127.0.0.1' in line)]
+            # Filter out RCON listener and client messages based on the filter_type
+            filtered_lines = []
+            for line in log_lines:
+                if filter_type == 'errors' and '/ERROR]' in line:
+                    filtered_lines.append(line)
+                elif filter_type == 'warnings' and '/WARN]' in line:
+                    filtered_lines.append(line)
+                elif filter_type == 'info' and '/INFO]' in line:
+                    filtered_lines.append(line)
+                elif filter_type == 'discussion' and ('[Rcon]' in line or '<' in line and '>' in line):
+                    filtered_lines.append(line)
+                elif filter_type == 'all':
+                    filtered_lines.append(line)
 
             # Colorize and escape the log messages
-            colored_lines = []
-            for line in filtered_lines:
-                # Escape < and >
-                line = line.replace('<', '&lt;').replace('>', '&gt;')
-
-                if '/INFO]' in line:
-                    colored_lines.append('<span class="info">' + line.strip() + '</span>\n')
-                elif '/WARN]' in line:
-                    colored_lines.append('<span class="warn">' + line.strip() + '</span>\n')
-                elif '/ERROR]' in line:
-                    colored_lines.append('<span class="error">' + line.strip() + '</span>\n')
-                elif '[Rcon]' in line:
-                    colored_lines.append('<span class="rcon">' + line.strip() + '</span>\n')
-                else:
-                    colored_lines.append(line.strip() + '\n')
-
+            colored_lines = [line.replace('<', '&lt;').replace('>', '&gt;') for line in filtered_lines]
             log_content = ''.join(colored_lines)
             return jsonify({'log': log_content})
     except Exception as e:

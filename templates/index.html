@@ -338,6 +338,13 @@
     {% endif %}
 </div>
 <div id="main-container">
+    <div id="filter-buttons">
+        <button onclick="fetchMinecraftLogFiltered('errors')">Show Errors</button>
+        <button onclick="fetchMinecraftLogFiltered('warnings')">Show Warnings</button>
+        <button onclick="fetchMinecraftLogFiltered('info')">Show Info</button>
+        <button onclick="fetchMinecraftLogFiltered('discussion')">Show Discussion</button>
+        <button onclick="fetchMinecraftLogFiltered('all')">Show All</button>
+    </div>
     <div id="console-container">
         <div id="console-box">
             <div id="console" class="console-box"></div>
@@ -421,6 +428,27 @@
 
     // Call the fetchMinecraftLog function once on page load
     fetchMinecraftLog();
+
+    async function fetchMinecraftLogFiltered(filterType) {
+        try {
+            const response = await fetch('/minecraft_log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ log_path: log_path, filter_type: filterType }) // Include filter type in the request
+            });
+            const data = await response.json();
+
+            const consoleElement = document.getElementById('console');
+            consoleElement.innerHTML = data.log;
+
+            // Scroll to the bottom of the console
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        } catch (error) {
+            console.error('Error fetching Minecraft log:', error);
+        }
+    }
 
     document.getElementById('command-form').addEventListener('submit', async function(event) {
         event.preventDefault();
