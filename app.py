@@ -13,10 +13,18 @@ log_path = "/home/chimea/Bureau/minecraft/logs"
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
 
+def is_minecraft_server_running():
+    for proc in psutil.process_iter(attrs=['cmdline']):
+        cmdline = ' '.join(proc.info['cmdline']).lower()
+        if 'java' in cmdline and 'minecraft_server.jar' in cmdline:
+            return True
+    return False
+
 @app.route('/')
 def index():
     services = get_services()
-    return render_template('index.html', services=services)
+    minecraft_running = is_minecraft_server_running()
+    return render_template('index.html', services=services, minecraft_running=minecraft_running)
 
 @app.route('/system_info')
 def system_info():
