@@ -526,23 +526,15 @@
                 consoleElement.appendChild(document.createElement('br')); // New line
             });
 
-            // Optionally, update the online players list if your API also returns this information
-            console.log(typeof data.online_players);
-            console.log(data.online_players);
+            // Optionally, update the online players list if your API also returns this information            
+            const playerList = document.getElementById('player-list');
+            playerList.innerHTML = ''; // Clear existing list
             for (const player of data.online_players) {
-                console.log(player);
+                const li = document.createElement('li');
+                li.textContent = player;
+                playerList.appendChild(li);
             }
-            if (data.online_players) {
-                const playerList = document.getElementById('player-list');
-                playerList.innerHTML = ''; // Clear existing list
-                for (const player of data.online_players) {
-                    console.log(player);
-                    const li = document.createElement('li');
-                    li.textContent = player;
-                    playerList.appendChild(li);
-                }
-            }
-
+            
             // Scroll to the bottom of the console
             consoleElement.scrollTop = consoleElement.scrollHeight;
         } catch (error) {
