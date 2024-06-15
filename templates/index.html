@@ -424,7 +424,6 @@
     
     async function fetchMinecraftLogFiltered(filterType) {
         highlightSelectedButton(filterType);
-        // Assuming filterType is 'errors', 'warnings', 'info', 'discussion', or 'all'
         try {
             const response = await fetch('/minecraft_log', {
                 method: 'POST',
@@ -440,24 +439,24 @@
             const consoleElement = document.getElementById('console');
             consoleElement.innerHTML = ''; // Clear existing logs
 
-            data.logs.forEach(log => {
+            // Split the logs string into individual log entries
+            const logEntries = data.logs.split('\n');
+            logEntries.forEach(entry => {
                 const span = document.createElement('span');
-                span.textContent = log.text;
-                // Apply CSS class based on log type
-                switch (log.type) {
-                    case 'error':
-                        span.className = 'error-message';
-                        break;
-                    case 'warning':
-                        span.className = 'warning-message';
-                        break;
-                    case 'info':
-                        span.className = 'info-message';
-                        break;
-                    case 'discussion':
-                        span.className = 'discussion-message';
-                        break;
+                span.textContent = entry;
+
+                // Determine log level and apply CSS class
+                if (entry.includes('/ERROR')) {
+                    span.className = 'error-message';
+                } else if (entry.includes('/WARN')) {
+                    span.className = 'warning-message';
+                } else if (entry.includes('/INFO')) {
+                    span.className = 'info-message';
+                } else {
+                    // Default class for logs without a clear level, or you can add more conditions for other levels
+                    span.className = 'discussion-message';
                 }
+
                 consoleElement.appendChild(span);
                 consoleElement.appendChild(document.createElement('br')); // New line
             });
