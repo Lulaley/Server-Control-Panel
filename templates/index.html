@@ -240,7 +240,7 @@
         <tr>
             <td>{{ service }}</td>
             <td>
-                <span style="display: inline-block; width: 20px; height: 20px; background-color: {{ 'green' if info['status'] == 'active' else 'red' }};margin-left: 10px;"></span>
+                <span style="display: inline-block; width: 20px; height: 20px; margin-left: 10px; background-color: { 'green' if info['status'] == 'active' else 'red' };"></span>
             </td>
             <td>
                 {% if info['status'] == 'active' %}
