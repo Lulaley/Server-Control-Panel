@@ -434,6 +434,8 @@
                 body: JSON.stringify({ log_path: log_path, filter_type: filterType })
             });
             const data = await response.json();
+            
+            console.log(data.logs);
 
             const consoleElement = document.getElementById('console');
             consoleElement.innerHTML = ''; // Clear existing logs
