@@ -528,10 +528,10 @@
 
             // Optionally, update the online players list if your API also returns this information
             if (data.online_players) {
-                console.log(typeof data.online_players);
                 const playerList = document.getElementById('player-list');
                 playerList.innerHTML = ''; // Clear existing list
                 data.online_players.forEach(player => {
+                    console.log(player);
                     const li = document.createElement('li');
                     li.textContent = player;
                     playerList.appendChild(li);
