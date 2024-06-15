@@ -550,7 +550,7 @@
         const selectedFolder = event.target.value;
         log_path = `/home/chimea/Bureau/${selectedFolder}/logs`;
         console.log(`Log path changed to: ${log_path}`);
-        fetchMinecraftLog();
+        fetchMinecraftLogFiltered(currentFilterType);
     });
 
     async function fetchServerStatus() {
