@@ -531,12 +531,10 @@
                 const playerList = document.getElementById('player-list');
                 playerList.innerHTML = ''; // Clear existing list
                 for (const player in data.online_players) {
-                    if (Object.hasOwnProperty.call(object, player)) {
-                        console.log(player);
-                        const li = document.createElement('li');
-                        li.textContent = player;
-                        playerList.appendChild(li);
-                    }
+                    console.log(player);
+                    const li = document.createElement('li');
+                    li.textContent = player;
+                    playerList.appendChild(li);
                 }
             }
 
