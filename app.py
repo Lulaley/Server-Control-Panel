@@ -75,9 +75,14 @@ def system_info():
 def fetch_minecraft_log():
     data = request.get_json()
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
+    log_file_path = os.path.join(log_path, 'latest.log')
+
+    # Vérifier si le fichier existe
+    if not os.path.exists(log_file_path):
+        return jsonify({'error': 'Le fichier de logs n\'existe pas.'}), 404
 
     try:
-        with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
+        with open(log_file_path, 'r') as log_file:
             log_lines = log_file.readlines()[-50:]  # Get the last 50 lines of the log
 
             # Filter out RCON listener and client messages
@@ -99,6 +104,10 @@ def fetch_minecraft_log():
 
             log_content = ''.join(colored_lines)
             return jsonify({'log': log_content})
+    except FileNotFoundError:
+        return jsonify({'error': 'Fichier de logs introuvable.'}), 404
+    except PermissionError:
+        return jsonify({'error': 'Permission refusée pour lire le fichier de logs.'}), 403
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
