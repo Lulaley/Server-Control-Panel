@@ -33,6 +33,11 @@ def index():
     minecraft_running = is_minecraft_server_running()
     return render_template('index.html', services=services, minecraft_running=minecraft_running)
 
+@app.route('/api/minecraft_status')
+def minecraft_status():
+    minecraft_running = is_minecraft_server_running()
+    return {'minecraft_running': minecraft_running}
+
 @app.route('/system_info')
 def system_info():
     cpu_percent = psutil.cpu_percent()
