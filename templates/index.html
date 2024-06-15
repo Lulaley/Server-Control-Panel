@@ -312,7 +312,8 @@
             border: 1px solid #fff;
             border-radius: 5px;
             background-color: rgba(0, 0, 0, 0.5);
-            transform: translateY(15%);
+            transform: translateY(19%);
+            height: 480px;
         }
 
         #players-list {
@@ -530,8 +531,6 @@
             const playerList = document.getElementById('players-list');
             playerList.innerHTML = ''; // Clear existing list
             for (const player of data.online_players) {
-                console.log(player);
-                console.log(playerList);
                 const li = document.createElement('li');
                 li.textContent = player;
                 playerList.appendChild(li);
