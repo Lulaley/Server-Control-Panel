@@ -604,6 +604,7 @@
     let lastStatus = { minecraft_running };
 
     function checkMinecraftStatus() {
+        console.log('Checking Minecraft status...');
         fetch('/api/minecraft_status')
             .then(response => response.json())
             .then(data => {
