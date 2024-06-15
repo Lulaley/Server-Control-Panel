@@ -411,9 +411,9 @@
 
     let currentFilterType = 'all'; // Default filter type
     
-    function setFilterType(filterType) {
-        currentFilterType = filterType;
-        fetchMinecraftLogFiltered();
+    function updateFilterType(filterType) {
+        localStorage.setItem('selectedFilterType', filterType);
+        fetchMinecraftLogFiltered(filterType);
     }
 
     function highlightSelectedButton(filterType) {
@@ -428,6 +428,11 @@
     }
     
     async function fetchMinecraftLogFiltered() {
+        // Retrieve the filter type from local storage or use a default
+        const filterType = localStorage.getItem('selectedFilterType') || 'all';
+
+        highlightSelectedButton(filterType);
+
         try {
             const response = await fetch('/minecraft_log', {
                 method: 'POST',
@@ -472,6 +477,12 @@
 
     // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
     setInterval(() => fetchMinecraftLogFiltered(currentFilterType), 10000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterType = localStorage.getItem('selectedFilterType') || 'all';
+        highlightSelectedButton(filterType);
+        fetchMinecraftLogFiltered(); // This will now use the filter type from local storage
+    });
 
     document.getElementById('command-form').addEventListener('submit', async function(event) {
         event.preventDefault();
