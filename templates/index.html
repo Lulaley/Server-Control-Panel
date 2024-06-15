@@ -341,25 +341,7 @@
             const data = await response.json();
 
             const console = document.getElementById('console');
-            const parsedLog = data.log.replace(/&(#([0-9a-fA-F]{6})|([0-9a-fA-F]{3}))|[a-zA-Z0-9]{2}/g, ''); // Remove color codes and special characters
-            const logLines = parsedLog.split('\n'); // Split the log into lines
-
-            let formattedLog = '';
-            for (const line of logLines) {
-                if (line.trim() !== '' && !line.includes('[RCON Listener #')) { // Ignore empty lines and RCON listener messages
-                    const nameMatch = line.match(/<([^>]+)>/); // Find the player's name using a regular expression
-                    const name = nameMatch ? nameMatch[1] : ''; // Extract the name (without the chevrons)
-                    const message = nameMatch ? line.substring(nameMatch.index + nameMatch[0].length).trim() : line; // Extract the message
-
-                    // Replace the player's name in the message with a placeholder
-                    const messageWithPlaceholder = message.replace(new RegExp(`\\b${name}\\b`, 'g'), '__NAME__');
-
-                    // Format the log line with the chevrons and the placeholder
-                    formattedLog += `<span class="player-name">${nameMatch[0]}</span><span class="player-message">${messageWithPlaceholder.replace('__NAME__', name)}</span>\n`;
-                }
-            }
-
-            console.innerHTML = formattedLog;
+            console.innerHTML = data.log;
 
             // Scroll to the bottom of the console
             console.scrollTop = console.scrollHeight;
