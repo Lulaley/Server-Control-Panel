@@ -438,7 +438,19 @@
 
     let currentFilterType = 'all'; // Default filter type
 
+    function highlightSelectedButton(filterType) {
+        const buttons = document.querySelectorAll('#filter-buttons button');
+        buttons.forEach(button => {
+            if (button.getAttribute('data-filter') === filterType) {
+                button.classList.add('selected');
+            } else {
+                button.classList.remove('selected');
+            }
+        });
+    }
+    
     async function fetchMinecraftLogFiltered(filterType) {
+    highlightSelectedButton(filterType);
     // Assuming filterType is 'errors', 'warnings', 'info', 'discussion', or 'all'
     try {
         const response = await fetch('/minecraft_log', {
@@ -484,20 +496,6 @@
 
     // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
     setInterval(() => fetchMinecraftLogFiltered(currentFilterType), 3800);
-
-    function highlightSelectedButton(filterType) {
-        const buttons = document.querySelectorAll('#filter-buttons button');
-        buttons.forEach(button => {
-            if (button.getAttribute('data-filter') === filterType) {
-                button.classList.add('selected');
-            } else {
-                button.classList.remove('selected');
-            }
-        });
-    }
-
-    // Call this function at the beginning of [`fetchMinecraftLogFiltered`](command:_github.copilot.openSymbolFromReferences?%5B%7B%22%24mid%22%3A1%2C%22path%22%3A%22%2Fj%3A%2FPersonnal%20Project%2FServer%20Control%20Panel%2FServer-Control-Panel%2Ftemplates%2Findex.html%22%2C%22scheme%22%3A%22file%22%7D%2C%7B%22line%22%3A431%2C%22character%22%3A19%7D%5D "templates/index.html")
-    highlightSelectedButton(filterType);
 
     document.getElementById('command-form').addEventListener('submit', async function(event) {
         event.preventDefault();
