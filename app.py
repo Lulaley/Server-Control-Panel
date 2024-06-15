@@ -88,9 +88,9 @@ def fetch_minecraft_log():
                     filtered_lines.append(line)
                 elif filter_type == 'warnings' and '/WARN]' in line:
                     filtered_lines.append(line)
-                elif filter_type == 'discussion' and ('[Rcon]' in line or '<' in line and '>' in line):
+                elif filter_type == 'discussion' and ('[Rcon]' in line or '<' in line and '>' in line) and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line:
                     filtered_lines.append(line)
-                elif filter_type == 'info' and '/INFO]' in line:
+                elif filter_type == 'info' and '/INFO]' in line and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line and not ('[Rcon]' in line or '<' in line and '>' in line):
                     filtered_lines.append(line)
                 elif filter_type == 'all':
                     filtered_lines.append(line)
