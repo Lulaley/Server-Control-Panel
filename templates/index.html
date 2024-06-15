@@ -304,6 +304,27 @@
             border-radius: 5px;
             color: white;
         }
+
+        #players-container {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        #players-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #players-list li {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #players-list li:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
@@ -367,6 +388,12 @@
                 </select>
             </div>
         {% endif %}
+    </div>
+    <div id="players-container">
+        <h2>Players List</h2>
+        <ul id="players-list">
+            <!-- Player items will be added here dynamically -->
+        </ul>
     </div>
     <div id="main-container">
         <div id="filter-buttons">
@@ -723,6 +750,23 @@
 
     // Vérifier le statut toutes les 30 secondes
     setInterval(checkMinecraftStatus, 30000);
+
+    async function fetchAndDisplayPlayers() {
+        const playersContainer = document.getElementById('players-list');
+        playersContainer.innerHTML = ''; // Clear existing list items
+
+        // Example: Fetch player list from an API or server
+        const players = await fetchPlayers(); // Implement this function based on your backend
+
+        players.forEach(player => {
+            const listItem = document.createElement('li');
+            listItem.textContent = player.name; // Assuming each player has a 'name' property
+            playersContainer.appendChild(listItem);
+        });
+    }
+
+    // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
+    fetchAndDisplayPlayers();
 });
 </script>
 </body>

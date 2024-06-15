@@ -27,11 +27,24 @@ def is_minecraft_server_running():
     logging.info("No Minecraft server found running.")
     return False
 
+def fetchPlayers():
+    try:
+        with Client('127.0.0.1', 25575, passwd='minecraft') as client:
+            response = client.run("list")
+            # Typical response: "There are X of Y players online: Player1, Player2, ..."
+            player_list = response.split(": ")[1] if ": " in response else ""
+            players = player_list.split(", ") if player_list else []
+            return players
+    except Exception as e:
+        logging.error(f"Failed to fetch players: {e}")
+        return []
+
 @app.route('/')
 def index():
     services = get_services()
     minecraft_running = is_minecraft_server_running()
-    return render_template('index.html', services=services, minecraft_running=minecraft_running)
+    players = fetchPlayers()
+    return render_template('index.html', services=services, minecraft_running=minecraft_running, players=players)
 
 @app.route('/api/minecraft_status')
 def minecraft_status():
