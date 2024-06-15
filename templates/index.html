@@ -30,12 +30,23 @@
 
         #console-container {
             position: absolute; /* Change the position to absolute */
-            top: 70px; /* Set the top position to 70px */
+            top: 100px; /* Set the top position to 70px */
             left: 50%; /* Set the left position to 50% to center horizontally */
             transform: translateX(-50%); /* Move the container left by 50% of its own width to center it */
             width: 100%; /* Set the width to 100% */
             max-width: 1100px; /* Set the maximum width to 1100px */
             height: calc(100vh - 120px); /* Set the height to fill the remaining space vertically (subtracting the top position and the cat bar height) */
+            box-sizing: border-box;
+        }
+
+        #filter-buttons {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1100px;
+            height: 20px;
             box-sizing: border-box;
         }
 
