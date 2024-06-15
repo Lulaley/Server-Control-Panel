@@ -121,6 +121,7 @@ def get_folders():
             server_properties_path = os.path.join(entry.path, "server.properties")
             if os.path.isfile(server_properties_path):
                 folders.append(entry.name)
+                logging.info("Find : "+entry.name+".")
     return jsonify({'folders': folders})
 
 def check_server_status(selected_folder):
