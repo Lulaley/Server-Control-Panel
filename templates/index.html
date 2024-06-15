@@ -504,7 +504,7 @@
     }
 
     // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
-    setInterval(() => fetchMinecraftLogFiltered(currentFilterType), 10000);
+    setInterval(() => fetchMinecraftLogFiltered(currentFilterType), 1000);
 
     document.addEventListener('DOMContentLoaded', function() {
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
