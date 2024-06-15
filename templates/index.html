@@ -74,20 +74,6 @@
             margin: 0 10px;
         }
 
-        #server-control-button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        #server-control-button:hover {
-            background-color: #45a049;
-        }
-
         #console-box {
             background-color: rgba(0, 0, 0, 0.5);
             border: 1px solid #fff;
@@ -269,16 +255,15 @@
     </table>
 </div>
 <div id="control-container">
-    <button id="server-control-button">Start Server</button>
     <div class="folder-select-container">
-        <label for="folder-select">Select a folder:</label>
+        <label for="folder-select">Select a Miencraft server :</label>
         <select id="folder-select">
             <option value="">Select...</option>
         </select>
     </div>
     {% if not minecraft_running %}
         <div id="java-version-container" class="folder-select-container">
-            <label for="java-version-select">Select Java version:</label>
+            <label for="java-version-select">Select Java version :</label>
             <select id="java-version-select">
                 <option value="">Select...</option>
             </select>
@@ -456,32 +441,13 @@
             });
             const data = await response.json();
 
-            console.log("Server is running: ", data.is_running);
+            console.log("Minecraft server is running: ", data.is_running);
             return data.is_running;
         } catch (error) {
-            console.error('Error fetching server status:', error);
+            console.error('Error fetching minecraft server status:', error);
             return false;
         }
     }
-
-    async function updateServerControlButton() {
-        console.log("Updating server control button...");
-        const isRunning = await fetchServerStatus();
-        const button = document.getElementById('server-control-button');
-
-        if (isRunning) {
-            button.innerText = 'Stop Server';
-            button.style.backgroundColor = 'red';
-        } else {
-            button.innerText = 'Start Server';
-            button.style.backgroundColor = '#4caf50';
-        }
-    }
-    // Call the updateServerControlButton function every 5 seconds
-    setInterval(updateServerControlButton, 3800);
-
-    // Call the updateServerControlButton function once on page load
-    updateServerControlButton();
 
     async function fetchJavaVersions() {
         try {
