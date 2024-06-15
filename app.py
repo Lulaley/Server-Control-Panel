@@ -80,7 +80,7 @@ def fetch_minecraft_log():
     try:
         with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
             log_lines = log_file.readlines()[-50:]  # Get the last 50 lines of the log
-
+            logging.info("filter_type : "+filter_type+".")
             # Filter out RCON listener and client messages based on the filter_type
             filtered_lines = []
             for line in log_lines:
@@ -96,7 +96,7 @@ def fetch_minecraft_log():
                     filtered_lines.append(line)
 
             # Colorize and escape the log messages
-            colored_lines = [line.replace('<', '<').replace('>', '>') for line in filtered_lines]
+            colored_lines = filtered_lines
             log_content = ''.join(colored_lines)
             logging.debug(log_content)
             return jsonify({'logs': log_content})
