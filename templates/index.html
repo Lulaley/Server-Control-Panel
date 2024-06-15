@@ -304,83 +304,85 @@
     </style>
 </head>
 <body>
-<div class="cat-bar">
-    <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
-</div>
-<div id="percentages-container">
-    <div id="java-version"></div>
-    <div class="plain-bar"></div>
-
-    <div id="cpu-percentage"></div>
-    <div class="progress-bar" id="cpu-progress-bar"></div>
-
-    <div id="memory-percentage"></div>
-    <div class="progress-bar" id="memory-progress-bar"></div>
-
-    <div id="disk-percentage"></div>
-    <div class="progress-bar" id="disk-progress-bar"></div>
-</div>
-<div id="services-container">
-    <table>
-        <thead>
-        <tr>
-            <th>Service</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for service, info in services.items() %}
-        <tr>
-            <td>{{ service }}</td>
-            <td>
-                <span style="display: inline-block; width: 20px; height: 20px; background-color: {{ 'green' if info['status'] == 'active' else 'red' }};margin-left: 10px;"></span>
-            </td>
-            <td>
-                {% if info['status'] == 'active' %}
-                <button type="button" class="btn btn-danger" onclick="stop_service('{{ service }}')">Stop</button>
-                {% else %}
-                <button type="button" class="btn btn-success" onclick="start_service('{{ service }}')">Start</button>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-<div id="control-container">
-    <div class="folder-select-container">
-        <label for="folder-select">Select a Minecraft server :</label>
-        <select id="folder-select">
-            <option value="">Select...</option>
-        </select>
+<div id="super-container">
+    <div class="cat-bar">
+        <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
     </div>
-    {% if not minecraft_running %}
-        <div id="java-version-container" class="folder-select-container">
-            <label for="java-version-select">Select Java version :</label>
-            <select id="java-version-select">
+    <div id="percentages-container">
+        <div id="java-version"></div>
+        <div class="plain-bar"></div>
+    
+        <div id="cpu-percentage"></div>
+        <div class="progress-bar" id="cpu-progress-bar"></div>
+    
+        <div id="memory-percentage"></div>
+        <div class="progress-bar" id="memory-progress-bar"></div>
+    
+        <div id="disk-percentage"></div>
+        <div class="progress-bar" id="disk-progress-bar"></div>
+    </div>
+    <div id="services-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for service, info in services.items() %}
+            <tr>
+                <td>{{ service }}</td>
+                <td>
+                    <span style="display: inline-block; width: 20px; height: 20px; background-color: {{ 'green' if info['status'] == 'active' else 'red' }};margin-left: 10px;"></span>
+                </td>
+                <td>
+                    {% if info['status'] == 'active' %}
+                    <button type="button" class="btn btn-danger" onclick="stop_service('{{ service }}')">Stop</button>
+                    {% else %}
+                    <button type="button" class="btn btn-success" onclick="start_service('{{ service }}')">Start</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="control-container">
+        <div class="folder-select-container">
+            <label for="folder-select">Select a Minecraft server :</label>
+            <select id="folder-select">
                 <option value="">Select...</option>
             </select>
         </div>
-    {% endif %}
-</div>
-<div id="main-container">
-    <div id="filter-buttons">
-        <button onclick="fetchMinecraftLogFiltered('errors')">Show Errors</button>
-        <button onclick="fetchMinecraftLogFiltered('warnings')">Show Warnings</button>
-        <button onclick="fetchMinecraftLogFiltered('info')">Show Info</button>
-        <button onclick="fetchMinecraftLogFiltered('discussion')">Show Discussion</button>
-        <button onclick="fetchMinecraftLogFiltered('all')">Show All</button>
+        {% if not minecraft_running %}
+            <div id="java-version-container" class="folder-select-container">
+                <label for="java-version-select">Select Java version :</label>
+                <select id="java-version-select">
+                    <option value="">Select...</option>
+                </select>
+            </div>
+        {% endif %}
     </div>
-    <div id="console-container">
-        <div id="console-box">
-            <div id="console" class="console-box"></div>
+    <div id="main-container">
+        <div id="filter-buttons">
+            <button onclick="fetchMinecraftLogFiltered('errors')">Show Errors</button>
+            <button onclick="fetchMinecraftLogFiltered('warnings')">Show Warnings</button>
+            <button onclick="fetchMinecraftLogFiltered('info')">Show Info</button>
+            <button onclick="fetchMinecraftLogFiltered('discussion')">Show Discussion</button>
+            <button onclick="fetchMinecraftLogFiltered('all')">Show All</button>
         </div>
-
-        <form id="command-form">
-            <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
-            <div id="command-error"></div>
-        </form>
+        <div id="console-container">
+            <div id="console-box">
+                <div id="console" class="console-box"></div>
+            </div>
+    
+            <form id="command-form">
+                <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
+                <div id="command-error"></div>
+            </form>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
