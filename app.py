@@ -16,7 +16,7 @@ def remove_color_codes(text):
 def is_minecraft_server_running():
     for proc in psutil.process_iter(attrs=['cmdline']):
         cmdline = ' '.join(proc.info['cmdline']).lower()
-        if 'java' in cmdline and 'minecraft_server.jar' in cmdline:
+        if 'java' in cmdline:
             return True
     return False
 
