@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import subprocess
@@ -10,14 +11,20 @@ mc_rcon_password = "minecraft"
 mc_rcon_host = "0.0.0.0"
 log_path = "/home/chimea/Bureau/minecraft/logs"
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
 
 def is_minecraft_server_running():
+    logging.info("Checking if a Minecraft server is running...")
     for proc in psutil.process_iter(attrs=['cmdline']):
         cmdline = ' '.join(proc.info['cmdline']).lower()
         if 'java' in cmdline:
+            logging.info("A Java process was found, assuming a Minecraft server is running.")
             return True
+    logging.info("No Minecraft server found running.")
     return False
 
 @app.route('/')
