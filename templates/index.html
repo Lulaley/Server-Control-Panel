@@ -527,14 +527,16 @@
             });
 
             // Optionally, update the online players list if your API also returns this information            
-            const playerList = document.getElementById('player-list');
-            playerList.innerHTML = ''; // Clear existing list
+            /* const playerList = document.getElementById('player-list');
+            playerList.innerHTML = ''; // Clear existing list */
             for (const player of data.online_players) {
+                console.log(player);
+                console.log(playerList);
                 const li = document.createElement('li');
                 li.textContent = player;
                 playerList.appendChild(li);
             }
-            
+
             // Scroll to the bottom of the console
             consoleElement.scrollTop = consoleElement.scrollHeight;
         } catch (error) {
