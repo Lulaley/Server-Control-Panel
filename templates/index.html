@@ -274,6 +274,22 @@
             border-radius: 5px;
             background-color: rgba(0, 0, 0, 0.5);
         }
+
+        .error-message {
+            color: red;
+        }
+
+        .warning-message {
+            color: orange;
+        }
+
+        .info-message {
+            color: white;
+        }
+
+        .discussion-message {
+            color: blue;
+        }
     </style>
 </head>
 <body>
@@ -429,26 +445,68 @@
     // Call the fetchMinecraftLog function once on page load
     fetchMinecraftLog();
 
+    let currentFilterType = 'all'; // Default filter type
+
     async function fetchMinecraftLogFiltered(filterType) {
-        try {
-            const response = await fetch('/minecraft_log', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ log_path: log_path, filter_type: filterType }) // Include filter type in the request
-            });
-            const data = await response.json();
+    // Assuming filterType is 'errors', 'warnings', 'info', 'discussion', or 'all'
+    try {
+        const response = await fetch('/minecraft_log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ log_path: log_path, filter_type: filterType })
+        });
+        const data = await response.json();
 
-            const consoleElement = document.getElementById('console');
-            consoleElement.innerHTML = data.log;
+        const consoleElement = document.getElementById('console');
+        consoleElement.innerHTML = ''; // Clear existing logs
 
-            // Scroll to the bottom of the console
-            consoleElement.scrollTop = consoleElement.scrollHeight;
-        } catch (error) {
-            console.error('Error fetching Minecraft log:', error);
-        }
+        data.logs.forEach(log => {
+            const span = document.createElement('span');
+            span.textContent = log.text;
+            // Apply CSS class based on log type
+            switch (log.type) {
+                case 'error':
+                    span.className = 'error-message';
+                    break;
+                case 'warning':
+                    span.className = 'warning-message';
+                    break;
+                case 'info':
+                    span.className = 'info-message';
+                    break;
+                case 'discussion':
+                    span.className = 'discussion-message';
+                    break;
+            }
+            consoleElement.appendChild(span);
+            consoleElement.appendChild(document.createElement('br')); // New line
+        });
+
+        // Scroll to the bottom of the console
+        consoleElement.scrollTop = consoleElement.scrollHeight;
+    } catch (error) {
+        console.error('Error fetching Minecraft log:', error);
     }
+}
+
+    // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
+    setInterval(() => fetchMinecraftLogFiltered(currentFilterType), 3800);
+
+    function highlightSelectedButton(filterType) {
+    const buttons = document.querySelectorAll('#filter-buttons button');
+    buttons.forEach(button => {
+        if (button.getAttribute('data-filter') === filterType) {
+            button.classList.add('selected');
+        } else {
+            button.classList.remove('selected');
+        }
+    });
+}
+
+    // Call this function at the beginning of [`fetchMinecraftLogFiltered`](command:_github.copilot.openSymbolFromReferences?%5B%7B%22%24mid%22%3A1%2C%22path%22%3A%22%2Fj%3A%2FPersonnal%20Project%2FServer%20Control%20Panel%2FServer-Control-Panel%2Ftemplates%2Findex.html%22%2C%22scheme%22%3A%22file%22%7D%2C%7B%22line%22%3A431%2C%22character%22%3A19%7D%5D "templates/index.html")
+    highlightSelectedButton(filterType);
 
     document.getElementById('command-form').addEventListener('submit', async function(event) {
         event.preventDefault();
