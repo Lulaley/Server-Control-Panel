@@ -218,29 +218,30 @@
     <div id="java-version"></div>
     <div class="plain-bar"></div>
 
+    <div id="cpu-percentage"></div>
+    <div class="progress-bar" id="cpu-progress-bar"></div>
 
-    <th>Service</th>
-    <th>Status</th>
-    <th>Action</th>
-</tr>
-</thead>
-<tbody>
+    <div id="memory-percentage"></div>
+    <div class="progress-bar" id="memory-progress-bar"></div>
 
-        <button type="button" class="btn btn-danger" onclick="stop_service('{{ service }}')">Stop</button>,
-        {% else %}
-        <button type="button" class="btn btn-success" onclick="start_service('{{ service }}')">Start</button>
-        {% endif %}
-    </td>
-</tr>
-
+    <div id="disk-percentage"></div>
+    <div class="progress-bar" id="disk-progress-bar"></div>
 </div>
-{% endif %}
-</div>      <tbody>
+<div id="services-container">
+    <table>
+        <thead>
+        <tr>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for service, info in services.items() %}
         <tr>
             <td>{{ service }}</td>
             <td>
-                <span style="display: inline-block; width: 20px; height: 20px; margin-left: 10px; background-color: { 'green' if info['status'] == 'active' else 'red' };"></span>
+                <span style="display: inline-block; width: 20px; height: 20px; background-color: {{ 'green' if info['status'] == 'active' else 'red' }};margin-left: 10px;"></span>
             </td>
             <td>
                 {% if info['status'] == 'active' %}
