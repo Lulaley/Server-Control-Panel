@@ -61,19 +61,6 @@
             margin-left: 10px;
         }
 
-        #control-container {
-            position: fixed;
-            top: 70px;
-            right: 10px;
-            padding: 10px;
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            flex-grow: 3;
-            min-width: min-content;
-            margin: 0 10px;
-        }
-
         #server-control-button {
             background-color: #4caf50;
             color: white;
@@ -387,7 +374,7 @@
     // Call the fetchMinecraftLog function once on page load
     fetchMinecraftLog();
 
-    document.getElementById('command-form').addEventListener('submit', async function(event) {
+    document.getElementById('command-input').addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const command = document.getElementById('command-input').value;
