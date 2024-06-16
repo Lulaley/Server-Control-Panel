@@ -665,7 +665,9 @@
                     const option = document.createElement('option');
                     option.value = version.path;
                     option.textContent = version.version;
-                    javaVersionSelect.appendChild(option);
+                    if (javaVersionSelect) {
+                        javaVersionSelect.appendChild(option);
+                    }
                 }
             } else {
                 console.log('Not all latest.log files have a modified date of today');
@@ -677,11 +679,13 @@
 
     fetchJavaVersions();
 
-    document.getElementById('java-version-select').addEventListener('change', function(event) {
-        const selectedVersion = event.target.value;
-        console.log(`Java version wanted : ${selectedVersion}`);
-        changeJavaVersion(selectedVersion);
-    });
+    if (document.getElementById('java-version-select')) {
+        document.getElementById('java-version-select').addEventListener('change', function(event) {
+            const selectedVersion = event.target.value;
+            console.log(`Java version wanted : ${selectedVersion}`);
+            changeJavaVersion(selectedVersion);
+        });
+    }
 
     async function changeJavaVersion(selectedVersion) {
         try {
