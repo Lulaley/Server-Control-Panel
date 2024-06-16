@@ -248,13 +248,13 @@
         }
 
         #java-version-container {
-            position: fixed;
-            top: 200px;
-            right: 10px;
-            padding: 10px;
             border: 1px solid #fff;
             border-radius: 5px;
             background-color: rgba(0, 0, 0, 0.5);
+            grid-column-start: 1;
+            grid-row-start: 2;
+            transform: translateY(448%);
+            height: fit-content;
         }
 
         .error-message {
@@ -379,13 +379,14 @@
             </tbody>
         </table>
     </div>
-    
+    {% if not minecraft_running %}
     <div id="java-version-container" class="folder-select-container">
         <label for="java-version-select">Select Java version :</label>
         <select id="java-version-select">
             <option value="">Select...</option>
         </select>
     </div>
+    {% endif %}
     <div id="control-container">
         <div class="folder-select-container">
             <label for="folder-select">Select a Minecraft server :</label>
