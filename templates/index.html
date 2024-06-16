@@ -486,7 +486,9 @@
     }
     
     async function fetchMinecraftLogFiltered() {
-        console.log(document.getElementById('folder-select').value);
+        if (document.getElementById('folder-select').value === "") {
+            return;
+        }
         // Retrieve the filter type from local storage or use a default
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
         highlightSelectedButton(filterType);
