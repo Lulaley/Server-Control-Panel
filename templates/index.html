@@ -35,6 +35,7 @@
         }
 
         .cat-image {
+            position: absolute;
             top: 5px;
             width: 3%;
             animation: move-cat 10s linear infinite; /* Adjust the duration as needed */
@@ -485,9 +486,9 @@
     }
     
     async function fetchMinecraftLogFiltered() {
+        console.log(document.getElementById('folder-select').value);
         // Retrieve the filter type from local storage or use a default
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
-        console.log(`Fetching Minecraft log with filter type: ${filterType}`);
         highlightSelectedButton(filterType);
 
         try {
@@ -545,7 +546,7 @@
     }
 
     // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
-    setInterval(() => fetchMinecraftLogFiltered(currentFilterType), 1000);
+    setInterval(() => fetchMinecraftLogFiltered(), 1000);
 
     document.addEventListener('DOMContentLoaded', function() {
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
