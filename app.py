@@ -39,7 +39,7 @@ def fetchPlayers():
         logging.error(f"Failed to fetch players: {e}")
         return []
 
-def erase_specified_lines_from_log():
+def erase_specified_lines_from_log(log_path):
     try:
         with open(log_path + '/latest.log', 'r') as file:
             lines = file.readlines()
@@ -101,11 +101,11 @@ def system_info():
 
 @app.route('/minecraft_log', methods=['POST'])
 def fetch_minecraft_log():
-    erase_specified_lines_from_log()
     data = request.get_json()
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
+    erase_specified_lines_from_log(log_path)
     try:
         # Fetch the list of online players
         online_players = fetchPlayers()
