@@ -111,6 +111,10 @@ def fetch_minecraft_log():
                 elif filter_type == 'all':
                     filtered_lines.append(line)
 
+            # If filtered_lines is empty, set a default message
+            if not filtered_lines:
+                filtered_lines = ["Tout se passe bien !"]
+                
             # Colorize and escape the log messages
             colored_lines = filtered_lines
             log_content = ''.join(colored_lines)
