@@ -88,13 +88,14 @@ def fetch_minecraft_log():
     data = request.get_json()
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
+    lines = data.get('lines', '500')  # Get the filter type from the request
 
     try:
         # Fetch the list of online players
         online_players = fetchPlayers()
 
         with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
-            log_lines = log_file.readlines()[-20:]  # Get the last 50 lines of the log
+            log_lines = log_file.readlines()[-lines:]  # Get the last 'lines' lines of the log
             # Filter out RCON listener and client messages based on the filter_type
             filtered_lines = []
             for line in log_lines:

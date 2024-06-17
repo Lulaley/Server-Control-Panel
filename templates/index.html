@@ -531,12 +531,12 @@
         }
 
         try {
-            const response = await fetch('/minecraft_log', {
+            const response = await fetch('/minecraft_log?lines=100&filter_type=' + filterType, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ log_path: log_path, filter_type: filterType })
+                body: JSON.stringify({ log_path: log_path, filter_type: filterType, lines: 100 })
             });
             const data = await response.json();
 
@@ -585,7 +585,7 @@
     }
 
     // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
-    setInterval(() => fetchMinecraftLogFiltered(), 1000);
+    setInterval(() => fetchMinecraftLogFiltered(), 5000);
 
     document.addEventListener('DOMContentLoaded', function() {
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
