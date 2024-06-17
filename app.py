@@ -139,6 +139,7 @@ def system_info():
 @app.route('/minecraft_log', methods=['POST'])
 def fetch_minecraft_log():
     data = request.get_json()
+    global log_path
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
