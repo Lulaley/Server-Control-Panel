@@ -291,7 +291,7 @@ def start_service(service):
         return jsonify({'success': False, 'message': str(e)})
 
 def schedule_erase():
-    erase_specified_lines_from_log()
+    erase_specified_lines_from_log(log_path)
     # Planifier l'exécution de la fonction toutes les secondes
     threading.Timer(1, schedule_erase).start()
 
