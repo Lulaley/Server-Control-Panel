@@ -3,6 +3,7 @@ import os
 import re
 import subprocess
 import psutil
+import threading
 from flask import Flask, request, render_template, jsonify
 from rcon.source import Client
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -54,7 +55,7 @@ def erase_specified_lines_from_log(log_path):
         
         logging.info("Specified lines were successfully erased from the log file.")
     except Exception as e:
-        logging.error(f"Failed to erase specified lines from the log file: {e}")
+        logging.error(f"Failed to erase specified lines from the log file {log_path}/latest.log: {e}")
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
@@ -289,9 +290,16 @@ def start_service(service):
     except subprocess.CalledProcessError as e:
         return jsonify({'success': False, 'message': str(e)})
 
+def schedule_erase():
+    erase_specified_lines_from_log()
+    # Planifier l'exécution de la fonction toutes les secondes
+    threading.Timer(1, schedule_erase).start()
+
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
     scheduler.start()
+    # Démarrer la planification
+    schedule_erase()
     # Important to use use_reloader=False to avoid duplicate scheduler instances
     app.run(host='0.0.0.0', port=5000, use_reloader=False)
