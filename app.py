@@ -61,7 +61,7 @@ def erase_specified_lines_from_log(log_path):
 def send_welcome_message(new_player):
     try:
         with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
-            welcome_message = f"tell {new_player} Welcome to the server! Enjoy your stay."
+            welcome_message = f"tell {new_player} Wesh tu geek encore ? Oublie pas de désactiver le spawn de mobs de mana & artifice via la quête ! Le serveur à peut-être restart ! Après peut-être que l'administrateur à régler le problème des mobs avec la modification en config serveur !."
             client.run(welcome_message)
             logging.info(f"Sent welcome message to {new_player}")
     except Exception as e:
