@@ -105,7 +105,6 @@ def fetch_minecraft_log():
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
-    erase_specified_lines_from_log(log_path)
     try:
         # Fetch the list of online players
         online_players = fetchPlayers()
