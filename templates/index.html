@@ -536,7 +536,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ log_path: log_path, filter_type: filterType, lines: 100 })
+                body: JSON.stringify({ log_path: log_path, filter_type: filterType })
             });
             const data = await response.json();
 
