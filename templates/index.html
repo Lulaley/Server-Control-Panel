@@ -489,6 +489,9 @@
     let currentFilterType = 'all'; // Default filter type
     
     function updateFilterType(filterType) {
+        if (filterType === currentFilterType) {
+            return;  // Skip if the filter type hasn't changed
+        }
         localStorage.setItem('selectedFilterType', filterType);
         fetchMinecraftLogFiltered(filterType);
         // Remove the 'selected' class from all buttons
