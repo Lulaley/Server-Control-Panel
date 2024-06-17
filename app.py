@@ -39,6 +39,22 @@ def fetchPlayers():
         logging.error(f"Failed to fetch players: {e}")
         return []
 
+def erase_specified_lines_from_log():
+    try:
+        with open(log_path + '/latest.log', 'r') as file:
+            lines = file.readlines()
+        
+        # Filter out lines containing the specified strings
+        filtered_lines = [line for line in lines if "Thread RCON Client ** started" not in line and "Thread RCON Client ** shutting down" not in line]
+        
+        # Write the filtered lines back to the file
+        with open(log_path + '/latest.log', 'w') as file:
+            file.writelines(filtered_lines)
+        
+        logging.info("Specified lines were successfully erased from the log file.")
+    except Exception as e:
+        logging.error(f"Failed to erase specified lines from the log file: {e}")
+
 @app.route('/')
 def index():
     services = get_services()
@@ -85,6 +101,7 @@ def system_info():
 
 @app.route('/minecraft_log', methods=['POST'])
 def fetch_minecraft_log():
+    erase_specified_lines_from_log()
     data = request.get_json()
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request

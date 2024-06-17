@@ -484,7 +484,7 @@
             }
         });
     }
-    
+
     async function fetchMinecraftLogFiltered() {
         if (document.getElementById('folder-select').value === "") {
             return;
@@ -507,7 +507,10 @@
             consoleElement.innerHTML = ''; // Clear existing logs
 
             // Split the logs string into individual log entries
-            const logEntries = data.logs.split('\n');
+            const logEntries = data.logs.split('\n').filter(entry => 
+                !entry.includes('Thread RCON Client ** started') && 
+                !entry.includes('Thread RCON Client ** shutting down')
+            );
             logEntries.forEach(entry => {
                 const span = document.createElement('span');
                 span.textContent = entry;
