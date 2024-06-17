@@ -39,6 +39,13 @@ def fetchPlayers():
         logging.error(f"Failed to fetch players: {e}")
         return []
 
+def send_message_to_player(player_name, message):
+    try:
+        with Client('127.0.0.1', 25575, passwd='minecraft') as client:
+            client.run(f"tell {player_name} {message}")
+    except Exception as e:
+        logging.error(f"Failed to send message to player {player_name}: {e}")
+
 @app.route('/')
 def index():
     services = get_services()
@@ -83,6 +90,9 @@ def system_info():
         'current_disk_used': current_disk_used
     })
 
+# Global variable to keep track of online players
+online_players_list = []
+
 @app.route('/minecraft_log', methods=['POST'])
 def fetch_minecraft_log():
     data = request.get_json()
@@ -93,11 +103,23 @@ def fetch_minecraft_log():
         # Fetch the list of online players
         online_players = fetchPlayers()
 
+        # Check if the list is empty
+        if not online_players:
+            online_players = ["Pas de joueur connectés"]
+        else:
+            # Check for new players
+            for player in online_players:
+                if player not in online_players_list:
+                    send_message_to_player(player, "Wesh tu geek encore ? Oublie pas de désactiver le spawn de mobs de mana & artifice via la quête !")
+        online_players_list = online_players
+
         with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
-            log_lines = log_file.readlines()[-50:]  # Get the last 50 lines of the log
+            log_lines = log_file.readlines() # Get the last 'lines' lines of the log
             # Filter out RCON listener and client messages based on the filter_type
             filtered_lines = []
             for line in log_lines:
+                if 'Thread RCON Client' in line and ('started' in line or 'shutting down' in line):
+                    continue  # Skip this line
                 if filter_type == 'errors' and '/ERROR]' in line:
                     filtered_lines.append(line)
                 elif filter_type == 'warnings' and '/WARN]' in line:
@@ -109,6 +131,10 @@ def fetch_minecraft_log():
                 elif filter_type == 'all':
                     filtered_lines.append(line)
 
+            # If filtered_lines is empty, set a default message
+            if not filtered_lines:
+                filtered_lines = ["Tout se passe bien !"]
+                
             # Colorize and escape the log messages
             colored_lines = filtered_lines
             log_content = ''.join(colored_lines)

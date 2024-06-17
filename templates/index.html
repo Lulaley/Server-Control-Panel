@@ -277,33 +277,46 @@
         }
 
         #errors-tag-button {
-            background-color: darkred;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkred;
         }
 
         #warnings-tag-button {
-            background-color: darkorange;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkorange;
         }
 
         #info-tag-button {
-            background-color: darkgray;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkgrey;
         }
 
         #discussion-tag-button {
-            background-color: darkblue;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkblue;
         }
 
         #all-tag-button {
-            background-color: darkviolet;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkviolet;
+        }
+
+        #errors-tag-button.selected,
+        #warnings-tag-button.selected,
+        #info-tag-button.selected,
+        #discussion-tag-button.selected,
+        #all-tag-button.selected {
+            border: 1px solid #fff;
         }
 
         #players-container {
@@ -422,6 +435,12 @@
     </div>
 </div>
 <script type="text/javascript">
+    // Call this function on page load to update the selected button
+    window.onload = function() {
+        const filterType = localStorage.getItem('selectedFilterType') || 'all';
+        updateFilterType(filterType);
+    }
+
     function bytesToSize(bytes) {
         const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
         if (bytes === 0) return '0 Bytes';
@@ -470,11 +489,27 @@
     let currentFilterType = 'all'; // Default filter type
     
     function updateFilterType(filterType) {
+        if (filterType === currentFilterType) {
+            return;  // Skip if the filter type hasn't changed
+        }
         localStorage.setItem('selectedFilterType', filterType);
         fetchMinecraftLogFiltered(filterType);
+        // Remove the 'selected' class from all buttons
+        document.getElementById('errors-tag-button').classList.remove('selected');
+        document.getElementById('warnings-tag-button').classList.remove('selected');
+        document.getElementById('info-tag-button').classList.remove('selected');
+        document.getElementById('discussion-tag-button').classList.remove('selected');
+        document.getElementById('all-tag-button').classList.remove('selected');
+
+        // Add the 'selected' class to the clicked button
+        document.getElementById(filterType + '-tag-button').classList.add('selected');
+        currentFilterType = filterType;  // Update the current filter type
     }
 
     function highlightSelectedButton(filterType) {
+        if (filterType !== currentFilterType) {
+            updateFilterType(filterType);
+        }
         const buttons = document.querySelectorAll('#filter-buttons button');
         buttons.forEach(button => {
             if (button.getAttribute('data-filter') === filterType) {
@@ -491,10 +526,12 @@
         }
         // Retrieve the filter type from local storage or use a default
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
-        highlightSelectedButton(filterType);
+        if (filterType !== currentFilterType) {
+            highlightSelectedButton(filterType);
+        }
 
         try {
-            const response = await fetch('/minecraft_log', {
+            const response = await fetch('/minecraft_log?lines=100&filter_type=' + filterType, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -503,43 +540,54 @@
             });
             const data = await response.json();
 
+            if (!data) {
+                console.warn('No data received from server');
+                return;
+            }
             const consoleElement = document.getElementById('console');
             consoleElement.innerHTML = ''; // Clear existing logs
 
-            // Split the logs string into individual log entries
-            const logEntries = data.logs.split('\n');
-            logEntries.forEach(entry => {
-                const span = document.createElement('span');
-                span.textContent = entry;
+            if (data.logs) {
+                // Split the logs string into individual log entries
+                const logEntries = data.logs.split('\n');
+                logEntries.forEach(entry => {
+                    const span = document.createElement('span');
+                    span.textContent = entry;
 
-                // Determine log level and apply CSS class
-                if (entry.includes('/ERROR')) {
-                    span.className = 'error-message';
-                } else if (entry.includes('/WARN')) {
-                    span.className = 'warning-message';
-                } else if (entry.includes('<') || entry.includes('[Rcon]')) {
-                    // This condition now also checks for entries containing [RCON]
-                    span.className = 'discussion-message';
-                } else if (entry.includes('/INFO')) {
-                    span.className = 'info-message';
-                } else {
-                    // Default class for logs without a clear level, or you can add more conditions for other levels
-                    span.className = 'any-message';
-                }
+                    // Determine log level and apply CSS class
+                    if (entry.includes('/ERROR')) {
+                        span.className = 'error-message';
+                    } else if (entry.includes('/WARN')) {
+                        span.className = 'warning-message';
+                    } else if (entry.includes('<') || entry.includes('[Rcon]')) {
+                        // This condition now also checks for entries containing [RCON]
+                        span.className = 'discussion-message';
+                    } else if (entry.includes('/INFO')) {
+                        span.className = 'info-message';
+                    } else {
+                        // Default class for logs without a clear level, or you can add more conditions for other levels
+                        span.className = 'any-message';
+                    }
 
-                consoleElement.appendChild(span);
-                consoleElement.appendChild(document.createElement('br')); // New line
-            });
-
-            // Optionally, update the online players list if your API also returns this information            
-            const playerList = document.getElementById('players-list');
-            playerList.innerHTML = ''; // Clear existing list
-            for (const player of data.online_players) {
-                const li = document.createElement('li');
-                li.textContent = player;
-                playerList.appendChild(li);
+                    consoleElement.appendChild(span);
+                    consoleElement.appendChild(document.createElement('br')); // New line
+                });
+            } else {
+                console.warn('No logs received from server');
             }
 
+            if (data.online_players) {
+                // Optionally, update the online players list if your API also returns this information            
+                const playerList = document.getElementById('players-list');
+                playerList.innerHTML = ''; // Clear existing list
+                for (const player of data.online_players) {
+                    const li = document.createElement('li');
+                    li.textContent = player;
+                    playerList.appendChild(li);
+                }
+            } else {
+                console.warn('No online players data received from server');
+            }
             // Scroll to the bottom of the console
             consoleElement.scrollTop = consoleElement.scrollHeight;
         } catch (error) {
@@ -548,7 +596,7 @@
     }
 
     // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
-    setInterval(() => fetchMinecraftLogFiltered(), 1000);
+    setInterval(() => fetchMinecraftLogFiltered(), 10000);
 
     document.addEventListener('DOMContentLoaded', function() {
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
