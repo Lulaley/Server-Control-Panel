@@ -103,10 +103,14 @@ def fetch_minecraft_log():
         # Fetch the list of online players
         online_players = fetchPlayers()
 
-        # Check for new players
-        for player in online_players:
-            if player not in online_players_list:
-                send_message_to_player(player, "Wesh tu geek encore ? Oublie pas de désactiver le spawn de mobs de mana & artifice via la quête !")
+        # Check if the list is empty
+        if not online_players:
+            online_players = ["Pas de joueur connectés"]
+        else:
+            # Check for new players
+            for player in online_players:
+                if player not in online_players_list:
+                    send_message_to_player(player, "Wesh tu geek encore ? Oublie pas de désactiver le spawn de mobs de mana & artifice via la quête !")
         online_players_list = online_players
 
         with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
