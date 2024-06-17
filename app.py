@@ -98,6 +98,8 @@ def fetch_minecraft_log():
             # Filter out RCON listener and client messages based on the filter_type
             filtered_lines = []
             for line in log_lines:
+                if 'Thread RCON Client' in line and ('started' in line or 'shutting down' in line):
+                    continue  # Skip this line
                 if filter_type == 'errors' and '/ERROR]' in line:
                     filtered_lines.append(line)
                 elif filter_type == 'warnings' and '/WARN]' in line:
