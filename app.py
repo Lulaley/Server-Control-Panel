@@ -98,7 +98,7 @@ def fetch_minecraft_log():
     data = request.get_json()
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
-    lines = data.get('lines', '500')  # Get the filter type from the request
+    lines = data.get('lines', 500)  # Get the number of lines to read from logs
 
     try:
         # Fetch the list of online players
