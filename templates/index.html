@@ -503,10 +503,13 @@
 
         // Add the 'selected' class to the clicked button
         document.getElementById(filterType + '-tag-button').classList.add('selected');
+        currentFilterType = filterType;  // Update the current filter type
     }
 
     function highlightSelectedButton(filterType) {
-        updateFilterType(filterType);
+        if (filterType !== currentFilterType) {
+            updateFilterType(filterType);
+        }
         const buttons = document.querySelectorAll('#filter-buttons button');
         buttons.forEach(button => {
             if (button.getAttribute('data-filter') === filterType) {
@@ -523,7 +526,9 @@
         }
         // Retrieve the filter type from local storage or use a default
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
-        highlightSelectedButton(filterType);
+        if (filterType !== currentFilterType) {
+            highlightSelectedButton(filterType);
+        }
 
         try {
             const response = await fetch('/minecraft_log', {
