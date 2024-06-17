@@ -503,6 +503,7 @@
     }
 
     function highlightSelectedButton(filterType) {
+        updateFilterType(filterType);
         const buttons = document.querySelectorAll('#filter-buttons button');
         buttons.forEach(button => {
             if (button.getAttribute('data-filter') === filterType) {
@@ -519,6 +520,7 @@
         }
         // Retrieve the filter type from local storage or use a default
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
+        console.log(filterType);
         highlightSelectedButton(filterType);
 
         try {
