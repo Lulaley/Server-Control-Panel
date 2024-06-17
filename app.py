@@ -5,6 +5,7 @@ import subprocess
 import psutil
 from flask import Flask, request, render_template, jsonify
 from rcon.source import Client
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 mc_rcon_password = "minecraft"
@@ -54,6 +55,41 @@ def erase_specified_lines_from_log(log_path):
         logging.info("Specified lines were successfully erased from the log file.")
     except Exception as e:
         logging.error(f"Failed to erase specified lines from the log file: {e}")
+
+# Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
+def send_welcome_message(new_player):
+    try:
+        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
+            welcome_message = f"tell {new_player} Welcome to the server! Enjoy your stay."
+            client.run(welcome_message)
+            logging.info(f"Sent welcome message to {new_player}")
+    except Exception as e:
+        logging.error(f"Failed to send welcome message to {new_player}: {e}")
+
+def monitor_for_new_players():
+    known_players = load_known_players()  # Load the list of known players from a file or database
+    with open(log_path + '/latest.log', 'r') as file:
+        for line in file:
+            join_match = re.search(r'(\w+)\[.*\] logged in with entity id', line)
+            if join_match:
+                player_name = join_match.group(1)
+                if player_name not in known_players:
+                    send_welcome_message(player_name)
+                    known_players.add(player_name)
+                    save_known_players(known_players)  # Update the list of known players
+
+# Global variable to store known players in-memory
+known_players_set = set()
+
+def load_known_players():
+    # Return the global set of known players
+    global known_players_set
+    return known_players_set
+
+def save_known_players(known_players):
+    # Update the global set of known players, no actual saving since it's in-memory
+    global known_players_set
+    known_players_set = known_players
 
 @app.route('/')
 def index():
@@ -254,4 +290,8 @@ def start_service(service):
         return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
+    scheduler.start()
+    # Important to use use_reloader=False to avoid duplicate scheduler instances
+    app.run(host='0.0.0.0', port=5000, use_reloader=False)
