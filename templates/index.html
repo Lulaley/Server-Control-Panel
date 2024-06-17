@@ -277,33 +277,46 @@
         }
 
         #errors-tag-button {
-            background-color: darkred;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkred;
         }
 
         #warnings-tag-button {
-            background-color: darkorange;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkorange;
         }
 
         #info-tag-button {
-            background-color: darkgray;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkgrey;
         }
 
         #discussion-tag-button {
-            background-color: darkblue;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkblue;
         }
 
         #all-tag-button {
-            background-color: darkviolet;
-            border-radius: 5px;
             color: white;
+            box-sizing: border-box;
+            border-radius: 5px;
+            background-color: darkviolet;
+        }
+
+        #errors-tag-button.selected,
+        #warnings-tag-button.selected,
+        #info-tag-button.selected,
+        #discussion-tag-button.selected,
+        #all-tag-button.selected {
+            border: 1px solid #fff;
         }
 
         #players-container {
@@ -472,6 +485,15 @@
     function updateFilterType(filterType) {
         localStorage.setItem('selectedFilterType', filterType);
         fetchMinecraftLogFiltered(filterType);
+        // Remove the 'selected' class from all buttons
+        document.getElementById('errors-tag-button').classList.remove('selected');
+        document.getElementById('warnings-tag-button').classList.remove('selected');
+        document.getElementById('info-tag-button').classList.remove('selected');
+        document.getElementById('discussion-tag-button').classList.remove('selected');
+        document.getElementById('all-tag-button').classList.remove('selected');
+
+        // Add the 'selected' class to the clicked button
+        document.getElementById(filterType + '-tag-button').classList.add('selected');
     }
 
     function highlightSelectedButton(filterType) {
