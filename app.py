@@ -304,6 +304,6 @@ if __name__ == '__main__':
     schedule_erase()
     
     # Exécuter la commande au démarrage de l'application
-    subprocess.Popen('tail -F ' + os.path.join(log_path, 'filtered.log') + ' | grep -v RCON > ' + os.path.join(log_path, 'filtered.log'), shell=True)
+    subprocess.Popen('tail -F ' + os.path.join(log_path, 'latest.log') + ' | grep -v RCON > ' + os.path.join(log_path, 'filtered.log'), shell=True)
     # Important to use use_reloader=False to avoid duplicate scheduler instances
     app.run(host='0.0.0.0', port=5000, use_reloader=False)
