@@ -276,34 +276,35 @@
             color: grey;
         }
 
-        #errors-tag-button {
-            background-color: darkred;
+        .tag-button {
+            box-sizing: border-box;
             border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
+        }
+
+        #errors-tag-button {
+            background-color: rgba(139, 0, 0, 0.5); /* darkred */
         }
 
         #warnings-tag-button {
-            background-color: darkorange;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(255, 140, 0, 0.5); /* darkorange */
         }
 
         #info-tag-button {
-            background-color: darkgray;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(169, 169, 169, 0.5); /* darkgray */
         }
 
         #discussion-tag-button {
-            background-color: darkblue;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(0, 0, 139, 0.5); /* darkblue */
         }
 
         #all-tag-button {
-            background-color: darkviolet;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(148, 0, 211, 0.5); /* darkviolet */
+        }
+
+        .tag-button.selected {
+            border: 1px solid #fff;
         }
 
         #players-container {
@@ -403,11 +404,11 @@
     </div>
     <div id="main-container">
         <div id="filter-buttons">
-            <button id="errors-tag-button" onclick="updateFilterType('errors')">Show Errors</button>
-            <button id="warnings-tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
-            <button id="info-tag-button" onclick="updateFilterType('info')">Show Info</button>
-            <button id="discussion-tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
-            <button id="all-tag-button" onclick="updateFilterType('all')">Show All</button>
+            <button id="errors-tag-button" class="tag-button" onclick="updateFilterType('errors')">Show Errors</button>
+            <button id="warnings-tag-button" class="tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
+            <button id="info-tag-button" class="tag-button" onclick="updateFilterType('info')">Show Info</button>
+            <button id="discussion-tag-button" class="tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
+            <button id="all-tag-button" class="tag-button" onclick="updateFilterType('all')">Show All</button>
         </div>
         <div id="console-container">
             <div id="console-box">
@@ -468,10 +469,18 @@
     fetchSystemInfo();
 
     let currentFilterType = 'all'; // Default filter type
-    
+    let selectedButton = document.getElementById('all-tag-button');  // Par défaut, le bouton "Show All" est sélectionné
     function updateFilterType(filterType) {
         localStorage.setItem('selectedFilterType', filterType);
         fetchMinecraftLogFiltered(filterType);
+
+        // Supprimer la classe 'selected' du bouton précédemment sélectionné
+        selectedButton.classList.remove('selected');
+
+        // Ajouter la classe 'selected' au bouton actuellement sélectionné
+        const buttonId = filterType + '-tag-button';
+        selectedButton = document.getElementById(buttonId);
+        selectedButton.classList.add('selected');
     }
 
     function highlightSelectedButton(filterType) {
