@@ -744,8 +744,8 @@
             method: 'POST',
             body: new URLSearchParams({service: service})
         }).then(() => {
-            const serveurSelect = document.getElementById('folder_select').value;
-            localStorage.setItem('serveurSelect', serveurSelect);
+            const serveurSelect = document.getElementById('folder_select');
+            localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
             localStorage.setItem('selectedTagButton', selectedButton.id);
             setTimeout(() => {
                 try {
@@ -766,8 +766,8 @@
             method: 'POST',
             body: new URLSearchParams({service: service})
         }).then(() => {
-            const serveurSelect = document.getElementById('folder_select').value;
-            localStorage.setItem('serveurSelect', serveurSelect);
+            const serveurSelect = document.getElementById('folder_select');
+            localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
             localStorage.setItem('selectedTagButton', selectedButton.id);
             setTimeout(() => {
                 try {
@@ -788,8 +788,8 @@
             method: 'POST',
             body: new URLSearchParams({service: service})
         }).then(() => {
-            const serveurSelect = document.getElementById('folder_select').value;
-            localStorage.setItem('serveurSelect', serveurSelect);
+            const serveurSelect = document.getElementById('folder_select');
+            localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
             localStorage.setItem('selectedTagButton', selectedButton.id);
             setTimeout(() => {
                 try {
