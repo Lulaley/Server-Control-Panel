@@ -143,8 +143,23 @@ def fetch_minecraft_log():
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
-    # Exécuter la commande au démarrage de l'application
-    subprocess.Popen('cat ' + os.path.join(log_path, 'latest.log') + ' | grep -v RCON > ' + os.path.join(log_path, 'filtered.log'), shell=True)
+    latest_log_path = os.path.join(log_path, 'latest.log')
+    filtered_log_path = os.path.join(log_path, 'filtered.log')
+
+    # Get the last line of latest.log and filtered.log that does not contain "RCON"
+    last_line_latest = None
+    last_line_filtered = None
+    with open(latest_log_path, 'r') as latest_log, open(filtered_log_path, 'r') as filtered_log:
+        for line in latest_log:
+            if 'RCON' not in line:
+                last_line_latest = line
+        for line in filtered_log:
+            if 'RCON' not in line:
+                last_line_filtered = line
+
+    # If the last lines are different, execute the command
+    if last_line_latest != last_line_filtered:
+        subprocess.Popen('cat ' + latest_log_path + ' | grep -v RCON > ' + filtered_log_path, shell=True)
 
     try:
         # Fetch the list of online players
