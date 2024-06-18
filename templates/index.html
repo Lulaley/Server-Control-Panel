@@ -744,7 +744,7 @@
             method: 'POST',
             body: new URLSearchParams({service: service})
         }).then(() => {
-            const serveurSelect = document.getElementById('folder_select');
+            const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
             localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
             localStorage.setItem('selectedTagButton', selectedButton.id);
@@ -767,7 +767,7 @@
             method: 'POST',
             body: new URLSearchParams({service: service})
         }).then(() => {
-            const serveurSelect = document.getElementById('folder_select');
+            const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
             localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
             localStorage.setItem('selectedTagButton', selectedButton.id);
@@ -790,7 +790,7 @@
             method: 'POST',
             body: new URLSearchParams({service: service})
         }).then(() => {
-            const serveurSelect = document.getElementById('folder_select');
+            const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
             localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
             localStorage.setItem('selectedTagButton', selectedButton.id);
@@ -815,7 +815,7 @@
 
         if (selectedService) {
             // Select the service
-            const selectServeur = document.getElementById('folder_select');
+            const selectServeur = document.getElementById('folder-select');
             selectServeur.value = serveurSelect;
         }
 
