@@ -143,6 +143,9 @@ def fetch_minecraft_log():
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
+    # Exécuter la commande au démarrage de l'application
+    subprocess.Popen('cat ' + os.path.join(log_path, 'latest.log') + ' | grep -v RCON > ' + os.path.join(log_path, 'filtered.log'), shell=True)
+
     try:
         # Fetch the list of online players
         online_players = fetchPlayers()
@@ -302,8 +305,5 @@ if __name__ == '__main__':
     scheduler.start()
     # Démarrer la planification
     schedule_erase()
-    
-    # Exécuter la commande au démarrage de l'application
-    subprocess.Popen('tail -F ' + os.path.join(log_path, 'latest.log') + ' | grep -v RCON > ' + os.path.join(log_path, 'filtered.log'), shell=True)
     # Important to use use_reloader=False to avoid duplicate scheduler instances
     app.run(host='0.0.0.0', port=5000, use_reloader=False)
