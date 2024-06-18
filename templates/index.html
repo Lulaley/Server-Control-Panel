@@ -772,6 +772,49 @@
 
     fetchServices();
 
+    // Function to set a cookie
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    // Function to get a cookie
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    window.onload = function() {
+        // Get the selected service and tag button from cookies after the page reloads
+        const serveurSelectIndex = getCookie('serveurSelectIndex');
+        const selectedTagButton = getCookie('selectedTagButton');
+
+        if (serveurSelectIndex !== "") {
+            // Select the service
+            const selectServeur = document.getElementById('folder-select');
+            selectServeur.selectedIndex = Number(serveurSelectIndex);
+        }
+
+        if (selectedTagButton !== "") {
+            // Select the tag button
+            const button = document.getElementById(selectedTagButton);
+            button.classList.add('selected');
+        }
+    }
+
     function start_service(service) {
         fetch('/start_service', {
             method: 'POST',
@@ -779,8 +822,8 @@
         }).then(() => {
             const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
-            localStorage.setItem('serveurSelect', serveurSelect.selectedIndex);
-            localStorage.setItem('selectedTagButton', selectedButton.id);
+            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
+            setCookie('selectedTagButton', selectedButton.id, 1);
             setTimeout(() => {
                 try {
                     if(window.location.reload instanceof Function) {
@@ -802,8 +845,8 @@
         }).then(() => {
             const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
-            localStorage.setItem('serveurSelect', serveurSelect.selectedIndex);
-            localStorage.setItem('selectedTagButton', selectedButton.id);
+            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
+            setCookie('selectedTagButton', selectedButton.id, 1);
             setTimeout(() => {
                 try {
                     if(window.location.reload instanceof Function) {
@@ -825,8 +868,8 @@
         }).then(() => {
             const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
-            localStorage.setItem('serveurSelect', serveurSelect.selectedIndex);
-            localStorage.setItem('selectedTagButton', selectedButton.id);
+            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
+            setCookie('selectedTagButton', selectedButton.id, 1);
             setTimeout(() => {
                 try {
                     if(window.location.reload instanceof Function) {
@@ -878,19 +921,19 @@
     });
 
     window.onload = function() {
-        // Get the selected service and tag button from localStorage after the page reloads
-        const serveurSelectIndex = localStorage.getItem('serveurSelectIndex');
-        const selectedTagButton = localStorage.getItem('selectedTagButton');
+        // Get the selected service and tag button from cookies after the page reloads
+        const serveurSelectIndex = getCookie('serveurSelectIndex');
+        const selectedTagButton = getCookie('selectedTagButton');
 
-        console.log(serveurSelectIndex);
+        console.log(serveurSelectIndex, selectedTagButton);
 
-        if (serveurSelectIndex !== null) {
+        if (serveurSelectIndex !== "") {
             // Select the service
             const selectServeur = document.getElementById('folder-select');
             selectServeur.selectedIndex = Number(serveurSelectIndex);
         }
 
-        if (selectedTagButton) {
+        if (selectedTagButton !== "") {
             // Select the tag button
             const button = document.getElementById(selectedTagButton);
             button.classList.add('selected');
