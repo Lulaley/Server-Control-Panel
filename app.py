@@ -31,7 +31,7 @@ def is_minecraft_server_running():
 
 def fetchPlayers():
     try:
-        with Client('127.0.0.1', 25575, passwd='minecraft') as client:
+        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
             response = client.run("list")
             # Typical response: "There are X of Y players online: Player1, Player2, ..."
             player_list = response.split(": ")[1] if ": " in response else ""
@@ -40,22 +40,6 @@ def fetchPlayers():
     except Exception as e:
         logging.error(f"Failed to fetch players: {e}")
         return []
-
-def erase_specified_lines_from_log(log_path):
-    try:
-        with open(log_path + '/filtered.log', 'r') as file:
-            lines = file.readlines()
-        
-        # Filter out lines containing the specified strings
-        filtered_lines = [line for line in lines if "Thread RCON Client ** started" not in line and "Thread RCON Client ** shutting down" not in line]
-        
-        # Write the filtered lines back to the file
-        with open(log_path + '/filtered.log', 'w') as file:
-            file.writelines(filtered_lines)
-        
-        logging.info("Specified lines were successfully erased from the log file.")
-    except Exception as e:
-        logging.error(f"Failed to erase specified lines from the log file {log_path}/filtered.log: {e}")
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
@@ -166,7 +150,7 @@ def fetch_minecraft_log():
         online_players = fetchPlayers()
 
         with open(os.path.join(log_path, 'filtered.log'), 'r') as log_file:
-            log_lines = log_file.readlines()[-50:]  # Get the last 50 lines of the log
+            log_lines = log_file.readlines()[-500:]  # Get the last 50 lines of the log
             # Filter out RCON listener and client messages based on the filter_type
             filtered_lines = []
             for line in log_lines:
@@ -193,7 +177,7 @@ def fetch_minecraft_log():
 def send_command():
     command = request.form.get('command')
     try:
-        with Client('127.0.0.1', 25575, passwd='minecraft') as client:
+        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
             response = client.run(command)
             return jsonify({'response': response})
     except Exception as e:
@@ -309,16 +293,9 @@ def start_service(service):
     except subprocess.CalledProcessError as e:
         return jsonify({'success': False, 'message': str(e)})
 
-def schedule_erase():
-    erase_specified_lines_from_log(log_path)
-    # Planifier l'exécution de la fonction toutes les secondes
-    threading.Timer(1, schedule_erase).start()
-
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
     scheduler.start()
-    # Démarrer la planification
-    schedule_erase()
     # Important to use use_reloader=False to avoid duplicate scheduler instances
     app.run(host='0.0.0.0', port=5000, use_reloader=False)
