@@ -808,23 +808,7 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get the selected service and tag button from localStorage after the page reloads
-        const serveurSelect = localStorage.getItem('serveurSelect');
-        const selectedTagButton = localStorage.getItem('selectedTagButton');
-
-        if (selectedService) {
-            // Select the service
-            const selectServeur = document.getElementById('folder-select');
-            selectServeur.value = serveurSelect;
-        }
-
-        if (selectedTagButton) {
-            // Select the tag button
-            const button = document.getElementById(selectedTagButton);
-            button.classList.add('selected');
-        }
-        
+    document.addEventListener('DOMContentLoaded', function() {       
         let lastStatus = { minecraft_running };
 
         function checkMinecraftStatus() {
@@ -859,6 +843,24 @@
         // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
         fetchAndDisplayPlayers();
     });
+
+    window.onload = function() {
+        // Get the selected service and tag button from localStorage after the page reloads
+        const serveurSelect = localStorage.getItem('serveurSelect');
+        const selectedTagButton = localStorage.getItem('selectedTagButton');
+
+        if (serveurSelect) {
+            // Select the service
+            const selectServeur = document.getElementById('folder-select');
+            selectServeur.value = serveurSelect;
+        }
+
+        if (selectedTagButton) {
+            // Select the tag button
+            const button = document.getElementById(selectedTagButton);
+            button.classList.add('selected');
+        }
+    }
 </script>
 </body>
 </html>
