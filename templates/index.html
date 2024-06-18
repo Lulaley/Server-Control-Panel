@@ -60,7 +60,7 @@
             grid-column-start: 1;
             width: 60%;
             height: max-content;
-            transform: translateY(200%);
+            transform: translateY(138%);
         }
 
         #control-container {
@@ -743,6 +743,11 @@
         fetch('/start_service', {
             method: 'POST',
             body: new URLSearchParams({service: service})
+        }).then(() => {
+            const serveurSelect = document.getElementById('folder_select').value;
+            localStorage.setItem('serveurSelect', serveurSelect);
+            localStorage.setItem('selectedTagButton', selectedButton.id);
+            window.location.reload();
         });
     }
 
@@ -750,6 +755,11 @@
         fetch('/stop_service', {
             method: 'POST',
             body: new URLSearchParams({service: service})
+        }).then(() => {
+            const serveurSelect = document.getElementById('folder_select').value;
+            localStorage.setItem('serveurSelect', serveurSelect);
+            localStorage.setItem('selectedTagButton', selectedButton.id);
+            window.location.reload();
         });
     }
 
@@ -757,10 +767,31 @@
         fetch('/restart_service', {
             method: 'POST',
             body: new URLSearchParams({service: service})
+        }).then(() => {
+            const serveurSelect = document.getElementById('folder_select').value;
+            localStorage.setItem('serveurSelect', serveurSelect);
+            localStorage.setItem('selectedTagButton', selectedButton.id);
+            window.location.reload();
         });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Get the selected service and tag button from localStorage after the page reloads
+        const serveurSelect = localStorage.getItem('serveurSelect');
+        const selectedTagButton = localStorage.getItem('selectedTagButton');
+
+        if (selectedService) {
+            // Select the service
+            const selectServeur = document.getElementById('folder_select');
+            selectServeur.value = serveurSelect;
+        }
+
+        if (selectedTagButton) {
+            // Select the tag button
+            const button = document.getElementById(selectedTagButton);
+            button.classList.add('selected');
+        }
+        
         let lastStatus = { minecraft_running };
 
         function checkMinecraftStatus() {
