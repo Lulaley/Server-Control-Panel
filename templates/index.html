@@ -336,33 +336,33 @@
         .btn {
             border: none;
             color: white;
-            padding: 14px 28px;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             border-radius: 5px;
+            margin-bottom: 3px;
         }
 
-        .btn-danger {
+        .btn-stop {
             background-color: #f44336; /* Red */
         }
 
-        .btn-danger:hover {
+        .btn-stop:hover {
             background: #da190b;
         }
 
-        .btn-success {
+        .btn-start {
             background-color: #4CAF50; /* Green */
         }
 
-        .btn-success:hover {
+        .btn-start:hover {
             background: #45a049;
         }
 
-        .btn-info {
+        .btn-restart {
             background-color: #2196F3; /* Blue */
         }
 
-        .btn-info:hover {
+        .btn-restart:hover {
             background: #0b7dda;
         }
     </style>
@@ -403,11 +403,11 @@
                 </td>
                 <td>
                     {% if info['status'] == 'active' %}
-                    <button type="button" class="btn btn-danger" onclick="stop_service('{{ service }}')">Stop</button>
+                    <button type="button" class="btn btn-stop" onclick="stop_service('{{ service }}')">Stop</button>
                     {% else %}
-                    <button type="button" class="btn btn-success" onclick="start_service('{{ service }}')">Start</button>
+                    <button type="button" class="btn btn-start" onclick="start_service('{{ service }}')">Start</button>
                     {% endif %}
-                    <button type="button" class="btn btn-danger" onclick="restart_service('{{ service }}')">Restart</button>
+                    <button type="button" class="btn btn-restart" onclick="restart_service('{{ service }}')">Restart</button>
                 </td>
             </tr>
             {% endfor %}
