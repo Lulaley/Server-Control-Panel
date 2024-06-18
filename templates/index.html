@@ -646,6 +646,15 @@
                 option.textContent = folder;
                 folderSelect.appendChild(option);
             });
+
+            // Get the selected service from cookies after the page reloads
+            const serveurSelectIndex = getCookie('serveurSelectIndex');
+
+            if (serveurSelectIndex !== "") {
+                // Select the service
+                const selectServeur = document.getElementById('folder-select');
+                selectServeur.selectedIndex = Number(serveurSelectIndex);
+            }
         } catch (error) {
             console.error('Error fetching folders:', error);
         }
