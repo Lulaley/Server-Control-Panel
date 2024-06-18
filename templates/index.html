@@ -920,7 +920,7 @@
         fetchAndDisplayPlayers();
     });
 
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', (event) => {
         // Get the selected service and tag button from cookies after the page reloads
         const serveurSelectIndex = getCookie('serveurSelectIndex');
         const selectedTagButton = getCookie('selectedTagButton');
@@ -938,7 +938,7 @@
             const button = document.getElementById(selectedTagButton);
             button.classList.add('selected');
         }
-    }
+    });
 </script>
 </body>
 </html>
