@@ -43,19 +43,19 @@ def fetchPlayers():
 
 def erase_specified_lines_from_log(log_path):
     try:
-        with open(log_path + '/latest.log', 'r') as file:
+        with open(log_path + '/filtered.log', 'r') as file:
             lines = file.readlines()
         
         # Filter out lines containing the specified strings
         filtered_lines = [line for line in lines if "Thread RCON Client ** started" not in line and "Thread RCON Client ** shutting down" not in line]
         
         # Write the filtered lines back to the file
-        with open(log_path + '/latest.log', 'w') as file:
+        with open(log_path + '/filtered.log', 'w') as file:
             file.writelines(filtered_lines)
         
         logging.info("Specified lines were successfully erased from the log file.")
     except Exception as e:
-        logging.error(f"Failed to erase specified lines from the log file {log_path}/latest.log: {e}")
+        logging.error(f"Failed to erase specified lines from the log file {log_path}/filtered.log: {e}")
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
@@ -69,7 +69,7 @@ def send_welcome_message(new_player):
 
 def monitor_for_new_players():
     known_players = load_known_players()  # Load the list of known players from a file or database
-    with open(log_path + '/latest.log', 'r') as file:
+    with open(log_path + '/filtered.log', 'r') as file:
         for line in file:
             join_match = re.search(r'(\w+)\[.*\] logged in with entity id', line)
             if join_match:
@@ -147,7 +147,7 @@ def fetch_minecraft_log():
         # Fetch the list of online players
         online_players = fetchPlayers()
 
-        with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
+        with open(os.path.join(log_path, 'filtered.log'), 'r') as log_file:
             log_lines = log_file.readlines()[-50:]  # Get the last 50 lines of the log
             # Filter out RCON listener and client messages based on the filter_type
             filtered_lines = []
@@ -302,5 +302,8 @@ if __name__ == '__main__':
     scheduler.start()
     # Démarrer la planification
     schedule_erase()
+    
+    # Exécuter la commande au démarrage de l'application
+    subprocess.Popen('tail -F ' + os.path.join(log_path, 'filtered.log') + ' | grep -v RCON > ' + os.path.join(log_path, 'filtered.log'), shell=True)
     # Important to use use_reloader=False to avoid duplicate scheduler instances
     app.run(host='0.0.0.0', port=5000, use_reloader=False)

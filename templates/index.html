@@ -642,7 +642,7 @@
             const javaVersions = await response.json();
             const javaVersionSelect = document.getElementById('java-version-select');
 
-            // Check if latest.log exists and has a modified date of today for all Minecraft servers
+            // Check if filtered.log exists and has a modified date of today for all Minecraft servers
             const logPaths = document.querySelectorAll('.log-path');
             let allLogsModifiedToday = true;
             for (const logPath of logPaths) {
@@ -673,7 +673,7 @@
                     }
                 }
             } else {
-                console.log('Not all latest.log files have a modified date of today');
+                console.log('Not all filtered.log files have a modified date of today');
             }
         } catch (error) {
             console.error('Error fetching Java versions:', error);
