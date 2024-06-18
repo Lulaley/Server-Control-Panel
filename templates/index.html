@@ -747,7 +747,17 @@
             const serveurSelect = document.getElementById('folder_select').value;
             localStorage.setItem('serveurSelect', serveurSelect);
             localStorage.setItem('selectedTagButton', selectedButton.id);
-            window.location.reload();
+            setTimeout(() => {
+                try {
+                    if(window.location.reload instanceof Function) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                } catch (error) {
+                    console.error('Error reloading the page:', error);
+                }
+            }, 100);
         });
     }
 
@@ -759,7 +769,17 @@
             const serveurSelect = document.getElementById('folder_select').value;
             localStorage.setItem('serveurSelect', serveurSelect);
             localStorage.setItem('selectedTagButton', selectedButton.id);
-            window.location.reload();
+            setTimeout(() => {
+                try {
+                    if(window.location.reload instanceof Function) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                } catch (error) {
+                    console.error('Error reloading the page:', error);
+                }
+            }, 100);
         });
     }
 
@@ -771,7 +791,17 @@
             const serveurSelect = document.getElementById('folder_select').value;
             localStorage.setItem('serveurSelect', serveurSelect);
             localStorage.setItem('selectedTagButton', selectedButton.id);
-            window.location.reload();
+            setTimeout(() => {
+                try {
+                    if(window.location.reload instanceof Function) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                } catch (error) {
+                    console.error('Error reloading the page:', error);
+                }
+            }, 100);
         });
     }
 
