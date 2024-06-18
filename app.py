@@ -159,6 +159,10 @@ def fetch_minecraft_log():
                 elif filter_type == 'warnings' and '/WARN]' in line:
                     filtered_lines.append(line)
                 elif filter_type == 'discussion' and ('[Rcon]' in line or '<' in line and '>' in line) and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line:
+                    # Find the first occurrence of <pseudo> or [Rcon] and remove everything before it
+                    match = re.search(r'(<.*?>|\[Rcon\])', line)
+                    if match:
+                        line = line[match.start():]
                     filtered_lines.append(line)
                 elif filter_type == 'info' and '/INFO]' in line and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line and not ('[Rcon]' in line or '<' in line and '>' in line):
                     filtered_lines.append(line)
