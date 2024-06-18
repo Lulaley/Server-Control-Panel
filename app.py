@@ -281,21 +281,23 @@ def get_services():
                 services[service] = {'status': status}
     return services
 
-@app.route('/stop-service/<service>', methods=['POST'])
-def stop_service(service):
-    try:
-        subprocess.check_call(['systemctl', 'stop', f'{service}.service'])
-        return jsonify({'success': True})
-    except subprocess.CalledProcessError as e:
-        return jsonify({'success': False, 'message': str(e)})
+@app.route('/start_service', methods=['POST'])
+def start_service():
+    service = request.form.get('service')
+    subprocess.run(['sudo', 'systemctl', 'start', service])
+    return 'Service started'
 
-@app.route('/start-service/<service>', methods=['POST'])
-def start_service(service):
-    try:
-        subprocess.check_call(['systemctl', 'start', f'{service}.service'])
-        return jsonify({'success': True})
-    except subprocess.CalledProcessError as e:
-        return jsonify({'success': False, 'message': str(e)})
+@app.route('/stop_service', methods=['POST'])
+def stop_service():
+    service = request.form.get('service')
+    subprocess.run(['sudo', 'systemctl', 'stop', service])
+    return 'Service stopped'
+
+@app.route('/restart_service', methods=['POST'])
+def restart_service():
+    service = request.form.get('service')
+    subprocess.run(['sudo', 'systemctl', 'restart', service])
+    return 'Service restarted'
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()

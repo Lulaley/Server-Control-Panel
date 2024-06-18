@@ -374,6 +374,7 @@
                     {% else %}
                     <button type="button" class="btn btn-success" onclick="start_service('{{ service }}')">Start</button>
                     {% endif %}
+                    <button type="button" class="btn btn-danger" onclick="restart_service('{{ service }}')">Restart</button>
                 </td>
             </tr>
             {% endfor %}
@@ -738,32 +739,25 @@
 
     fetchServices();
 
-    async function stopService(service) {
-      try {
-        const response = await fetch(`/stop-service/${service}`, { method: 'POST' });
-        const data = await response.json();
-        if (data.success) {
-          // Update the UI to reflect the new service status
-        } else {
-          console.error(`Failed to stop service: ${data.message}`);
-        }
-      } catch (error) {
-        console.error(`Error stopping service: ${error}`);
-      }
+    function start_service(service) {
+        fetch('/start_service', {
+            method: 'POST',
+            body: new URLSearchParams({service: service})
+        });
     }
 
-    async function startService(service) {
-      try {
-        const response = await fetch(`/start-service/${service}`, { method: 'POST' });
-        const data = await response.json();
-        if (data.success) {
-          // Update the UI to reflect the new service status
-        } else {
-          console.error(`Failed to start service: ${data.message}`);
-        }
-      } catch (error) {
-        console.error(`Error starting service: ${error}`);
-      }
+    function stop_service(service) {
+        fetch('/stop_service', {
+            method: 'POST',
+            body: new URLSearchParams({service: service})
+        });
+    }
+
+    function restart_service(service) {
+        fetch('/restart_service', {
+            method: 'POST',
+            body: new URLSearchParams({service: service})
+        });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
