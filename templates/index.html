@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Control Panel</title>
+    <title>Minecraft Server Control</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/serveur.png') }}">
     <style type="text/css">
         body {
@@ -60,7 +60,7 @@
             grid-column-start: 1;
             width: 60%;
             height: max-content;
-            transform: translateY(200%);
+            transform: translateY(138%);
         }
 
         #control-container {
@@ -276,34 +276,35 @@
             color: grey;
         }
 
-        #errors-tag-button {
-            background-color: darkred;
+        .tag-button {
+            box-sizing: border-box;
             border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
+        }
+
+        #errors-tag-button {
+            background-color: rgba(139, 0, 0, 0.5); /* darkred */
         }
 
         #warnings-tag-button {
-            background-color: darkorange;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(255, 140, 0, 0.5); /* darkorange */
         }
 
         #info-tag-button {
-            background-color: darkgray;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(169, 169, 169, 0.5); /* darkgray */
         }
 
         #discussion-tag-button {
-            background-color: darkblue;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(0, 0, 139, 0.5); /* darkblue */
         }
 
         #all-tag-button {
-            background-color: darkviolet;
-            border-radius: 5px;
-            color: white;
+            background-color: rgba(148, 0, 211, 0.5); /* darkviolet */
+        }
+
+        .tag-button.selected {
+            border: 1px solid #fff;
         }
 
         #players-container {
@@ -330,6 +331,39 @@
 
         #players-list li:last-child {
             border-bottom: none;
+        }
+
+        .btn {
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 3px;
+        }
+
+        .btn-stop {
+            background-color: #f44336; /* Red */
+        }
+
+        .btn-stop:hover {
+            background: #da190b;
+        }
+
+        .btn-start {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .btn-start:hover {
+            background: #45a049;
+        }
+
+        .btn-restart {
+            background-color: #2196F3; /* Blue */
+        }
+
+        .btn-restart:hover {
+            background: #0b7dda;
         }
     </style>
 </head>
@@ -369,10 +403,11 @@
                 </td>
                 <td>
                     {% if info['status'] == 'active' %}
-                    <button type="button" class="btn btn-danger" onclick="stop_service('{{ service }}')">Stop</button>
+                    <button type="button" class="btn btn-stop" onclick="stop_service('{{ service }}')">Stop</button>
                     {% else %}
-                    <button type="button" class="btn btn-success" onclick="start_service('{{ service }}')">Start</button>
+                    <button type="button" class="btn btn-start" onclick="start_service('{{ service }}')">Start</button>
                     {% endif %}
+                    <button type="button" class="btn btn-restart" onclick="restart_service('{{ service }}')">Restart</button>
                 </td>
             </tr>
             {% endfor %}
@@ -396,18 +431,18 @@
         </div>
     </div>
     <div id="players-container">
-        <h2>Players List</h2>
+        <h2>Players List :</h2>
         <ul id="players-list">
             <!-- Player items will be added here dynamically -->
         </ul>
     </div>
     <div id="main-container">
         <div id="filter-buttons">
-            <button id="errors-tag-button" onclick="updateFilterType('errors')">Show Errors</button>
-            <button id="warnings-tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
-            <button id="info-tag-button" onclick="updateFilterType('info')">Show Info</button>
-            <button id="discussion-tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
-            <button id="all-tag-button" onclick="updateFilterType('all')">Show All</button>
+            <button id="errors-tag-button" class="tag-button" onclick="updateFilterType('errors')">Show Errors</button>
+            <button id="warnings-tag-button" class="tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
+            <button id="info-tag-button" class="tag-button" onclick="updateFilterType('info')">Show Info</button>
+            <button id="discussion-tag-button" class="tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
+            <button id="all-tag-button" class="tag-button" onclick="updateFilterType('all')">Show All</button>
         </div>
         <div id="console-container">
             <div id="console-box">
@@ -468,10 +503,18 @@
     fetchSystemInfo();
 
     let currentFilterType = 'all'; // Default filter type
-    
+    let selectedButton = document.getElementById('all-tag-button');  // Par défaut, le bouton "Show All" est sélectionné
     function updateFilterType(filterType) {
         localStorage.setItem('selectedFilterType', filterType);
         fetchMinecraftLogFiltered(filterType);
+
+        // Supprimer la classe 'selected' du bouton précédemment sélectionné
+        selectedButton.classList.remove('selected');
+
+        // Ajouter la classe 'selected' au bouton actuellement sélectionné
+        const buttonId = filterType + '-tag-button';
+        selectedButton = document.getElementById(buttonId);
+        selectedButton.classList.add('selected');
     }
 
     function highlightSelectedButton(filterType) {
@@ -603,6 +646,22 @@
                 option.textContent = folder;
                 folderSelect.appendChild(option);
             });
+
+            // Get the selected service from cookies after the page reloads
+            const serveurSelectIndex = getCookie('serveurSelectIndex');
+
+            if (serveurSelectIndex !== "") {
+                // Select the service
+                const selectServeur = document.getElementById('folder-select');
+                selectServeur.selectedIndex = Number(serveurSelectIndex);
+            }
+
+            // Get the path log from cookies after the page reloads
+            const logPath = getCookie('logPath');
+
+            if (logPath !== "") {
+                log_path = logPath;
+            }
         } catch (error) {
             console.error('Error fetching folders:', error);
         }
@@ -642,7 +701,7 @@
             const javaVersions = await response.json();
             const javaVersionSelect = document.getElementById('java-version-select');
 
-            // Check if latest.log exists and has a modified date of today for all Minecraft servers
+            // Check if filtered.log exists and has a modified date of today for all Minecraft servers
             const logPaths = document.querySelectorAll('.log-path');
             let allLogsModifiedToday = true;
             for (const logPath of logPaths) {
@@ -673,7 +732,7 @@
                     }
                 }
             } else {
-                console.log('Not all latest.log files have a modified date of today');
+                console.log('Not all filtered.log files have a modified date of today');
             }
         } catch (error) {
             console.error('Error fetching Java versions:', error);
@@ -729,35 +788,122 @@
 
     fetchServices();
 
-    async function stopService(service) {
-      try {
-        const response = await fetch(`/stop-service/${service}`, { method: 'POST' });
-        const data = await response.json();
-        if (data.success) {
-          // Update the UI to reflect the new service status
-        } else {
-          console.error(`Failed to stop service: ${data.message}`);
-        }
-      } catch (error) {
-        console.error(`Error stopping service: ${error}`);
-      }
+    // Function to set a cookie
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
 
-    async function startService(service) {
-      try {
-        const response = await fetch(`/start-service/${service}`, { method: 'POST' });
-        const data = await response.json();
-        if (data.success) {
-          // Update the UI to reflect the new service status
-        } else {
-          console.error(`Failed to start service: ${data.message}`);
+    // Function to get a cookie
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
         }
-      } catch (error) {
-        console.error(`Error starting service: ${error}`);
-      }
+        return "";
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    window.onload = function() {
+        // Get the selected service and tag button from cookies after the page reloads
+        const serveurSelectIndex = getCookie('serveurSelectIndex');
+        const selectedTagButton = getCookie('selectedTagButton');
+
+        if (serveurSelectIndex !== "") {
+            // Select the service
+            const selectServeur = document.getElementById('folder-select');
+            selectServeur.selectedIndex = Number(serveurSelectIndex);
+        }
+
+        if (selectedTagButton !== "") {
+            // Select the tag button
+            const button = document.getElementById(selectedTagButton);
+            button.classList.add('selected');
+        }
+    }
+
+    function start_service(service) {
+        fetch('/start_service', {
+            method: 'POST',
+            body: new URLSearchParams({service: service})
+        }).then(() => {
+            const serveurSelect = document.getElementById('folder-select');
+            console.log(serveurSelect);
+            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
+            setCookie('selectedTagButton', selectedButton.id, 1);
+            setCookie('logPath', log_path, 1);
+            setTimeout(() => {
+                try {
+                    if(window.location.reload instanceof Function) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                } catch (error) {
+                    console.error('Error reloading the page:', error);
+                }
+            }, 100);
+        });
+    }
+
+    function stop_service(service) {
+        fetch('/stop_service', {
+            method: 'POST',
+            body: new URLSearchParams({service: service})
+        }).then(() => {
+            const serveurSelect = document.getElementById('folder-select');
+            console.log(serveurSelect);
+            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
+            setCookie('selectedTagButton', selectedButton.id, 1);
+            setCookie('logPath', log_path, 1);
+            setTimeout(() => {
+                try {
+                    if(window.location.reload instanceof Function) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                } catch (error) {
+                    console.error('Error reloading the page:', error);
+                }
+            }, 100);
+        });
+    }
+
+    function restart_service(service) {
+        fetch('/restart_service', {
+            method: 'POST',
+            body: new URLSearchParams({service: service})
+        }).then(() => {
+            const serveurSelect = document.getElementById('folder-select');
+            console.log(serveurSelect);
+            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
+            setCookie('selectedTagButton', selectedButton.id, 1);
+            setCookie('logPath', log_path, 1);
+            setTimeout(() => {
+                try {
+                    if(window.location.reload instanceof Function) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                } catch (error) {
+                    console.error('Error reloading the page:', error);
+                }
+            }, 100);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {       
         let lastStatus = { minecraft_running };
 
         function checkMinecraftStatus() {
@@ -791,6 +937,26 @@
 
         // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
         fetchAndDisplayPlayers();
+    });
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Get the selected service and tag button from cookies after the page reloads
+        const serveurSelectIndex = getCookie('serveurSelectIndex');
+        const selectedTagButton = getCookie('selectedTagButton');
+
+        console.log(serveurSelectIndex, selectedTagButton);
+
+        if (serveurSelectIndex !== "") {
+            // Select the service
+            const selectServeur = document.getElementById('folder-select');
+            selectServeur.selectedIndex = Number(serveurSelectIndex);
+        }
+
+        if (selectedTagButton !== "") {
+            // Select the tag button
+            const button = document.getElementById(selectedTagButton);
+            button.classList.add('selected');
+        }
     });
 </script>
 </body>

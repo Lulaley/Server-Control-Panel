@@ -31,7 +31,7 @@ def is_minecraft_server_running():
 
 def fetchPlayers():
     try:
-        with Client('127.0.0.1', 25575, passwd='minecraft') as client:
+        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
             response = client.run("list")
             # Typical response: "There are X of Y players online: Player1, Player2, ..."
             player_list = response.split(": ")[1] if ": " in response else ""
@@ -40,22 +40,6 @@ def fetchPlayers():
     except Exception as e:
         logging.error(f"Failed to fetch players: {e}")
         return []
-
-def erase_specified_lines_from_log(log_path):
-    try:
-        with open(log_path + '/latest.log', 'r') as file:
-            lines = file.readlines()
-        
-        # Filter out lines containing the specified strings
-        filtered_lines = [line for line in lines if "Thread RCON Client ** started" not in line and "Thread RCON Client ** shutting down" not in line]
-        
-        # Write the filtered lines back to the file
-        with open(log_path + '/latest.log', 'w') as file:
-            file.writelines(filtered_lines)
-        
-        logging.info("Specified lines were successfully erased from the log file.")
-    except Exception as e:
-        logging.error(f"Failed to erase specified lines from the log file {log_path}/latest.log: {e}")
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
@@ -69,7 +53,7 @@ def send_welcome_message(new_player):
 
 def monitor_for_new_players():
     known_players = load_known_players()  # Load the list of known players from a file or database
-    with open(log_path + '/latest.log', 'r') as file:
+    with open(log_path + '/filtered.log', 'r') as file:
         for line in file:
             join_match = re.search(r'(\w+)\[.*\] logged in with entity id', line)
             if join_match:
@@ -143,12 +127,30 @@ def fetch_minecraft_log():
     log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
     filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
+    latest_log_path = os.path.join(log_path, 'latest.log')
+    filtered_log_path = os.path.join(log_path, 'filtered.log')
+
+    # Get the last line of latest.log and filtered.log that does not contain "RCON"
+    last_line_latest = None
+    last_line_filtered = None
+    with open(latest_log_path, 'r') as latest_log, open(filtered_log_path, 'r') as filtered_log:
+        for line in latest_log:
+            if 'RCON' not in line:
+                last_line_latest = line
+        for line in filtered_log:
+            if 'RCON' not in line:
+                last_line_filtered = line
+
+    # If the last lines are different, execute the command
+    if last_line_latest != last_line_filtered:
+        subprocess.Popen('cat ' + latest_log_path + ' | grep -v RCON > ' + filtered_log_path, shell=True)
+
     try:
         # Fetch the list of online players
         online_players = fetchPlayers()
 
-        with open(os.path.join(log_path, 'latest.log'), 'r') as log_file:
-            log_lines = log_file.readlines()[-50:]  # Get the last 50 lines of the log
+        with open(os.path.join(log_path, 'filtered.log'), 'r') as log_file:
+            log_lines = log_file.readlines()[-500:]  # Get the last 50 lines of the log
             # Filter out RCON listener and client messages based on the filter_type
             filtered_lines = []
             for line in log_lines:
@@ -157,6 +159,10 @@ def fetch_minecraft_log():
                 elif filter_type == 'warnings' and '/WARN]' in line:
                     filtered_lines.append(line)
                 elif filter_type == 'discussion' and ('[Rcon]' in line or '<' in line and '>' in line) and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line:
+                    # Find the first occurrence of <pseudo> or [Rcon] and remove everything before it
+                    match = re.search(r'(<.*?>|\[Rcon\])', line)
+                    if match:
+                        line = line[match.start():]
                     filtered_lines.append(line)
                 elif filter_type == 'info' and '/INFO]' in line and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line and not ('[Rcon]' in line or '<' in line and '>' in line):
                     filtered_lines.append(line)
@@ -175,7 +181,7 @@ def fetch_minecraft_log():
 def send_command():
     command = request.form.get('command')
     try:
-        with Client('127.0.0.1', 25575, passwd='minecraft') as client:
+        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
             response = client.run(command)
             return jsonify({'response': response})
     except Exception as e:
@@ -259,7 +265,7 @@ def change_java_version():
 
 def get_services():
     services = {}
-    for service in ['palword', 'satisfactory', 'minecraft']:
+    for service in ['palworld', 'satisfactory', 'minecraft']:
         process = subprocess.Popen(['systemctl', 'show', f'{service}.service'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
         if error:
@@ -275,32 +281,27 @@ def get_services():
                 services[service] = {'status': status}
     return services
 
-@app.route('/stop-service/<service>', methods=['POST'])
-def stop_service(service):
-    try:
-        subprocess.check_call(['systemctl', 'stop', f'{service}.service'])
-        return jsonify({'success': True})
-    except subprocess.CalledProcessError as e:
-        return jsonify({'success': False, 'message': str(e)})
+@app.route('/start_service', methods=['POST'])
+def start_service():
+    service = request.form.get('service')
+    subprocess.run(['sudo', 'systemctl', 'start', service])
+    return 'Service '+service+' started'
 
-@app.route('/start-service/<service>', methods=['POST'])
-def start_service(service):
-    try:
-        subprocess.check_call(['systemctl', 'start', f'{service}.service'])
-        return jsonify({'success': True})
-    except subprocess.CalledProcessError as e:
-        return jsonify({'success': False, 'message': str(e)})
+@app.route('/stop_service', methods=['POST'])
+def stop_service():
+    service = request.form.get('service')
+    subprocess.run(['sudo', 'systemctl', 'stop', service])
+    return 'Service '+service+' stopped'
 
-def schedule_erase():
-    erase_specified_lines_from_log(log_path)
-    # Planifier l'exécution de la fonction toutes les secondes
-    threading.Timer(1, schedule_erase).start()
+@app.route('/restart_service', methods=['POST'])
+def restart_service():
+    service = request.form.get('service')
+    subprocess.run(['sudo', 'systemctl', 'restart', service])
+    return 'Service '+service+' restarted'
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
     scheduler.start()
-    # Démarrer la planification
-    schedule_erase()
     # Important to use use_reloader=False to avoid duplicate scheduler instances
     app.run(host='0.0.0.0', port=5000, use_reloader=False)
