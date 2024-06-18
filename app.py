@@ -265,7 +265,7 @@ def change_java_version():
 
 def get_services():
     services = {}
-    for service in ['palword', 'satisfactory', 'minecraft']:
+    for service in ['palworld', 'satisfactory', 'minecraft']:
         process = subprocess.Popen(['systemctl', 'show', f'{service}.service'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
         if error:
@@ -285,19 +285,19 @@ def get_services():
 def start_service():
     service = request.form.get('service')
     subprocess.run(['sudo', 'systemctl', 'start', service])
-    return 'Service started'
+    return 'Service '+service+' started'
 
 @app.route('/stop_service', methods=['POST'])
 def stop_service():
     service = request.form.get('service')
     subprocess.run(['sudo', 'systemctl', 'stop', service])
-    return 'Service stopped'
+    return 'Service '+service+' stopped'
 
 @app.route('/restart_service', methods=['POST'])
 def restart_service():
     service = request.form.get('service')
     subprocess.run(['sudo', 'systemctl', 'restart', service])
-    return 'Service restarted'
+    return 'Service '+service+' restarted'
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
