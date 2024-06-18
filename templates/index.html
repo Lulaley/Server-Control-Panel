@@ -882,10 +882,10 @@
         const serveurSelectIndex = localStorage.getItem('serveurSelectIndex');
         const selectedTagButton = localStorage.getItem('selectedTagButton');
 
-        if (serveurSelectIndex) {
+        if (serveurSelectIndex !== null) {
             // Select the service
             const selectServeur = document.getElementById('folder-select');
-            selectServeur.selectedIndex = serveurSelectIndex;
+            selectServeur.selectedIndex = Number(serveurSelectIndex);
         }
 
         if (selectedTagButton) {
