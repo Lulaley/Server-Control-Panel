@@ -431,7 +431,7 @@
         </div>
     </div>
     <div id="players-container">
-        <h2>Players List</h2>
+        <h2>Players List :</h2>
         <ul id="players-list">
             <!-- Player items will be added here dynamically -->
         </ul>
@@ -779,7 +779,7 @@
         }).then(() => {
             const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
-            localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
+            localStorage.setItem('serveurSelect', serveurSelect.selectedIndex);
             localStorage.setItem('selectedTagButton', selectedButton.id);
             setTimeout(() => {
                 try {
@@ -802,7 +802,7 @@
         }).then(() => {
             const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
-            localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
+            localStorage.setItem('serveurSelect', serveurSelect.selectedIndex);
             localStorage.setItem('selectedTagButton', selectedButton.id);
             setTimeout(() => {
                 try {
@@ -825,7 +825,7 @@
         }).then(() => {
             const serveurSelect = document.getElementById('folder-select');
             console.log(serveurSelect);
-            localStorage.setItem('serveurSelect', serveurSelect.options[serveurSelect.selectedIndex].value);
+            localStorage.setItem('serveurSelect', serveurSelect.selectedIndex);
             localStorage.setItem('selectedTagButton', selectedButton.id);
             setTimeout(() => {
                 try {
@@ -879,13 +879,13 @@
 
     window.onload = function() {
         // Get the selected service and tag button from localStorage after the page reloads
-        const serveurSelect = localStorage.getItem('serveurSelect');
+        const serveurSelectIndex = localStorage.getItem('serveurSelectIndex');
         const selectedTagButton = localStorage.getItem('selectedTagButton');
 
-        if (serveurSelect) {
+        if (serveurSelectIndex) {
             // Select the service
             const selectServeur = document.getElementById('folder-select');
-            selectServeur.value = serveurSelect;
+            selectServeur.selectedIndex = serveurSelectIndex;
         }
 
         if (selectedTagButton) {
