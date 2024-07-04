@@ -299,28 +299,35 @@ def restart_service():
     subprocess.run(['sudo', 'systemctl', 'restart', service])
     return 'Service '+service+' restarted'
 
+def is_valid_name(name):
+    # Simple validation to ensure name is safe
+    return re.match("^[a-zA-Z0-9_-]+$", name) is not None
+
 @app.route('/create_service', methods=['POST'])
 def create_service():
     data = request.json
-    service_name = data['serviceName']
-    service_description = data['serviceDescription']
-    service_command = data['serviceCommand']
-    
-    # Créer le fichier de service ici
-    # Exemple: avec open(f'/etc/systemd/system/{service_name}.service', 'w') as f:
-    #              f.write(f'[Unit]\nDescription={service_description}\n\n[Service]\nExecStart={service_command}\n')
-    # Redémarrer le daemon et activer le service
-    # subprocess.run(['systemctl', 'daemon-reload'])
-    # subprocess.run(['systemctl', 'enable', service_name])
-    # subprocess.run(['systemctl', 'start', service_name])
-    
-    with open(f'/etc/systemd/system/{service_name}.service', 'w') as f:
-        f.write(f'[Unit]\nDescription={service_description}\n\n[Service]\nExecStart={service_command}\n')
-        subprocess.run(['systemctl', 'daemon-reload'])
-        subprocess.run(['systemctl', 'enable', service_name])
-        subprocess.run(['systemctl', 'start', service_name])
+    service_name = data.get('serviceName')
+    service_description = data.get('serviceDescription', 'No description provided')
+    service_command = data.get('serviceCommand')
 
-    
+    # Validation
+    if not service_name or not is_valid_name(service_name):
+        return 'Invalid service name', 400
+    if not service_command:
+        return 'Service command is required', 400
+
+    service_file_path = f'/etc/systemd/system/{service_name}.service'
+    service_content = f'[Unit]\nDescription={service_description}\n\n[Service]\nExecStart={service_command}\n'
+
+    try:
+        with open(service_file_path, 'w') as f:
+            f.write(service_content)
+        subprocess.run(['systemctl', 'daemon-reload'], check=True)
+        subprocess.run(['systemctl', 'enable', service_name], check=True)
+        subprocess.run(['systemctl', 'start', service_name], check=True)
+    except Exception as e:
+        return f'Failed to create service: {e}', 500
+
     return 'Service créé', 200
 
 if __name__ == '__main__':
