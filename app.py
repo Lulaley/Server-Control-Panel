@@ -303,6 +303,7 @@ def is_valid_name(name):
     # Simple validation to ensure name is safe
     return re.match("^[a-zA-Z0-9_-]+$", name) is not None
 
+
 @app.route('/create_service', methods=['POST'])
 def create_service():
     data = request.json
@@ -312,9 +313,9 @@ def create_service():
 
     # Validation
     if not service_name or not is_valid_name(service_name):
-        return 'Invalid service name', 400
+        return jsonify(error='Invalid service name'), 400
     if not service_command:
-        return 'Service command is required', 400
+        return jsonify(error='Service command is required'), 400
 
     service_file_path = f'/etc/systemd/system/{service_name}.service'
     service_content = f'[Unit]\nDescription={service_description}\n\n[Service]\nExecStart={service_command}\n'
@@ -326,9 +327,9 @@ def create_service():
         subprocess.run(['systemctl', 'enable', service_name], check=True)
         subprocess.run(['systemctl', 'start', service_name], check=True)
     except Exception as e:
-        return f'Failed to create service: {e}', 500
+        return jsonify(error=f'Failed to create service: {e}'), 500
 
-    return 'Service créé', 200
+    return jsonify(message='Service créé'), 200
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
