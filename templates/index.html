@@ -64,12 +64,14 @@
         }
 
         #add-service-form {
-            position: absolute;
-            top: Xpx; /* Ajustez X pour positionner sous la boîte de gestion des services */
-            left: Ypx; /* Ajustez Y pour aligner horizontalement comme souhaité */
-            width: 80%; /* ou la largeur souhaitée */
-            margin: 0 auto; /* Centre le formulaire si nécessaire */
-            z-index: 10; /* Assurez-vous qu'il apparaît au-dessus des autres éléments si nécessaire */
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            grid-row-start: 2;
+            grid-column-start: 1;
+            width: 60%;
+            height: max-content;
+            transform: translateY(238%);
         }
 
         #control-container {
