@@ -63,6 +63,15 @@
             transform: translateY(138%);
         }
 
+        #add-service-form {
+            position: absolute;
+            top: Xpx; /* Ajustez X pour positionner sous la boîte de gestion des services */
+            left: Ypx; /* Ajustez Y pour aligner horizontalement comme souhaité */
+            width: 80%; /* ou la largeur souhaitée */
+            margin: 0 auto; /* Centre le formulaire si nécessaire */
+            z-index: 10; /* Assurez-vous qu'il apparaît au-dessus des autres éléments si nécessaire */
+        }
+
         #control-container {
             grid-row-start: 2;
             height: fit-content;
@@ -380,12 +389,10 @@
             padding-top: 60px;
         }
 
+        /* Pour centrer le formulaire dans la page, si nécessaire */
         .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
+            margin: 0 auto;
+            width: 50%; /* Ajustez selon la largeur souhaitée */
         }
 
         .close {
