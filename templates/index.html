@@ -1081,12 +1081,36 @@
         const serviceDescription = document.getElementById("service-description").value;
         const serviceCommand = document.getElementById("service-command").value;
         
-        // Envoyer ces données au serveur pour créer le service
-        // Utilisez fetch() ou XMLHttpRequest pour envoyer les données au serveur ici
-        // Exemple: fetch('/create_service', {method: 'POST', body: JSON.stringify({serviceName, serviceDescription, serviceCommand})})
+        // Préparer les données à envoyer
+        const data = {
+            serviceName: serviceName,
+            serviceDescription: serviceDescription,
+            serviceCommand: serviceCommand
+        };
         
-        modal.style.display = "none";
-        alert("Service créé (simulé)"); // Remplacez ceci par une logique réelle après la création du service
+        // Utiliser fetch pour envoyer les données au serveur
+        fetch('/create_service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('La requête a échoué');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Service créé:', data);
+            alert("Service créé avec succès");
+            modal.style.display = "none";
+        })
+        .catch((error) => {
+            console.error('Erreur:', error);
+            alert("Erreur lors de la création du service");
+        });
     };
 </script>
 </body>
