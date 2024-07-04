@@ -365,6 +365,42 @@
         .btn-restart:hover {
             background: #0b7dda;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -372,6 +408,7 @@
     <div class="cat-bar">
         <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
     </div>
+
     <div id="percentages-container">
         <div id="java-version" style="padding-left: 5px;padding-top: 5px;"></div>
         <div class="plain-bar"></div>
@@ -385,6 +422,7 @@
         <div id="disk-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
         <div class="progress-bar" id="disk-progress-bar"></div>
     </div>
+
     <div id="services-container">
         <table>
             <thead>
@@ -414,6 +452,23 @@
             </tbody>
         </table>
     </div>
+    <button id="add-service-btn">Ajouter un service</button>
+
+    <div id="add-service-form" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="new-service-form">
+                <label for="service-name">Nom du service:</label>
+                <input type="text" id="service-name" name="service-name" required><br><br>
+                <label for="service-description">Description du service:</label>
+                <input type="text" id="service-description" name="service-description" required><br><br>
+                <label for="service-command">Commande à exécuter:</label>
+                <input type="text" id="service-command" name="service-command" required><br><br>
+                <input type="submit" value="Créer le service">
+            </form>
+        </div>
+    </div>
+
     {% if not minecraft_running %}
     <div id="java-version-container" class="folder-select-container">
         <label for="java-version-select">Select Java version :</label>
@@ -422,6 +477,7 @@
         </select>
     </div>
     {% endif %}
+
     <div id="control-container">
         <div class="folder-select-container">
             <label for="folder-select">Select a Minecraft server :</label>
@@ -430,12 +486,14 @@
             </select>
         </div>
     </div>
+
     <div id="players-container">
         <h2>Players List :</h2>
         <ul id="players-list">
             <!-- Player items will be added here dynamically -->
         </ul>
     </div>
+
     <div id="main-container">
         <div id="filter-buttons">
             <button id="errors-tag-button" class="tag-button" onclick="updateFilterType('errors')">Show Errors</button>
@@ -958,6 +1016,47 @@
             button.classList.add('selected');
         }
     });
+
+    // Get the modal
+    var modal = document.getElementById("add-service-form");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("add-service-btn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal 
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Handle form submission
+    document.getElementById("new-service-form").onsubmit = function(event) {
+        event.preventDefault();
+        const serviceName = document.getElementById("service-name").value;
+        const serviceDescription = document.getElementById("service-description").value;
+        const serviceCommand = document.getElementById("service-command").value;
+        
+        // Envoyer ces données au serveur pour créer le service
+        // Utilisez fetch() ou XMLHttpRequest pour envoyer les données au serveur ici
+        // Exemple: fetch('/create_service', {method: 'POST', body: JSON.stringify({serviceName, serviceDescription, serviceCommand})})
+        
+        modal.style.display = "none";
+        alert("Service créé (simulé)"); // Remplacez ceci par une logique réelle après la création du service
+    };
 </script>
 </body>
 </html>

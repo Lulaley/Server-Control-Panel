@@ -299,6 +299,30 @@ def restart_service():
     subprocess.run(['sudo', 'systemctl', 'restart', service])
     return 'Service '+service+' restarted'
 
+@app.route('/create_service', methods=['POST'])
+def create_service():
+    data = request.json
+    service_name = data['serviceName']
+    service_description = data['serviceDescription']
+    service_command = data['serviceCommand']
+    
+    # Créer le fichier de service ici
+    # Exemple: avec open(f'/etc/systemd/system/{service_name}.service', 'w') as f:
+    #              f.write(f'[Unit]\nDescription={service_description}\n\n[Service]\nExecStart={service_command}\n')
+    # Redémarrer le daemon et activer le service
+    # subprocess.run(['systemctl', 'daemon-reload'])
+    # subprocess.run(['systemctl', 'enable', service_name])
+    # subprocess.run(['systemctl', 'start', service_name])
+    
+    with open(f'/etc/systemd/system/{service_name}.service', 'w') as f:
+        f.write(f'[Unit]\nDescription={service_description}\n\n[Service]\nExecStart={service_command}\n')
+        subprocess.run(['systemctl', 'daemon-reload'])
+        subprocess.run(['systemctl', 'enable', service_name])
+        subprocess.run(['systemctl', 'start', service_name])
+
+    
+    return 'Service créé', 200
+
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
