@@ -380,11 +380,20 @@
         .btn-add-service {
             color: black;
             margin: 10px;
-            background-color: #f3cd21;
+            background-color: #f39f21;
         }
 
         .btn-add-service {
             background: #ccda0b;
+        }
+
+
+        .btn-valider-form {
+            background-color: #3e8e41;
+        }
+
+        .btn-valider-form {
+            background: #4caf50;
         }
 
         .modal {
@@ -416,7 +425,7 @@
 
         .close:hover,
         .close:focus {
-            color: black;
+            color: red;
             text-decoration: none;
             cursor: pointer;
         }
@@ -475,6 +484,7 @@
 
     <div id="add-service-form" class="modal">
         <div class="modal-content">
+            <span class="title-service-form">Création d'un service</span>
             <span class="close">&times;</span>
             <form id="new-service-form">
                 <label for="service-name">Nom du service:</label>
@@ -482,7 +492,7 @@
                 <label for="service-description">Description du service:</label>
                 <input type="text" id="service-description" name="service-description" required><br><br>
                 <label for="service-command">Commande à exécuter:</label>
-                <input type="text" id="service-command" name="service-command" required><br><br>
+                <input type="text" id="service-command" class="btn btn-valider-form" name="service-command" required><br><br>
                 <input type="submit" value="Créer le service">
             </form>
         </div>
