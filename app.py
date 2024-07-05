@@ -313,6 +313,42 @@ def restart_service():
     subprocess.run(['sudo', 'systemctl', 'restart', service])
     return 'Service '+service+' restarted'
 
+@app.route('/delete_service', methods=['POST'])
+def delete_service():
+    service = request.form.get('service')
+    if not is_valid_name(service):
+        return 'Invalid service name', 400
+
+    # Vérifier si le service est inactif
+    process = subprocess.Popen(['systemctl', 'is-active', f'{service}.service'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error = process.communicate()
+    if output.decode('utf-8').strip() == 'inactive':
+        # Supprimer le service du fichier JSON
+        # Supprimer le service du fichier JSON
+        try:
+            with open('services.json', 'r') as f:
+                services = json.load(f)
+        except FileNotFoundError:
+            return 'Fichier services.json non trouvé', 500
+        except json.JSONDecodeError:
+            return 'Erreur de décodage JSON dans services.json', 500
+
+        # Vérifier si le service existe
+        if service in services['services']:
+            services['services'].remove(service)  # Supprimer le service de la liste
+            # Écrire les services mis à jour dans le fichier JSON
+            with open('services.json', 'w') as f:
+                json.dump(services, f, indent=4)
+            # Supprimer le service via systemctl
+            subprocess.run(['sudo', 'systemctl', 'stop', service])
+            subprocess.run(['sudo', 'systemctl', 'disable', service])
+            subprocess.run(['systemctl', 'daemon-reload'], check=True)
+            return f'Service {service} deleted successfully'
+        else:
+            return 'Service not found in JSON', 400
+    else:
+        return 'Service is not inactive or not found', 400
+    
 def is_valid_name(name):
     # Simple validation to ensure name is safe
     return re.match("^[a-zA-Z0-9_-]+$", name) is not None
