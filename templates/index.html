@@ -784,7 +784,7 @@
             });
     }
 
-    async function fetchMinecraftPlayer(data) {
+    async function fetchMinecraftPlayer() {
         try {
             const players = await fetchMinecraftPlayers(data); // Implémentez cette fonction selon votre backend
             console.log(players); // Ajoutez ceci pour vérifier la structure des données
@@ -816,6 +816,7 @@
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
         highlightSelectedButton(filterType);
         fetchMinecraftLogFiltered(); // This will now use the filter type from local storage
+        fetchMinecraftPlayer(); // Appel initial pour afficher les joueurs
     });
 
     document.getElementById('command-form').addEventListener('submit', async function(event) {
