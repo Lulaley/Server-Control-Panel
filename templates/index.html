@@ -696,7 +696,16 @@
 
                 consoleElement.appendChild(span);
                 consoleElement.appendChild(document.createElement('br')); // New line
-            });         
+            });
+
+            // Optionally, update the online players list if your API also returns this information            
+            const playerList = document.getElementById('players-list');
+            playerList.innerHTML = ''; // Clear existing list
+            for (const player of data.online_players) {
+                const li = document.createElement('li');
+                li.textContent = player;
+                playerList.appendChild(li);
+            }
 
             // Scroll to the bottom of the console
             consoleElement.scrollTop = consoleElement.scrollHeight;
@@ -708,115 +717,10 @@
     // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
     setInterval(() => fetchMinecraftLogFiltered(), 1000);
 
-    async function fetchMinecraftPlayers(data) {
-        // Créer ou sélectionner le conteneur du tableau
-        let table = document.getElementById('players-table');
-            if (!table) {
-                table = document.createElement('table');
-                table.id = 'players-table';
-                document.body.appendChild(table); // Modifier pour ajouter le tableau où vous le souhaitez dans le DOM
-            }
-            table.innerHTML = ''; // Nettoyer le tableau existant
-
-            // Créer et ajouter le thead au tableau
-            const thead = document.createElement('thead');
-            table.appendChild(thead);
-            const headerRow = document.createElement('tr');
-            thead.appendChild(headerRow);
-
-            // Ajouter les en-têtes de colonnes
-            ['Nom du joueur', 'Message', 'Supprimer'].forEach(headerText => {
-                const headerCell = document.createElement('th');
-                headerCell.textContent = headerText;
-                headerRow.appendChild(headerCell);
-            });
-
-            // Créer et ajouter le tbody au tableau
-            const tbody = document.createElement('tbody');
-            table.appendChild(tbody);
-
-            const response = await fetch('/minecraft_log', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ log_path: log_path, filter_type: filterType })
-            });
-
-            const data = await response.json();
-            for (const player of data.online_players) {
-                const li = document.createElement('li');
-                li.textContent = player;
-                playerList.appendChild(li);
-            }
-
-            players.forEach(player => {
-                const row = document.createElement('tr');
-                
-                // Colonne pour le nom du joueur
-                const nameCell = document.createElement('td');
-                nameCell.textContent = player.name;
-                row.appendChild(nameCell);
-
-                // Colonne pour l'action "envoyer un message"
-                const messageCell = document.createElement('td');
-                const messageIcon = document.createElement('img');
-                messageIcon.src = 'message.png'; // Assurez-vous que ce chemin est correct
-                messageIcon.style.cursor = 'pointer';
-                messageIcon.onclick = function() {
-                    console.log('Envoyer un message à', player.name);
-                };
-                messageCell.appendChild(messageIcon);
-                row.appendChild(messageCell);
-
-                // Colonne pour l'action "supprimer"
-                const deleteCell = document.createElement('td');
-                const deleteIcon = document.createElement('span');
-                deleteIcon.innerHTML = '&#10060;'; // Utilisez le symbole de croix ou une icône appropriée
-                deleteIcon.style.cursor = 'pointer';
-                deleteIcon.onclick = function() {
-                    console.log('Supprimer', player.name);
-                };
-                deleteCell.appendChild(deleteIcon);
-                row.appendChild(deleteCell);
-
-                tbody.appendChild(row);
-            });
-    }
-
-    async function fetchMinecraftPlayer() {
-        try {
-            const players = await fetchMinecraftPlayers(data); // Implémentez cette fonction selon votre backend
-            console.log(players); // Ajoutez ceci pour vérifier la structure des données
-
-            players.forEach(player => {
-                if (!player.name) {
-                    console.error('Joueur sans nom:', player);
-                    return; // Skip ce joueur si le nom n'est pas présent
-                }
-                const row = document.createElement('tr');
-                
-                // Colonne pour le nom du joueur
-                const nameCell = document.createElement('td');
-                nameCell.textContent = player.name;
-                row.appendChild(nameCell);
-
-                // Ajoutez le reste de votre code ici pour les autres colonnes
-
-                tbody.appendChild(row);
-            });
-        } catch (error) {
-            console.error('Error fetching Minecraft log:', error);
-        }
-    }
-
-    setInterval(() => fetchMinecraftPlayer(), 3800); // Corrigé pour correspondre à votre commentaire  
-
     document.addEventListener('DOMContentLoaded', function() {
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
         highlightSelectedButton(filterType);
         fetchMinecraftLogFiltered(); // This will now use the filter type from local storage
-        fetchMinecraftPlayer(); // Appel initial pour afficher les joueurs
     });
 
     document.getElementById('command-form').addEventListener('submit', async function(event) {
@@ -1137,6 +1041,23 @@
 
         // Vérifier le statut toutes les 30 secondes
         setInterval(checkMinecraftStatus, 30000);
+
+        async function fetchAndDisplayPlayers() {
+            const playersContainer = document.getElementById('players-list');
+            playersContainer.innerHTML = ''; // Clear existing list items
+
+            // Example: Fetch player list from an API or server
+            const players = await fetchPlayers(); // Implement this function based on your backend
+
+            players.forEach(player => {
+                const listItem = document.createElement('li');
+                listItem.textContent = player.name; // Assuming each player has a 'name' property
+                playersContainer.appendChild(listItem);
+            });
+        }
+
+        // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
+        fetchAndDisplayPlayers();
     });
 
     document.addEventListener('DOMContentLoaded', (event) => {
