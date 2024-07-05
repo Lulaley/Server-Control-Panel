@@ -1126,7 +1126,17 @@
             console.log('Service créé:', data);
             alert("Service créé avec succès");
             modal.style.display = "none";
-            fetchServerStatus(); // Rafraîchir l'état des services après la création réussie
+            setTimeout(() => {
+                try {
+                    if(window.location.reload instanceof Function) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = window.location.href;
+                    }
+                } catch (error) {
+                    console.error('Error reloading the page:', error);
+                }
+            }, 100);
         })
         .catch((error) => {
             console.error('Erreur:', error);
