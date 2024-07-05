@@ -1,0 +1,169 @@
+#main-container {
+    grid-row-start: 2;
+    grid-column-start: 2;
+}
+
+#filter-buttons {
+    box-sizing: border-box;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding-left: 10px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    width: fit-content;
+    padding-right: 10px;
+}
+
+#console-box {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #fff;
+    border-radius: 5px;
+    padding: 10px;
+    overflow-y: auto;
+    font-family: monospace;
+    width: 100%;
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: top;
+    text-align: left;
+    word-wrap: break-word;
+    font-size: 14px;
+}
+
+/* Style INFO messages */
+.console-box span.info {
+    color: #0066cc;
+}
+
+/* Style WARN messages */
+.console-box span.warn {
+    color: coral;
+}
+
+/* Style ERROR messages */
+.console-box span.error {
+    color: darkred;
+}
+
+/* Style RCON messages */
+.console-box span.rcon {
+    color: aquamarine;
+}
+
+#console {
+    height: 500px; /* Subtract the height of the input and some extra space for padding */
+    overflow-y: auto;
+}
+
+#command-form {
+    width: 100%;
+    vertical-align: top;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #fff;
+    border-radius: 5px;
+    padding: 1px;
+}
+
+#command-input {
+    width: 100%;
+    padding: 5px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+
+
+#command-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+
+.error-message {
+    color: red;
+}
+
+.warning-message {
+    color: orange;
+}
+
+.info-message {
+    color: white;
+}
+
+.discussion-message {
+    color: blue !important;
+}
+
+.any-message {
+    color: grey;
+}
+
+.tag-button {
+    box-sizing: border-box;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+#errors-tag-button {
+    background-color: rgba(139, 0, 0, 0.5); /* darkred */
+}
+
+#errors-tag-button:hover {
+    background-color: rgba(139, 0, 0, 5);
+}
+
+#warnings-tag-button {
+    background-color: rgba(255, 140, 0, 0.5); /* darkorange */
+}
+
+#warnings-tag-button:hover {
+    background-color: rgba(255, 140, 0, 5); /* darkorange */
+}
+
+#info-tag-button {
+    background-color: rgba(169, 169, 169, 0.5); /* darkgray */
+}
+
+#info-tag-button:hover {
+    background-color: rgba(169, 169, 169, 5); /* darkgray */
+}
+
+#discussion-tag-button {
+    background-color: rgba(0, 0, 139, 0.5); /* darkblue */
+}
+
+#discussion-tag-button:hover {
+    background-color: rgba(0, 0, 139, 5); /* darkblue */
+}
+
+#all-tag-button {
+    background-color: rgba(148, 0, 211, 0.5); /* darkviolet */
+}
+
+#all-tag-button:hover {
+    background-color: rgba(148, 0, 211, 5); /* darkviolet */
+}
+
+.tag-button.selected {
+    border: 1px solid #fff;
+}
+
+#players-list {
+    list-style-type: none;
+    padding: 0;
+    overflow-y: auto;
+}
+
+#players-list li {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+#players-list li:last-child {
+    border-bottom: none;
+}

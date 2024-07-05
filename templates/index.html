@@ -5,1177 +5,221 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Server Control</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/serveur.png') }}">
-    <style type="text/css">
-        body {
-            background-color: #333;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            overflow-x: hidden;
-            overflow-y: hidden;
-        }
-
-        #super-container {
-            display: grid;
-            grid-template-columns: 350px 1200px 1fr;
-            grid-template-rows: 50px max-content max-content;
-            grid-gap: 20px;
-        }
-
-        .cat-bar {
-            grid-row-start: 1;
-        }
-
-        @keyframes move-cat {
-            0% {
-                left: 0;
-            }
-            100% {
-                left: calc(100% + 50px); /* Subtract the cat image's width to make it stop at the right edge */
-            }
-        }
-
-        .cat-image {
-            position: absolute;
-            top: 5px;
-            width: 3%;
-            animation: move-cat 10s linear infinite; /* Adjust the duration as needed */
-        }
-
-        #percentages-container {
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            grid-row-start: 2;
-            grid-column-start: 1;
-            width: 100%;
-            height: max-content;
-        }
-
-        #services-container {
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            grid-row-start: 2;
-            grid-column-start: 1;
-            width: 100%;
-            height: 380px;
-            transform: translateY(57%);
-            overflow-y: auto;
-        }
-
-        #add-service-form {
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0);
-            grid-row-start: 2;
-            grid-column-start: 2;
-            width: 60%;
-            height: max-content;
-            transform: translateX(38%);
-        }
-
-        #control-container {
-            grid-row-start: 2;
-            height: fit-content;
-            grid-column-start: 3;
-            width: 230px;
-        }
-
-        #players-container {
-            grid-column-start: 3;
-            grid-row-start: 2;
-            padding: 10px;
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            transform: translateY(22%);
-            height: 390px;
-            overflow-y: auto;
-        }
-
-        #java-version-container {
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            grid-column-start: 3;
-            grid-row-start: 2;
-            transform: translateY(665%);
-            height: fit-content;
-        }
-
-        #main-container {
-            grid-row-start: 2;
-            grid-column-start: 2;
-        }
-
-        #filter-buttons {
-            box-sizing: border-box;
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding-left: 10px;
-            padding-bottom: 2px;
-            padding-top: 2px;
-            width: fit-content;
-            padding-right: 10px;
-        }
-
-        .status-indicator {
-          display: inline-block;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-weight: bold;
-        }
-
-        .status-indicator.active {
-          background-color: green;
-          color: white;
-        }
-
-        .status-indicator.inactive {
-          background-color: red;
-          color: white;
-        }
-
-        .service-button {
-          background-color: #4CAF50;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          padding: 8px 16px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: background-color 0.3s;
-        }
-
-        .service-button.stop-button {
-          background-color: red;
-        }
-
-        .service-button:hover {
-          background-color: #3e8e41;
-        }
-
-        #server-control-button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        #server-control-button:hover {
-            background-color: #45a049;
-        }
-
-        #console-box {
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid #fff;
-            border-radius: 5px;
-            padding: 10px;
-            overflow-y: auto;
-            font-family: monospace;
-            width: 100%;
-            box-sizing: border-box;
-            display: inline-block;
-            vertical-align: top;
-            text-align: left;
-            word-wrap: break-word;
-            font-size: 14px;
-        }
-
-        /* Style INFO messages */
-        .console-box span.info {
-            color: #0066cc;
-        }
-
-        /* Style WARN messages */
-        .console-box span.warn {
-            color: coral;
-        }
-
-        /* Style ERROR messages */
-        .console-box span.error {
-            color: darkred;
-        }
-
-        /* Style RCON messages */
-        .console-box span.rcon {
-            color: aquamarine;
-        }
-
-        #console {
-            height: 500px; /* Subtract the height of the input and some extra space for padding */
-            overflow-y: auto;
-        }
-
-        #command-form {
-            width: 100%;
-            vertical-align: top;
-            box-sizing: border-box;
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid #fff;
-            border-radius: 5px;
-            padding: 1px;
-        }
-
-        #command-input {
-            width: 100%;
-            padding: 5px;
-            margin-top: 10px;
-            box-sizing: border-box;
-        }
-
-        .progress-bar {
-            height: 20px;
-            background-color: green;
-            border-radius: 5px;
-            margin: 5px 0;
-            padding: 0 5px;
-            line-height: 20px;
-            box-sizing: border-box;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-bar.orange {
-            background-color: orange;
-        }
-
-        .progress-bar.red {
-            background-color: red;
-        }
-        .plain-bar {
-            border-bottom: 1px solid #ddd;
-            margin: 10px 0;
-        }
-
-        #command-error {
-            color: red;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .folder-select-container {
-            padding: 10px;
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: grid;
-            grid-gap: 10px;
-        }
-
-        .folder-select-container label {
-            margin-right: 10px;
-        }
-
-        .folder-select-container select {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 5px;
-            font-size: 14px;
-        }
-
-        .error-message {
-            color: red;
-        }
-
-        .warning-message {
-            color: orange;
-        }
-
-        .info-message {
-            color: white;
-        }
-
-        .discussion-message {
-            color: blue !important;
-        }
-        .any-message {
-            color: grey;
-        }
-
-        .tag-button {
-            box-sizing: border-box;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-        }
-
-        #errors-tag-button {
-            background-color: rgba(139, 0, 0, 0.5); /* darkred */
-        }
-        
-        #errors-tag-button:hover {
-            background-color: rgba(139, 0, 0, 5);
-        }
-
-        #warnings-tag-button {
-            background-color: rgba(255, 140, 0, 0.5); /* darkorange */
-        }
-
-        #warnings-tag-button:hover {
-            background-color: rgba(255, 140, 0, 5); /* darkorange */
-        }
-
-        #info-tag-button {
-            background-color: rgba(169, 169, 169, 0.5); /* darkgray */
-        }
-
-        #info-tag-button:hover {
-            background-color: rgba(169, 169, 169, 5); /* darkgray */
-        }
-
-        #discussion-tag-button {
-            background-color: rgba(0, 0, 139, 0.5); /* darkblue */
-        }
-
-        #discussion-tag-button:hover {
-            background-color: rgba(0, 0, 139, 5); /* darkblue */
-        }
-
-        #all-tag-button {
-            background-color: rgba(148, 0, 211, 0.5); /* darkviolet */
-        }
-
-        #all-tag-button:hover {
-            background-color: rgba(148, 0, 211, 5); /* darkviolet */
-        }
-
-        .tag-button.selected {
-            border: 1px solid #fff;
-        }
-
-        #players-list {
-            list-style-type: none;
-            padding: 0;
-            overflow-y: auto;
-        }
-
-        #players-list li {
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        #players-list li:last-child {
-            border-bottom: none;
-        }
-
-        .btn {
-            border: none;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-bottom: 3px;
-        }
-
-        .btn-stop {
-            background-color: #f44336; /* Red */
-        }
-
-        .btn-stop:hover {
-            background: #da190b;
-        }
-
-        .btn-start {
-            background-color: #4CAF50; /* Green */
-        }
-
-        .btn-start:hover {
-            background: #45a049;
-        }
-
-        .btn-restart {
-            background-color: #2196F3; /* Blue */
-        }
-
-        .btn-restart:hover {
-            background: #0b7dda;
-        }
-
-        .btn-delete {
-            background-color: #7c21f3; /* Blue */
-        }
-
-        .btn-delete:hover {
-            background: #870bda;
-        }
-
-        .btn-add-service {
-            margin: 10px;
-            background-color: #f39f21;
-        }
-
-        .btn-add-service:hover {
-            background: #d68b1e;
-        }
-
-
-        .btn-valider-form {
-            background-color: #3e8e41;
-        }
-
-        .btn-valider-form:hover {
-            background: #4caf50;
-        }
-
-        .modal {
-            display: none;
-            z-index: 1;
-        }
-
-        /* Pour centrer le formulaire dans la page, si nécessaire */
-        .modal-content {
-            margin: 0 auto;
-            width: 50%; /* Ajustez selon la largeur souhaitée */
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .title-service-form {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 10px;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: red;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        #new-service-form {
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/commun.css">
+    <link rel="stylesheet" href="css/console.css">
+    <link rel="stylesheet" href="css/javaVersion.css">
+    <link rel="stylesheet" href="css/players.css">
+    <link rel="stylesheet" href="css/selecteurMcLog.css">
+    <link rel="stylesheet" href="css/serveurStatus.css">  
+    <link rel="stylesheet" href="css/services.css">  
 </head>
-<body>
-<div id="super-container">
-    <div class="cat-bar">
-        <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
-    </div>
-
-    <div id="percentages-container">
-        <div id="java-version" style="padding-left: 5px;padding-top: 5px;"></div>
-        <div class="plain-bar"></div>
-    
-        <div id="cpu-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
-        <div class="progress-bar" id="cpu-progress-bar"></div>
-    
-        <div id="memory-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
-        <div class="progress-bar" id="memory-progress-bar"></div>
-    
-        <div id="disk-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
-        <div class="progress-bar" id="disk-progress-bar"></div>
-    </div>
-
-    <div id="services-container">
-        <button id="add-service-btn" class="btn btn-add-service">Ajouter un service</button>
-        <table>
-            <thead>
-            <tr>
-                <th>Service</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for service, info in services.items() %}
-            <tr>
-                <td>{{ service }}</td>
-                <td>
-                    <span style="display: inline-block; width: 20px; height: 20px; background-color: 
-                    {% if info['status'] == 'active' %}green
-                    {% elif info['status'] == 'inactive' %}orange
-                    {% else %}red{% endif %}; margin-left: 10px;"></span>
-                </td>
-                <td>
-                    {% if info['status'] == 'active' %}
-                    <button type="button" class="btn btn-stop" onclick="stop_service('{{ service }}')">Stop</button>
-                    {% elif info['status'] == 'inactive' or info['status'] == 'not_found' %}
-                        <button type="button" class="btn btn-start" onclick="start_service('{{ service }}')">Start</button>
-                        <button type="button" class="btn btn-delete" onclick="delete_service('{{ service }}')">Supprimer</button>
-                    {% endif %}
-                    <button type="button" class="btn btn-restart" onclick="restart_service('{{ service }}')">Restart</button>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div id="add-service-form" class="modal">
-        <div class="modal-content">
-            <span class="title-service-form">Création d'un service</span>
-            <span class="close">&times;</span>
-            <form id="new-service-form">
-                <label for="service-name">Nom du service:</label>
-                <input type="text" id="service-name" name="service-name" required><br><br>
-                <label for="service-description">Description du service:</label>
-                <input type="text" id="service-description" name="service-description" required><br><br>
-                <label for="service-command">Commande à exécuter:</label>
-                <input type="text" id="service-command" name="service-command" required><br><br>
-                <input type="submit" class="btn btn-valider-form" value="Créer le service">
-            </form>
-        </div>
-    </div>
-
-    {% if not minecraft_running %}
-    <div id="java-version-container" class="folder-select-container">
-        <label for="java-version-select">Select Java version :</label>
-        <select id="java-version-select">
-            <option value="">Select...</option>
-        </select>
-    </div>
-    {% endif %}
-
-    <div id="control-container">
-        <div class="folder-select-container">
-            <label for="folder-select">Select a Minecraft server :</label>
-            <select id="folder-select">
-                <option value="">Select...</option>
-            </select>
-        </div>
-    </div>
-
-    <div id="players-container">
-        <h2>Players List :</h2>
-        <ul id="players-list">
-            <!-- Player items will be added here dynamically -->
-        </ul>
-    </div>
-
-    <div id="main-container">
-        <div id="filter-buttons">
-            <button id="errors-tag-button" class="tag-button" onclick="updateFilterType('errors')">Show Errors</button>
-            <button id="warnings-tag-button" class="tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
-            <button id="info-tag-button" class="tag-button" onclick="updateFilterType('info')">Show Info</button>
-            <button id="discussion-tag-button" class="tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
-            <button id="all-tag-button" class="tag-button" onclick="updateFilterType('all')">Show All</button>
-        </div>
-        <div id="console-container">
-            <div id="console-box">
-                <div id="console" class="console-box"></div>
+    <body>
+        <div id="super-container">
+            <div class="cat-bar">
+                <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
             </div>
-    
-            <form id="command-form">
-                <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
-                <div id="command-error"></div>
-            </form>
+
+            <div id="percentages-container">
+                <div id="java-version" style="padding-left: 5px;padding-top: 5px;"></div>
+                <div class="plain-bar"></div>
+            
+                <div id="cpu-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
+                <div class="progress-bar" id="cpu-progress-bar"></div>
+            
+                <div id="memory-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
+                <div class="progress-bar" id="memory-progress-bar"></div>
+            
+                <div id="disk-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
+                <div class="progress-bar" id="disk-progress-bar"></div>
+            </div>
+
+            <div id="services-container">
+                <button id="add-service-btn" class="btn btn-add-service">Ajouter un service</button>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for service, info in services.items() %}
+                    <tr>
+                        <td>{{ service }}</td>
+                        <td>
+                            <span style="display: inline-block; width: 20px; height: 20px; background-color: 
+                            {% if info['status'] == 'active' %}green
+                            {% elif info['status'] == 'inactive' %}orange
+                            {% else %}red{% endif %}; margin-left: 10px;"></span>
+                        </td>
+                        <td>
+                            {% if info['status'] == 'active' %}
+                            <button type="button" class="btn btn-stop" onclick="stop_service('{{ service }}')">Stop</button>
+                            {% elif info['status'] == 'inactive' or info['status'] == 'not_found' %}
+                                <button type="button" class="btn btn-start" onclick="start_service('{{ service }}')">Start</button>
+                                <button type="button" class="btn btn-delete" onclick="delete_service('{{ service }}')">Supprimer</button>
+                            {% endif %}
+                            <button type="button" class="btn btn-restart" onclick="restart_service('{{ service }}')">Restart</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="add-service-form" class="modal">
+                <div class="modal-content">
+                    <span class="title-service-form">Création d'un service</span>
+                    <span class="close">&times;</span>
+                    <form id="new-service-form">
+                        <label for="service-name">Nom du service:</label>
+                        <input type="text" id="service-name" name="service-name" required><br><br>
+                        <label for="service-description">Description du service:</label>
+                        <input type="text" id="service-description" name="service-description" required><br><br>
+                        <label for="service-command">Commande à exécuter:</label>
+                        <input type="text" id="service-command" name="service-command" required><br><br>
+                        <input type="submit" class="btn btn-valider-form" value="Créer le service">
+                    </form>
+                </div>
+            </div>
+
+            {% if not minecraft_running %}
+            <div id="java-version-container" class="folder-select-container">
+                <label for="java-version-select">Select Java version :</label>
+                <select id="java-version-select">
+                    <option value="">Select...</option>
+                </select>
+            </div>
+            {% endif %}
+
+            <div id="control-container">
+                <div class="folder-select-container">
+                    <label for="folder-select">Select a Minecraft server :</label>
+                    <select id="folder-select">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="players-container">
+                <h2>Players List :</h2>
+                <ul id="players-list">
+                    <!-- Player items will be added here dynamically -->
+                </ul>
+            </div>
+
+            <div id="main-container">
+                <div id="filter-buttons">
+                    <button id="errors-tag-button" class="tag-button" onclick="updateFilterType('errors')">Show Errors</button>
+                    <button id="warnings-tag-button" class="tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
+                    <button id="info-tag-button" class="tag-button" onclick="updateFilterType('info')">Show Info</button>
+                    <button id="discussion-tag-button" class="tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
+                    <button id="all-tag-button" class="tag-button" onclick="updateFilterType('all')">Show All</button>
+                </div>
+                <div id="console-container">
+                    <div id="console-box">
+                        <div id="console" class="console-box"></div>
+                    </div>
+            
+                    <form id="command-form">
+                        <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
+                        <div id="command-error"></div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-<script type="text/javascript">
-    function bytesToSize(bytes) {
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        if (bytes === 0) return '0 Bytes';
-        const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
-        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-    }
 
-    async function fetchSystemInfo() {
-        try {
-            const response = await fetch('/system_info');
-            const data = await response.json();
+        <script src="js/systemInfo.js"></script>
+        <script src="js/sendCmdMc.js"></script>
+        <script src="js/selecteurMcLog.js"></script>
+        <script src="js/mcLogs.js"></script>
+        <script src="js/javaVersion.js"></script>
+        <script src="js/mcserveurStatus.js"></script>
+        <script src="js/services.js"></script>
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {       
+                let lastStatus = { minecraft_running };
 
-            setProgressBar('#cpu-progress-bar', data.cpu_percent);
-            setProgressBar('#memory-progress-bar', data.memory_percent);
-            setProgressBar('#disk-progress-bar', data.disk_percent);
-
-            document.getElementById('java-version').innerText = `Java Version: ${data.java_version}`;
-            document.getElementById('cpu-percentage').innerText = `CPU: ${data.cpu_percent}%`;
-            document.getElementById('memory-percentage').innerText = `Memory: ${data.memory_percent}% (${bytesToSize(data.current_ram_used)} used / ${bytesToSize(data.total_ram)} total)`;
-            document.getElementById('disk-percentage').innerText = `Disk: ${data.disk_percent}% (${bytesToSize(data.current_disk_used)} used / ${bytesToSize(data.total_disk)} total)`;
-
-        } catch (error) {
-            console.error('Error fetching system info:', error);
-        }
-    }
-
-    function setProgressBar(selector, percent) {
-        const progressBarFill = document.querySelector(selector);
-        progressBarFill.style.width = `${percent}%`;
-
-        if (percent > 80) {
-            progressBarFill.style.backgroundColor = 'red';
-        } else if (percent > 60) {
-            progressBarFill.style.backgroundColor = 'orange';
-        } else {
-            progressBarFill.style.backgroundColor = 'green';
-        }
-    }
-
-    // Call the fetchSystemInfo function every minutes
-    setInterval(fetchSystemInfo, 3800);
-
-    // Call the fetchSystemInfo function once on page load
-    fetchSystemInfo();
-
-    let currentFilterType = 'all'; // Default filter type
-    let selectedButton = document.getElementById('all-tag-button');  // Par défaut, le bouton "Show All" est sélectionné
-    function updateFilterType(filterType) {
-        localStorage.setItem('selectedFilterType', filterType);
-        fetchMinecraftLogFiltered(filterType);
-
-        // Supprimer la classe 'selected' du bouton précédemment sélectionné
-        selectedButton.classList.remove('selected');
-
-        // Ajouter la classe 'selected' au bouton actuellement sélectionné
-        const buttonId = filterType + '-tag-button';
-        selectedButton = document.getElementById(buttonId);
-        selectedButton.classList.add('selected');
-    }
-
-    function highlightSelectedButton(filterType) {
-        const buttons = document.querySelectorAll('#filter-buttons button');
-        buttons.forEach(button => {
-            if (button.getAttribute('data-filter') === filterType) {
-                button.classList.add('selected');
-            } else {
-                button.classList.remove('selected');
-            }
-        });
-    }
-
-    async function fetchMinecraftLogFiltered() {
-        if (document.getElementById('folder-select').value === "") {
-            return;
-        }
-        // Retrieve the filter type from local storage or use a default
-        const filterType = localStorage.getItem('selectedFilterType') || 'all';
-        highlightSelectedButton(filterType);
-
-        try {
-            const response = await fetch('/minecraft_log', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ log_path: log_path, filter_type: filterType })
-            });
-            const data = await response.json();
-
-            const consoleElement = document.getElementById('console');
-            consoleElement.innerHTML = ''; // Clear existing logs
-
-            // Split the logs string into individual log entries
-            const logEntries = data.logs.split('\n').filter(entry => 
-                !entry.includes('Thread RCON Client ** started') && 
-                !entry.includes('Thread RCON Client ** shutting down')
-            );
-            logEntries.forEach(entry => {
-                const span = document.createElement('span');
-                span.textContent = entry;
-
-                // Determine log level and apply CSS class
-                if (entry.includes('/ERROR')) {
-                    span.className = 'error-message';
-                } else if (entry.includes('/WARN')) {
-                    span.className = 'warning-message';
-                } else if (entry.includes('<') || entry.includes('[Rcon]')) {
-                    // This condition now also checks for entries containing [RCON]
-                    span.className = 'discussion-message';
-                } else if (entry.includes('/INFO')) {
-                    span.className = 'info-message';
-                } else {
-                    // Default class for logs without a clear level, or you can add more conditions for other levels
-                    span.className = 'any-message';
+                function checkMinecraftStatus() {
+                    console.log('Checking Minecraft status...');
+                    fetch('/api/minecraft_status')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.minecraft_running !== lastStatus) {
+                                window.location.reload();
+                            }
+                        })
+                        .catch(error => console.error('Error fetching Minecraft status:', error));
                 }
 
-                consoleElement.appendChild(span);
-                consoleElement.appendChild(document.createElement('br')); // New line
+                // Vérifier le statut toutes les 30 secondes
+                setInterval(checkMinecraftStatus, 30000);
+
+                async function fetchAndDisplayPlayers() {
+                    const playersContainer = document.getElementById('players-list');
+                    playersContainer.innerHTML = ''; // Clear existing list items
+
+                    // Example: Fetch player list from an API or server
+                    const players = await fetchPlayers(); // Implement this function based on your backend
+
+                    players.forEach(player => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = player.name; // Assuming each player has a 'name' property
+                        playersContainer.appendChild(listItem);
+                    });
+                }
+
+                // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
+                fetchAndDisplayPlayers();
             });
 
-            // Optionally, update the online players list if your API also returns this information            
-            const playerList = document.getElementById('players-list');
-            playerList.innerHTML = ''; // Clear existing list
-            for (const player of data.online_players) {
-                const li = document.createElement('li');
-                li.textContent = player;
-                playerList.appendChild(li);
-            }
+            document.addEventListener('DOMContentLoaded', (event) => {
+                // Get the selected service and tag button from cookies after the page reloads
+                const serveurSelectIndex = getCookie('serveurSelectIndex');
+                const selectedTagButton = getCookie('selectedTagButton');
 
-            // Scroll to the bottom of the console
-            consoleElement.scrollTop = consoleElement.scrollHeight;
-        } catch (error) {
-            console.error('Error fetching Minecraft log:', error);
-        }
-    }
+                console.log(serveurSelectIndex, selectedTagButton);
 
-    // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
-    setInterval(() => fetchMinecraftLogFiltered(), 1000);
+                if (serveurSelectIndex !== "") {
+                    // Select the service
+                    const selectServeur = document.getElementById('folder-select');
+                    selectServeur.selectedIndex = Number(serveurSelectIndex);
+                }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterType = localStorage.getItem('selectedFilterType') || 'all';
-        highlightSelectedButton(filterType);
-        fetchMinecraftLogFiltered(); // This will now use the filter type from local storage
-    });
-
-    document.getElementById('command-form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-
-        const command = document.getElementById('command-input').value;
-
-        try {
-            const response = await fetch('/send_command', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `command=${encodeURIComponent(command)}`
+                if (selectedTagButton !== "") {
+                    // Select the tag button
+                    const button = document.getElementById(selectedTagButton);
+                    button.classList.add('selected');
+                }
             });
 
-            const data = await response.json();
+            // Get the modal
+            var modal = document.getElementById("add-service-form");
 
-            if ('response' in data) {
-                document.getElementById('console').innerText += '\n' + data.response;
-                document.getElementById('command-error').innerText = '';
-            } else if ('error' in data) {
-                document.getElementById('command-error').innerText = data.error;
-            } else {
-                document.getElementById('command-error').innerText = 'Unknown error';
-            }
-        } catch (error) {
-            document.getElementById('command-error').innerText = 'Error sending command: ' + error;
-        }
+            // Get the button that opens the modal
+            var btn = document.getElementById("add-service-btn");
 
-        document.getElementById('command-input').value = '';
-    });
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
 
-    async function fetchFolders() {
-        try {
-            const response = await fetch('/folders');
-            const data = await response.json();
-
-            const folderSelect = document.getElementById('folder-select');
-
-            data.folders.forEach(folder => {
-                const option = document.createElement('option');
-                option.value = folder;
-                option.textContent = folder;
-                folderSelect.appendChild(option);
-            });
-
-            // Get the selected service from cookies after the page reloads
-            const serveurSelectIndex = getCookie('serveurSelectIndex');
-
-            if (serveurSelectIndex !== "") {
-                // Select the service
-                const selectServeur = document.getElementById('folder-select');
-                selectServeur.selectedIndex = Number(serveurSelectIndex);
+            // When the user clicks the button, open the modal 
+            btn.onclick = function() {
+                modal.style.display = "block";
             }
 
-            // Get the path log from cookies after the page reloads
-            const logPath = getCookie('logPath');
-
-            if (logPath !== "") {
-                log_path = logPath;
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
             }
-        } catch (error) {
-            console.error('Error fetching folders:', error);
-        }
-    }
-    fetchFolders();
-    document.getElementById('folder-select').addEventListener('change', function(event) {
-        const selectedFolder = event.target.value;
-        log_path = `/home/chimea/Bureau/${selectedFolder}/logs`;
-        console.log(`Log path changed to: ${log_path}`);
-        fetchMinecraftLogFiltered('all');
-    });
 
-    async function fetchServerStatus() {
-        const selectedFolder = document.getElementById('folder-select').value;
-
-        try {
-            const response = await fetch('/server_status', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ folder: selectedFolder })
-            });
-            const data = await response.json();
-
-            console.log("Minecraft server is running: ", data.is_running);
-            return data.is_running;
-        } catch (error) {
-            console.error('Error fetching minecraft server status:', error);
-            return false;
-        }
-    }
-
-    async function fetchJavaVersions() {
-        try {
-            const response = await fetch('/java_versions');
-            const javaVersions = await response.json();
-            const javaVersionSelect = document.getElementById('java-version-select');
-
-            // Check if filtered.log exists and has a modified date of today for all Minecraft servers
-            const logPaths = document.querySelectorAll('.log-path');
-            let allLogsModifiedToday = true;
-            for (const logPath of logPaths) {
-                const path = logPath.textContent.trim();
-                const logResponse = await fetch(path);
-                if (logResponse.ok) {
-                    const logModifiedDate = new Date(logResponse.headers.get('Last-Modified')).setHours(0, 0, 0, 0);
-                    const today = new Date().setHours(0, 0, 0, 0);
-                    if (logModifiedDate !== today) {
-                        allLogsModifiedToday = false;
-                        break;
-                    }
-                } else {
-                    console.log(`${path} does not exist`);
-                    allLogsModifiedToday = false;
-                    break;
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
                 }
             }
-            console.log(javaVersions);
-            if (allLogsModifiedToday) {
-                // Populate the java version select element with the available versions
-                for (const version of javaVersions) {
-                    const option = document.createElement('option');
-                    option.value = version.path;
-                    option.textContent = version.version;
-                    if (javaVersionSelect) {
-                        javaVersionSelect.appendChild(option);
-                    }
-                }
-            } else {
-                console.log('Not all filtered.log files have a modified date of today');
-            }
-        } catch (error) {
-            console.error('Error fetching Java versions:', error);
-        }
-    }
 
-    fetchJavaVersions();
-
-    if (document.getElementById('java-version-select')) {
-        document.getElementById('java-version-select').addEventListener('change', function(event) {
-            const selectedVersion = event.target.value;
-            console.log(`Java version wanted : ${selectedVersion}`);
-            changeJavaVersion(selectedVersion);
-        });
-    }
-
-    async function changeJavaVersion(selectedVersion) {
-        try {
-            const response = await fetch('/change_java_version', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `version=${encodeURIComponent(selectedVersion)}`
-            });
-            const data = await response.json();
-            if (data.success) {
-                console.log(`Java version changed to ${selectedVersion}`);
-                // Reload the page to apply the changes
-                location.reload();
-            } else {
-                console.error('Error changing Java version:', data.error);
-            }
-        } catch (error) {
-            console.error('Error changing Java version:', error);
-        }
-    }
-
-    async function fetchServices() {
-      try {
-        const response = await fetch('/services');
-        const services = await response.json();
-        const servicesList = document.getElementById('services-list');
-        services.forEach(service => {
-          const li = document.createElement('li');
-          li.textContent = service;
-          servicesList.appendChild(li);
-        });
-      } catch (error) {
-        console.error('Error fetching services:', error);
-      }
-    }
-
-    fetchServices();
-
-    // Function to set a cookie
-    function setCookie(cname, cvalue, exdays) {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays*24*60*60*1000));
-        var expires = "expires="+ d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-    }
-
-    // Function to get a cookie
-    function getCookie(cname) {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for(var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
-    window.onload = function() {
-        // Get the selected service and tag button from cookies after the page reloads
-        const serveurSelectIndex = getCookie('serveurSelectIndex');
-        const selectedTagButton = getCookie('selectedTagButton');
-
-        if (serveurSelectIndex !== "") {
-            // Select the service
-            const selectServeur = document.getElementById('folder-select');
-            selectServeur.selectedIndex = Number(serveurSelectIndex);
-        }
-
-        if (selectedTagButton !== "") {
-            // Select the tag button
-            const button = document.getElementById(selectedTagButton);
-            button.classList.add('selected');
-        }
-    }
-
-    function start_service(service) {
-        fetch('/start_service', {
-            method: 'POST',
-            body: new URLSearchParams({service: service})
-        }).then(() => {
-            const serveurSelect = document.getElementById('folder-select');
-            console.log(serveurSelect);
-            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
-            setCookie('selectedTagButton', selectedButton.id, 1);
-            setCookie('logPath', log_path, 1);
-            setTimeout(() => {
-                try {
-                    if(window.location.reload instanceof Function) {
-                        window.location.reload(true);
-                    } else {
-                        window.location.href = window.location.href;
-                    }
-                } catch (error) {
-                    console.error('Error reloading the page:', error);
-                }
-            }, 100);
-        });
-    }
-
-    function stop_service(service) {
-        fetch('/stop_service', {
-            method: 'POST',
-            body: new URLSearchParams({service: service})
-        }).then(() => {
-            const serveurSelect = document.getElementById('folder-select');
-            console.log(serveurSelect);
-            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
-            setCookie('selectedTagButton', selectedButton.id, 1);
-            setCookie('logPath', log_path, 1);
-            setTimeout(() => {
-                try {
-                    if(window.location.reload instanceof Function) {
-                        window.location.reload(true);
-                    } else {
-                        window.location.href = window.location.href;
-                    }
-                } catch (error) {
-                    console.error('Error reloading the page:', error);
-                }
-            }, 100);
-        });
-    }
-
-    function restart_service(service) {
-        fetch('/restart_service', {
-            method: 'POST',
-            body: new URLSearchParams({service: service})
-        }).then(() => {
-            const serveurSelect = document.getElementById('folder-select');
-            console.log(serveurSelect);
-            setCookie('serveurSelectIndex', serveurSelect.selectedIndex, 1);
-            setCookie('selectedTagButton', selectedButton.id, 1);
-            setCookie('logPath', log_path, 1);
-            setTimeout(() => {
-                try {
-                    if(window.location.reload instanceof Function) {
-                        window.location.reload(true);
-                    } else {
-                        window.location.href = window.location.href;
-                    }
-                } catch (error) {
-                    console.error('Error reloading the page:', error);
-                }
-            }, 100);
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {       
-        let lastStatus = { minecraft_running };
-
-        function checkMinecraftStatus() {
-            console.log('Checking Minecraft status...');
-            fetch('/api/minecraft_status')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.minecraft_running !== lastStatus) {
-                        window.location.reload();
-                    }
-                })
-                .catch(error => console.error('Error fetching Minecraft status:', error));
-        }
-
-        // Vérifier le statut toutes les 30 secondes
-        setInterval(checkMinecraftStatus, 30000);
-
-        async function fetchAndDisplayPlayers() {
-            const playersContainer = document.getElementById('players-list');
-            playersContainer.innerHTML = ''; // Clear existing list items
-
-            // Example: Fetch player list from an API or server
-            const players = await fetchPlayers(); // Implement this function based on your backend
-
-            players.forEach(player => {
-                const listItem = document.createElement('li');
-                listItem.textContent = player.name; // Assuming each player has a 'name' property
-                playersContainer.appendChild(listItem);
-            });
-        }
-
-        // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
-        fetchAndDisplayPlayers();
-    });
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // Get the selected service and tag button from cookies after the page reloads
-        const serveurSelectIndex = getCookie('serveurSelectIndex');
-        const selectedTagButton = getCookie('selectedTagButton');
-
-        console.log(serveurSelectIndex, selectedTagButton);
-
-        if (serveurSelectIndex !== "") {
-            // Select the service
-            const selectServeur = document.getElementById('folder-select');
-            selectServeur.selectedIndex = Number(serveurSelectIndex);
-        }
-
-        if (selectedTagButton !== "") {
-            // Select the tag button
-            const button = document.getElementById(selectedTagButton);
-            button.classList.add('selected');
-        }
-    });
-
-    // Get the modal
-    var modal = document.getElementById("add-service-form");
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("add-service-btn");
-
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks the button, open the modal 
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Handle form submission
-    document.getElementById("new-service-form").onsubmit = function(event) {
-        event.preventDefault();
-        const serviceName = document.getElementById("service-name").value;
-        const serviceDescription = document.getElementById("service-description").value;
-        const serviceCommand = document.getElementById("service-command").value;
-        
-        // Préparer les données à envoyer
-        const data = {
-            serviceName: serviceName,
-            serviceDescription: serviceDescription,
-            serviceCommand: serviceCommand
-        };
-        
-        // Utiliser fetch pour envoyer les données au serveur
-        fetch('/create_service', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('La requête a échoué');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Service créé:', data);
-            alert("Service créé avec succès");
-            modal.style.display = "none";
-            setTimeout(() => {
-                try {
-                    if(window.location.reload instanceof Function) {
-                        window.location.reload(true);
-                    } else {
-                        window.location.href = window.location.href;
-                    }
-                } catch (error) {
-                    console.error('Error reloading the page:', error);
-                }
-            }, 100);
-        })
-        .catch((error) => {
-            console.error('Erreur:', error);
-            alert("Erreur lors de la création du service \n", error);
-        });
-    };
-
-    function delete_service(serviceName) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer le service ' + serviceName + ' ?')) {
-            fetch('/delete_service', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'service=' + encodeURIComponent(serviceName)
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Service ' + serviceName + ' supprimé avec succès.');
-                    window.location.reload(); // Recharger la page pour mettre à jour la liste des services
-                } else {
-                    alert('Échec de la suppression du service ' + serviceName + '.');
-                }
-            })
-            .catch(error => console.error('Erreur:', error));
-        }
-    }
-</script>
-</body>
+        </script>
+    </body>
 </html>

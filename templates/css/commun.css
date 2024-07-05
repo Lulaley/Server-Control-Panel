@@ -1,0 +1,43 @@
+body {
+    background-color: #333;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+#super-container {
+    display: grid;
+    grid-template-columns: 350px 1200px 1fr;
+    grid-template-rows: 50px max-content max-content;
+    grid-gap: 20px;
+}
+
+.cat-bar {
+    grid-row-start: 1;
+}
+
+@keyframes move-cat {
+    0% {
+        left: 0;
+    }
+    100% {
+        left: calc(100% + 50px); /* Subtract the cat image's width to make it stop at the right edge */
+    }
+}
+
+.cat-image {
+    position: absolute;
+    top: 5px;
+    width: 3%;
+    animation: move-cat 10s linear infinite; /* Adjust the duration as needed */
+}
+
+.btn {
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 3px;
+}
