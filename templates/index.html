@@ -1043,8 +1043,31 @@
         setInterval(checkMinecraftStatus, 30000);
 
         async function fetchAndDisplayPlayers() {
-            const tableContainer = document.getElementById('players-table-body');
-            tableContainer.innerHTML = ''; // Clear existing rows
+            // Créer ou sélectionner le conteneur du tableau
+            let table = document.getElementById('players-table');
+            if (!table) {
+                table = document.createElement('table');
+                table.id = 'players-table';
+                document.body.appendChild(table); // Modifier pour ajouter le tableau où vous le souhaitez dans le DOM
+            }
+            table.innerHTML = ''; // Nettoyer le tableau existant
+
+            // Créer et ajouter le thead au tableau
+            const thead = document.createElement('thead');
+            table.appendChild(thead);
+            const headerRow = document.createElement('tr');
+            thead.appendChild(headerRow);
+
+            // Ajouter les en-têtes de colonnes
+            ['Nom du joueur', 'Message', 'Supprimer'].forEach(headerText => {
+                const headerCell = document.createElement('th');
+                headerCell.textContent = headerText;
+                headerRow.appendChild(headerCell);
+            });
+
+            // Créer et ajouter le tbody au tableau
+            const tbody = document.createElement('tbody');
+            table.appendChild(tbody);
 
             // Exemple : Récupérer la liste des joueurs depuis une API ou un serveur
             const players = await fetchPlayers(); // Implémentez cette fonction selon votre backend
@@ -1054,16 +1077,15 @@
                 
                 // Colonne pour le nom du joueur
                 const nameCell = document.createElement('td');
-                nameCell.textContent = player.name; // En supposant que chaque joueur a une propriété 'name'
+                nameCell.textContent = player.name;
                 row.appendChild(nameCell);
 
                 // Colonne pour l'action "envoyer un message"
                 const messageCell = document.createElement('td');
                 const messageIcon = document.createElement('img');
-                messageIcon.src = 'message.png'; // Chemin vers votre icône de message
+                messageIcon.src = 'message.png';
                 messageIcon.style.cursor = 'pointer';
                 messageIcon.onclick = function() {
-                    // Implémentez la logique pour envoyer un message
                     console.log('Envoyer un message à', player.name);
                 };
                 messageCell.appendChild(messageIcon);
@@ -1072,16 +1094,15 @@
                 // Colonne pour l'action "supprimer"
                 const deleteCell = document.createElement('td');
                 const deleteIcon = document.createElement('span');
-                deleteIcon.innerHTML = '&#10060;'; // Utilisez le symbole de croix ou une icône
+                deleteIcon.innerHTML = '&#10060;';
                 deleteIcon.style.cursor = 'pointer';
                 deleteIcon.onclick = function() {
-                    // Implémentez la logique pour supprimer
                     console.log('Supprimer', player.name);
                 };
                 deleteCell.appendChild(deleteIcon);
                 row.appendChild(deleteCell);
 
-                tableContainer.appendChild(row);
+                tbody.appendChild(row);
             });
         }
 
