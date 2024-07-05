@@ -265,6 +265,7 @@ def change_java_version():
         return jsonify({'success': False, 'error': str(e)})
 
 def get_services():
+    subprocess.run(['systemctl', 'daemon-reload'], check=True)
     services = {}
     services_list = []
     try:
