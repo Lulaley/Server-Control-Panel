@@ -696,11 +696,21 @@
 
                 consoleElement.appendChild(span);
                 consoleElement.appendChild(document.createElement('br')); // New line
-            });
+            });         
 
-            // Optionally, update the online players list if your API also returns this information            
-            // Créer ou sélectionner le conteneur du tableau
-            let table = document.getElementById('players-table');
+            // Scroll to the bottom of the console
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        } catch (error) {
+            console.error('Error fetching Minecraft log:', error);
+        }
+    }
+
+    // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
+    setInterval(() => fetchMinecraftLogFiltered(), 1000);
+
+    async function fetchMinecraftPlayers(data) {
+        // Créer ou sélectionner le conteneur du tableau
+        let table = document.getElementById('players-table');
             if (!table) {
                 table = document.createElement('table');
                 table.id = 'players-table';
@@ -725,8 +735,20 @@
             const tbody = document.createElement('tbody');
             table.appendChild(tbody);
 
-            // Exemple : Récupérer la liste des joueurs filtrée depuis une API ou un serveur
-            const players = await fetchMinecraftPlayersFiltered(); // Implémentez cette fonction selon votre backend
+            const response = await fetch('/minecraft_log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ log_path: log_path, filter_type: filterType })
+            });
+
+            const data = await response.json();
+            for (const player of data.online_players) {
+                const li = document.createElement('li');
+                li.textContent = player;
+                playerList.appendChild(li);
+            }
 
             players.forEach(player => {
                 const row = document.createElement('tr');
@@ -760,16 +782,35 @@
 
                 tbody.appendChild(row);
             });
+    }
 
-            // Scroll to the bottom of the console
-            consoleElement.scrollTop = consoleElement.scrollHeight;
+    async function fetchMinecraftPlayer(data) {
+        try {
+            const players = await fetchMinecraftPlayers(data); // Implémentez cette fonction selon votre backend
+            console.log(players); // Ajoutez ceci pour vérifier la structure des données
+
+            players.forEach(player => {
+                if (!player.name) {
+                    console.error('Joueur sans nom:', player);
+                    return; // Skip ce joueur si le nom n'est pas présent
+                }
+                const row = document.createElement('tr');
+                
+                // Colonne pour le nom du joueur
+                const nameCell = document.createElement('td');
+                nameCell.textContent = player.name;
+                row.appendChild(nameCell);
+
+                // Ajoutez le reste de votre code ici pour les autres colonnes
+
+                tbody.appendChild(row);
+            });
         } catch (error) {
             console.error('Error fetching Minecraft log:', error);
         }
     }
 
-    // Call the fetchMinecraftLogFiltered function every 3800 milliseconds
-    setInterval(() => fetchMinecraftLogFiltered(), 1000);
+    setInterval(() => fetchMinecraftPlayer(), 3800); // Corrigé pour correspondre à votre commentaire  
 
     document.addEventListener('DOMContentLoaded', function() {
         const filterType = localStorage.getItem('selectedFilterType') || 'all';
