@@ -488,12 +488,15 @@
             <tr>
                 <td>{{ service }}</td>
                 <td>
-                    <span style="display: inline-block; width: 20px; height: 20px; background-color: {{ 'green' if info['status'] == 'active' else 'red' }};margin-left: 10px;"></span>
+                    <span style="display: inline-block; width: 20px; height: 20px; background-color: 
+                    {% if info['status'] == 'active' %}green
+                    {% elif info['status'] == 'inactive' %}orange
+                    {% else %}red{% endif %}; margin-left: 10px;"></span>
                 </td>
                 <td>
                     {% if info['status'] == 'active' %}
                     <button type="button" class="btn btn-stop" onclick="stop_service('{{ service }}')">Stop</button>
-                    {% else %}
+                    {% elif info['status'] == 'inactive' or info['status'] == 'not_found' %}
                     <button type="button" class="btn btn-start" onclick="start_service('{{ service }}')">Start</button>
                     {% endif %}
                     <button type="button" class="btn btn-restart" onclick="restart_service('{{ service }}')">Restart</button>

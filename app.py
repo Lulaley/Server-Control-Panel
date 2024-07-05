@@ -266,28 +266,32 @@ def change_java_version():
 
 def get_services():
     services = {}
+    services_list = []
     try:
         with open('services.json', 'r') as f:
             services_list = json.load(f)['services']
     except FileNotFoundError:
-        return {'error': 'Le fichier services.json est introuvable'}
+        return {'error': 'Le fichier services.json est introuvable', 'status': 'not_found'}
     except json.JSONDecodeError:
-        return {'error': 'Erreur de décodage JSON dans services.json'}
+        return {'error': 'Erreur de décodage JSON dans services.json', 'status': 'error'}
 
     for service in services_list:
         process = subprocess.Popen(['systemctl', 'show', f'{service}.service'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
         if error:
-            # Handle error
-            pass
+            services[service] = {'status': 'not_found'}  # Service fichier n'existe pas
         else:
             output = output.decode('utf-8').strip().split('\n')
             status = None
             for line in output:
                 if line.startswith('ActiveState='):
                     status = line.split('=')[1]
-            if status:
-                services[service] = {'status': status}
+            if status == 'inactive':
+                services[service] = {'status': 'inactive'}  # Service existe mais est inactif
+            elif status:
+                services[service] = {'status': 'active'}  # Service actif
+            else:
+                services[service] = {'status': 'not_found'}  # Service fichier n'existe pas
     return services
 
 @app.route('/start_service', methods=['POST'])
