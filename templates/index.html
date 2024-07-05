@@ -41,7 +41,6 @@
             animation: move-cat 10s linear infinite; /* Adjust the duration as needed */
         }
 
-
         #percentages-container {
             border: 1px solid #fff;
             border-radius: 5px;
@@ -58,9 +57,10 @@
             background-color: rgba(0, 0, 0, 0.5);
             grid-row-start: 2;
             grid-column-start: 1;
-            width: 60%;
-            height: max-content;
-            transform: translateY(118%);
+            width: 100%;
+            height: 380px;
+            transform: translateY(57%);
+            overflow-y: auto;
         }
 
         #add-service-form {
@@ -79,6 +79,28 @@
             height: fit-content;
             grid-column-start: 3;
             width: 230px;
+        }
+
+        #players-container {
+            grid-column-start: 3;
+            grid-row-start: 2;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            transform: translateY(22%);
+            height: 390px;
+            overflow-y: auto;
+        }
+
+        #java-version-container {
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            grid-column-start: 3;
+            grid-row-start: 2;
+            transform: translateY(665%);
+            height: fit-content;
         }
 
         #main-container {
@@ -258,16 +280,6 @@
             font-size: 14px;
         }
 
-        #java-version-container {
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            grid-column-start: 1;
-            grid-row-start: 2;
-            transform: translateY(528%);
-            height: fit-content;
-        }
-
         .error-message {
             color: red;
         }
@@ -336,17 +348,6 @@
 
         .tag-button.selected {
             border: 1px solid #fff;
-        }
-
-        #players-container {
-            grid-column-start: 3;
-            grid-row-start: 2;
-            padding: 10px;
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            transform: translateY(19%);
-            height: 480px;
         }
 
         #players-list {
