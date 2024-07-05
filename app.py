@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import re
@@ -265,7 +266,15 @@ def change_java_version():
 
 def get_services():
     services = {}
-    for service in ['palworld', 'satisfactory', 'minecraft']:
+    try:
+        with open('services.json', 'r') as f:
+            services_list = json.load(f)['services']
+    except FileNotFoundError:
+        return {'error': 'Le fichier services.json est introuvable'}
+    except json.JSONDecodeError:
+        return {'error': 'Erreur de décodage JSON dans services.json'}
+
+    for service in services_list:
         process = subprocess.Popen(['systemctl', 'show', f'{service}.service'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
         if error:
@@ -303,7 +312,6 @@ def is_valid_name(name):
     # Simple validation to ensure name is safe
     return re.match("^[a-zA-Z0-9_-]+$", name) is not None
 
-
 @app.route('/create_service', methods=['POST'])
 def create_service():
     data = request.json
@@ -317,9 +325,29 @@ def create_service():
     if not service_command:
         return jsonify(error='Service command is required'), 400
 
+    # Load existing services from JSON
+    try:
+        with open('services.json', 'r') as f:
+            services = json.load(f)
+    except FileNotFoundError:
+        services = {"services": []}
+    except json.JSONDecodeError:
+        return jsonify(error='Erreur de décodage JSON dans services.json'), 500
+
+    # Check if service already exists in JSON
+    if service_name in services['services']:
+        return jsonify(error='Service name already exists'), 400
+    else:
+        services['services'].append(service_name)
+
+    # Write updated services to JSON
+    with open('services.json', 'w') as f:
+        json.dump(services, f, indent=4)
+
     service_file_path = f'/etc/systemd/system/{service_name}.service'
     service_content = f'[Unit]\nDescription={service_description}\n\n[Service]\nExecStart={service_command}\n'
 
+    # Create or overwrite the service file
     try:
         with open(service_file_path, 'w') as f:
             f.write(service_content)
