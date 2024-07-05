@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Server Control</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/serveur.png') }}">
-    <link rel="stylesheet" href="{{ url_for('templates', filename='css/commun.css') }}">
-    <link rel="stylesheet" href="{{ url_for('templates', filename='css/console.css') }}">
-    <link rel="stylesheet" href="{{ url_for('templates', filename='css/javaVersion.css') }}">
-    <link rel="stylesheet" href="{{ url_for('templates', filename='css/players.css') }}">
-    <link rel="stylesheet" href="{{ url_for('templates', filename='css/selecteurMcLog.css') }}">
-    <link rel="stylesheet" href="{{ url_for('templates', filename='css/serveurStatus.css') }}">
-    <link rel="stylesheet" href="{{ url_for('templates', filename='css/services.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/commun.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/console.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/javaVersion.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/players.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/selecteurMcLog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/serveurStatus.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
 </head>
     <body>
         <div id="super-container">
@@ -130,13 +130,13 @@
             </div>
         </div>
 
-        <script src="js/systemInfo.js"></script>
-        <script src="js/sendCmdMc.js"></script>
-        <script src="js/selecteurMcLog.js"></script>
-        <script src="js/mcLogs.js"></script>
-        <script src="js/javaVersion.js"></script>
-        <script src="js/mcserveurStatus.js"></script>
-        <script src="js/services.js"></script>
+        <script src="../static/js/systemInfo.js"></script>
+        <script src="../static/js/sendCmdMc.js"></script>
+        <script src="../static/js/selecteurMcLog.js"></script>
+        <script src="../static/js/mcLogs.js"></script>
+        <script src="../static/js/javaVersion.js"></script>
+        <script src="../static/js/mcserveurStatus.js"></script>
+        <script src="../static/js/services.js"></script>
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {       
                 let lastStatus = { minecraft_running };
