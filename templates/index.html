@@ -1094,6 +1094,7 @@
         }
     }
 
+    // Handle form submission
     document.getElementById("new-service-form").onsubmit = function(event) {
         event.preventDefault();
         const serviceName = document.getElementById("service-name").value;
@@ -1124,12 +1125,12 @@
         .then(data => {
             console.log('Service créé:', data);
             alert("Service créé avec succès");
-            // Supposons que vous avez un modal ou une notification que vous fermez ici
+            modal.style.display = "none";
             fetchServerStatus(); // Rafraîchir l'état des services après la création réussie
         })
         .catch((error) => {
             console.error('Erreur:', error);
-            alert("Erreur lors de la création du service \n" + error);
+            alert("Erreur lors de la création du service \n", error);
         });
     };
 </script>
