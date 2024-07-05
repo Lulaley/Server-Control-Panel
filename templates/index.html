@@ -1043,21 +1043,50 @@
         setInterval(checkMinecraftStatus, 30000);
 
         async function fetchAndDisplayPlayers() {
-            const playersContainer = document.getElementById('players-list');
-            playersContainer.innerHTML = ''; // Clear existing list items
+        const tableContainer = document.getElementById('players-table-body');
+        tableContainer.innerHTML = ''; // Clear existing rows
 
-            // Example: Fetch player list from an API or server
-            const players = await fetchPlayers(); // Implement this function based on your backend
+        // Exemple : Récupérer la liste des joueurs depuis une API ou un serveur
+        const players = await fetchPlayers(); // Implémentez cette fonction selon votre backend
 
-            players.forEach(player => {
-                const listItem = document.createElement('li');
-                listItem.textContent = player.name; // Assuming each player has a 'name' property
-                playersContainer.appendChild(listItem);
-            });
-        }
+        players.forEach(player => {
+            const row = document.createElement('tr');
+            
+            // Colonne pour le nom du joueur
+            const nameCell = document.createElement('td');
+            nameCell.textContent = player.name; // En supposant que chaque joueur a une propriété 'name'
+            row.appendChild(nameCell);
 
-        // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
-        fetchAndDisplayPlayers();
+            // Colonne pour l'action "envoyer un message"
+            const messageCell = document.createElement('td');
+            const messageIcon = document.createElement('img');
+            messageIcon.src = 'message.png'; // Chemin vers votre icône de message
+            messageIcon.style.cursor = 'pointer';
+            messageIcon.onclick = function() {
+                // Implémentez la logique pour envoyer un message
+                console.log('Envoyer un message à', player.name);
+            };
+            messageCell.appendChild(messageIcon);
+            row.appendChild(messageCell);
+
+            // Colonne pour l'action "supprimer"
+            const deleteCell = document.createElement('td');
+            const deleteIcon = document.createElement('span');
+            deleteIcon.innerHTML = '&#10060;'; // Utilisez le symbole de croix ou une icône
+            deleteIcon.style.cursor = 'pointer';
+            deleteIcon.onclick = function() {
+                // Implémentez la logique pour supprimer
+                console.log('Supprimer', player.name);
+            };
+            deleteCell.appendChild(deleteIcon);
+            row.appendChild(deleteCell);
+
+            tableContainer.appendChild(row);
+        });
+    }
+
+    // Assurez-vous d'appeler cette fonction au chargement de la page ou lorsque la liste des joueurs doit être rafraîchie
+    fetchAndDisplayPlayers();
     });
 
     document.addEventListener('DOMContentLoaded', (event) => {
