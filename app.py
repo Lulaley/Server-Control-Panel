@@ -1,10 +1,8 @@
-import json
 import logging
 import os
 import re
 import subprocess
 import psutil
-import threading
 from flask import Flask, request, render_template, jsonify
 from rcon.source import Client
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -18,8 +16,7 @@ log_path = "/home/chimea/Bureau/minecraft/logs"
 # Configure logging
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Initialisez les routes
-init_get_services(app)
+# Initialisez les routes pour démarrer, arrêter, redémarrer et supprimer les services
 init_start_service_routes(app)
 init_stop_service_routes(app)
 init_restart_service_routes(app)
