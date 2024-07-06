@@ -9,9 +9,6 @@ from routes.systemInfo import init_system_info_routes
 from routes.javaGestion import init_get_java_versions_routes, init_change_java_version_routes
 
 app = Flask(__name__)
-mc_rcon_password = "minecraft"
-mc_rcon_host = "0.0.0.0"
-log_path = "/home/chimea/Bureau/minecraft/logs"
 
 # Configure logging
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
