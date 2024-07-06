@@ -2,6 +2,7 @@ from rcon.source import Client
 
 mc_rcon_password = "minecraft"
 mc_rcon_host = "0.0.0.0"
+log_path = "/home/chimea/Bureau/minecraft/logs"
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
