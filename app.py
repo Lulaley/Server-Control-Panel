@@ -8,7 +8,7 @@ import threading
 from flask import Flask, request, render_template, jsonify
 from rcon.source import Client
 from apscheduler.schedulers.background import BackgroundScheduler
-from routes.service import init_get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
+from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
 
 app = Flask(__name__)
 mc_rcon_password = "minecraft"
