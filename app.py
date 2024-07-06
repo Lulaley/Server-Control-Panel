@@ -10,7 +10,6 @@ from rcon.source import Client
 from apscheduler.schedulers.background import BackgroundScheduler
 from routes.service import init_delete_service_routes, init_create_service_routes
 
-
 app = Flask(__name__)
 mc_rcon_password = "minecraft"
 mc_rcon_host = "0.0.0.0"

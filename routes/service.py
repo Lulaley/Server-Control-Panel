@@ -34,6 +34,7 @@ def init_get_services(app):
                 else:
                     services[service] = {'status': 'not_found'}  # Service fichier n'existe pas
         return services
+    pass
 
 def init_start_service_routes(app):
     @app.route('/start_service', methods=['POST'])
@@ -41,6 +42,7 @@ def init_start_service_routes(app):
         service = request.form.get('service')
         subprocess.run(['sudo', 'systemctl', 'start', service])
         return 'Service '+service+' started'
+    pass
 
 def init_stop_service_routes(app):
     @app.route('/stop_service', methods=['POST'])
@@ -48,6 +50,7 @@ def init_stop_service_routes(app):
         service = request.form.get('service')
         subprocess.run(['sudo', 'systemctl', 'stop', service])
         return 'Service '+service+' stopped'
+    pass
 
 def init_restart_service_routes(app):
     @app.route('/restart_service', methods=['POST'])
@@ -55,6 +58,7 @@ def init_restart_service_routes(app):
         service = request.form.get('service')
         subprocess.run(['sudo', 'systemctl', 'restart', service])
         return 'Service '+service+' restarted'
+    pass
 
 def init_delete_service_routes(app):
     @app.route('/delete_service', methods=['POST'])
@@ -92,6 +96,7 @@ def init_delete_service_routes(app):
                 return 'Service not found in JSON', 400
         else:
             return 'Service is not inactive or not found', 400
+    pass
         
 def is_valid_name(name):
     # Simple validation to ensure name is safe
@@ -144,3 +149,4 @@ def init_create_service_routes(app):
             return jsonify(error=f'Failed to create service: {e}'), 500
 
         return jsonify(message='Service créé'), 200
+    pass
