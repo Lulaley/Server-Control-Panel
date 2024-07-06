@@ -279,4 +279,4 @@ if __name__ == '__main__':
     scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
     scheduler.start()
     # Important to use use_reloader=False to avoid duplicate scheduler instances
-    app.run(host='0.0.0.0', port=5000, use_reloader=False)
+    app.run(host='0.0.0.0', port=5000, use_reloader=False, debug=True)
