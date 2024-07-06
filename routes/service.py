@@ -26,7 +26,7 @@ def get_services():
             for line in output:
                 if line.startswith('ActiveState='):
                     status = line.split('=')[1]
-            if status == 'inactive':
+            if status == 'inactive' or status == 'failed':
                 services[service] = {'status': 'inactive'}  # Service existe mais est inactif
             elif status:
                 services[service] = {'status': 'active'}  # Service actif
