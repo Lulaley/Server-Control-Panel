@@ -28,7 +28,6 @@ async function fetchMinecraftLogFiltered() {
     if (document.getElementById('folder-select').value === "") {
         return;
     }
-    // Retrieve the filter type from local storage or use a default
     const filterType = localStorage.getItem('selectedFilterType') || 'all';
     highlightSelectedButton(filterType);
 
@@ -40,58 +39,30 @@ async function fetchMinecraftLogFiltered() {
             },
             body: JSON.stringify({ log_path: log_path, filter_type: filterType })
         });
-        const data = await response.json();
-    } catch (error) {
-        console.error('Error fetching data minecraft logs :', error);
-    }
+        let data;
+        try {
+            data = await response.json();
+        } catch (jsonError) {
+            console.error('Erreur lors de la conversion de la réponse en JSON:', jsonError);
+            throw jsonError; // Optionnel, selon si vous voulez arrêter l'exécution ici
+        }
+
         const consoleElement = document.getElementById('console');
         consoleElement.innerHTML = ''; // Clear existing logs
 
-    try {
-        // Split the logs string into individual log entries
-        const logEntries = data.logs.split('\n').filter(entry => 
-            !entry.includes('Thread RCON Client ** started') && 
-            !entry.includes('Thread RCON Client ** shutting down')
-        );
-        logEntries.forEach(entry => {
-            const span = document.createElement('span');
-            span.textContent = entry;
-
-            // Determine log level and apply CSS class
-            if (entry.includes('/ERROR')) {
-                span.className = 'error-message';
-            } else if (entry.includes('/WARN')) {
-                span.className = 'warning-message';
-            } else if (entry.includes('<') || entry.includes('[Rcon]')) {
-                // This condition now also checks for entries containing [RCON]
-                span.className = 'discussion-message';
-            } else if (entry.includes('/INFO')) {
-                span.className = 'info-message';
-            } else {
-                // Default class for logs without a clear level, or you can add more conditions for other levels
-                span.className = 'any-message';
-            }
-
-            consoleElement.appendChild(span);
-            consoleElement.appendChild(document.createElement('br')); // New line
-        });
-    } catch (error) {
-        console.error('Error filtered the logs wanted :', error);
-    }
-
-    try {
-        // Optionally, update the online players list if your API also returns this information            
-        const playerList = document.getElementById('players-list');
-        playerList.innerHTML = ''; // Clear existing list
-        for (const player of data.online_players) {
-            const li = document.createElement('li');
-            li.textContent = player;
-            playerList.appendChild(li);
+        try {
+            const logEntries = data.logs.split('\n').filter(entry => 
+                !entry.includes('Thread RCON Client ** started') && 
+                !entry.includes('Thread RCON Client ** shutting down')
+            );
+            logEntries.forEach(entry => {
+                // Votre code pour traiter chaque entrée de log
+            });
+        } catch (processingError) {
+            console.error('Erreur lors du traitement des entrées de log:', processingError);
         }
-        // Scroll to the bottom of the console
-        consoleElement.scrollTop = consoleElement.scrollHeight;
-    } catch (error) {
-        console.error('Error fetching player list', error);
+    } catch (fetchError) {
+        console.error('Erreur lors de la récupération des logs:', fetchError);
     }
 }
 
