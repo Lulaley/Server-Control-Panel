@@ -64,10 +64,21 @@ async function fetchMinecraftLogFiltered() {
 
         // Split the logs string into individual log entries
         try {
-            const logEntries = data.logs.split('\n').filter(entry => 
-                !entry.includes('Thread RCON Client ** started') && 
-                !entry.includes('Thread RCON Client ** shutting down')
-            );
+            let logEntries;
+            if (data.logs) {
+                logEntries = data.logs.split('\n').filter(entry => 
+                    !entry.includes('Thread RCON Client ** started') && 
+                    !entry.includes('Thread RCON Client ** shutting down')
+                );
+            
+                // Traiter logEntries, par exemple, les afficher
+                logEntries.forEach(entry => {
+                    console.log(entry); // Ou toute autre logique de traitement
+                });
+            } else {
+                logEntries = data.logs;
+                console.log('.');
+            }
             logEntries.forEach(entry => {
                 const span = document.createElement('span');
                 span.textContent = entry;
