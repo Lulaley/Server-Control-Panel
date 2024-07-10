@@ -9,6 +9,7 @@ def init_globals():
     gbl_mc_rcon_port = current_app.config['MC_RCON_PORT']
     gbl_log_path = current_app.config['LOG_PATH']
     print('Global variables initialized')
+    print('mc_rcon_host:', gbl_mc_rcon_host, 'mc_rcon_port:', gbl_mc_rcon_port, 'mc_rcon_password:', gbl_mc_rcon_password)
 
 
 def init_send_command(app):
