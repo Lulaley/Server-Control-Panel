@@ -2,7 +2,7 @@ import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template
 from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
-from routes.logs import init_get_logs_routes, get_rcon_port_from_properties
+from routes.logs import init_get_logs_routes
 from routes.commandMcServer import init_send_command
 from routes.welcomeMessage import monitor_for_new_players
 from routes.statusMcServer import init_get_mc_folders_routes, init_minecraft_status_routes, init_server_status_routes, is_minecraft_server_running
@@ -39,6 +39,26 @@ init_system_info_routes(app)
 # Initialisez les routes pour récupérer les versions de Java installées et pour changer la version de Java
 init_get_java_versions_routes(app)
 init_change_java_version_routes(app)
+
+def get_rcon_port_from_properties(app):
+    # Récupérer le dossier sélectionné à partir de la configuration de l'application
+    selected_folder = app.config.get('folders', '')
+    if not selected_folder:
+        return "Aucun dossier sélectionné."
+
+    # Construire le chemin vers le fichier server.properties
+    properties_file_path = os.path.join('/home/chimea/Bureau', selected_folder, 'server.properties')
+
+    # Lire le fichier server.properties et récupérer le port RCON
+    try:
+        with open(properties_file_path, 'r') as file:
+            for line in file:
+                if line.startswith('rcon.port='):
+                    return line.split('=')[1].strip()
+    except FileNotFoundError:
+        return "Le fichier server.properties n'a pas été trouvé."
+
+    return "Le port RCON n'a pas été trouvé dans le fichier."
 
 @app.route('/')
 def index():
