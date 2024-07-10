@@ -36,20 +36,30 @@ def init_get_logs_routes(app):
         if not os.path.exists(filtered_log_path):
             filtered_log_path = latest_log_path
 
-        # Get the last line of latest.log and filtered.log that does not contain "RCON"
-        last_line_latest = None
-        last_line_filtered = None
-        with open(latest_log_path, 'r') as latest_log, open(filtered_log_path, 'r') as filtered_log:
+        # Vérifier si "RCON" est présent dans les logs
+        rcon_present_in_logs = False
+        with open(latest_log_path, 'r') as latest_log:
             for line in latest_log:
-                if 'RCON' not in line:
-                    last_line_latest = line
-            for line in filtered_log:
-                if 'RCON' not in line:
-                    last_line_filtered = line
+                if 'RCON' in line:
+                    rcon_present_in_logs = True
+                    break
+              
+        # Si "RCON" n'est pas présent, ne pas traiter les logs pour "RCON"
+        if rcon_present_in_logs:  
+            # Get the last line of latest.log and filtered.log that does not contain "RCON"
+            last_line_latest = None
+            last_line_filtered = None
+            with open(latest_log_path, 'r') as latest_log, open(filtered_log_path, 'r') as filtered_log:
+                for line in latest_log:
+                    if 'RCON' not in line:
+                        last_line_latest = line
+                for line in filtered_log:
+                    if 'RCON' not in line:
+                        last_line_filtered = line
 
-        # If the last lines are different, execute the command
-        if last_line_latest != last_line_filtered:
-            subprocess.Popen('cat ' + latest_log_path + ' | grep -v RCON > ' + filtered_log_path, shell=True)
+            # If the last lines are different, execute the command
+            if last_line_latest != last_line_filtered:
+                subprocess.Popen('cat ' + latest_log_path + ' | grep -v RCON > ' + filtered_log_path, shell=True)
 
         try:
             # Fetch the list of online players
