@@ -1,4 +1,4 @@
-from flask import request, jsonify, current_app
+from flask import request, jsonify
 from rcon.source import Client
 
 def init_send_command(app):
