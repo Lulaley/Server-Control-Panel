@@ -28,25 +28,35 @@ async function fetchMinecraftLogFiltered() {
     if (document.getElementById('folder-select').value === "") {
         return;
     }
-    
+
     // Retrieve the filter type from local storage or use a default
     let filterType = localStorage.getItem('selectedFilterType') || 'all';
     highlightSelectedButton(filterType);
     
     try {
-        const response = await fetch('/minecraft_log', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ log_path: log_path, filter_type: filterType })
-        });
         let data;
         try {
-            data = await response.json();
-        } catch (jsonError) {
-            console.error('Erreur lors de la conversion de la réponse en JSON:', jsonError);
-            throw jsonError; // Optionnel, selon si vous voulez arrêter l'exécution ici
+            const response = await fetch('/minecraft_log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ log_path: log_path, filter_type: filterType })
+            });
+
+            if (!response.ok) {
+                // Gère les réponses HTTP non réussies
+                throw new Error('La réponse du serveur n\'est pas OK. Statut: ' + response.status);
+            }
+
+            try {
+                data = await response.json();
+            } catch (jsonError) {
+                console.error('Erreur lors de la conversion de la réponse en JSON:', jsonError);
+                throw jsonError; // Optionnel, selon si vous voulez arrêter l'exécution ici
+            }
+        } catch (networkError) {
+            console.error('Erreur réseau lors de la récupération des logs:', networkError);
         }
 
         const consoleElement = document.getElementById('console');
