@@ -30,11 +30,12 @@ def init_get_logs_routes(app):
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
         latest_log_path = os.path.join(log_path, 'latest.log')
-        try:
-            filtered_log_path = os.path.join(log_path, 'filtered.log')
-        except Exception as e:
-            pass
-        
+        filtered_log_path = os.path.join(log_path, 'filtered.log')
+
+        # Si filtered.log n'existe pas, utiliser latest.log à la place
+        if not os.path.exists(filtered_log_path):
+            filtered_log_path = latest_log_path
+
         # Get the last line of latest.log and filtered.log that does not contain "RCON"
         last_line_latest = None
         last_line_filtered = None
@@ -54,7 +55,7 @@ def init_get_logs_routes(app):
             # Fetch the list of online players
             online_players = fetchPlayers()
 
-            with open(os.path.join(log_path, 'filtered.log'), 'r') as log_file:
+            with open(filtered_log_path, 'r') as log_file:
                 log_lines = log_file.readlines()[-500:]  # Get the last 50 lines of the log
                 # Filter out RCON listener and client messages based on the filter_type
                 filtered_lines = []
