@@ -70,16 +70,11 @@ async function fetchMinecraftLogFiltered() {
                     !entry.includes('Thread RCON Client ** started') && 
                     !entry.includes('Thread RCON Client ** shutting down')
                 );
-            
-                // Traiter logEntries, par exemple, les afficher
-                logEntries.forEach(entry => {
-                    console.log(entry); // Ou toute autre logique de traitement
-                });
             } else {
                 logEntries = data.logs;
-                console.log('.');
             }
             logEntries.forEach(entry => {
+                console.log(entry);
                 const span = document.createElement('span');
                 span.textContent = entry;
 
