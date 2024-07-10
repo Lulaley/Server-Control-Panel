@@ -30,8 +30,11 @@ def init_get_logs_routes(app):
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
         latest_log_path = os.path.join(log_path, 'latest.log')
-        filtered_log_path = os.path.join(log_path, 'filtered.log')
-
+        try:
+            filtered_log_path = os.path.join(log_path, 'filtered.log')
+        except Exception as e:
+            pass
+        
         # Get the last line of latest.log and filtered.log that does not contain "RCON"
         last_line_latest = None
         last_line_filtered = None
