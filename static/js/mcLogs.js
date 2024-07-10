@@ -30,7 +30,7 @@ async function fetchMinecraftLogFiltered() {
     }
     try {
         // Retrieve the filter type from local storage or use a default
-        const filterType = localStorage.getItem('selectedFilterType') || 'all';
+        let filterType = localStorage.getItem('selectedFilterType') || 'all';
         highlightSelectedButton(filterType);
     } catch (filterTypeError) {
         console.error('Erreur la récupération du filtre type:', filterTypeError);
