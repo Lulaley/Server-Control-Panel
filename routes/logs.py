@@ -4,12 +4,6 @@ import subprocess
 from flask import request, jsonify, current_app
 from rcon.source import Client
 
-# Accéder aux variables globales
-mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
-mc_rcon_host = current_app.config['MC_RCON_HOST']
-mc_rcon_port = current_app.config['MC_RCON_PORT']
-log_path = current_app.config['LOG_PATH']
-
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
 
