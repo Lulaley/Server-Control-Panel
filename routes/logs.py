@@ -1,7 +1,7 @@
 import os
 import re
 import subprocess
-from flask import request, jsonify, current_app
+from flask import request, jsonify
 from rcon.source import Client
 
 def remove_color_codes(text):

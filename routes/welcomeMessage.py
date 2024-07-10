@@ -1,4 +1,4 @@
-from rcon.source import Client, current_app
+from rcon.source import Client
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
