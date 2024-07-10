@@ -17,6 +17,7 @@ def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
 
 def fetchPlayers():
+    print(mc_rcon_host, mc_rcon_port, mc_rcon_password)
     try:
         with Client(mc_rcon_host, mc_rcon_port, passwd=mc_rcon_password) as client:
             response = client.run("list")
