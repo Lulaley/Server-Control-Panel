@@ -82,15 +82,19 @@ async function fetchMinecraftLogFiltered() {
         } catch (processingError) {
             console.error('Erreur lors du traitement des entrées de log:', processingError);
         }
-        // Optionally, update the online players list if your API also returns this information            
-        const playerList = document.getElementById('players-list');
-        playerList.innerHTML = ''; // Clear existing list
-        for (const player of data.online_players) {
-            const li = document.createElement('li');
-            li.textContent = player;
-            playerList.appendChild(li);
-        }
 
+        try {
+            // Optionally, update the online players list if your API also returns this information            
+            const playerList = document.getElementById('players-list');
+            playerList.innerHTML = ''; // Clear existing list
+            for (const player of data.online_players) {
+                const li = document.createElement('li');
+                li.textContent = player;
+                playerList.appendChild(li);
+            }
+        } catch (playerError) {
+            console.error('Erreur lors de la récupération des jouieurs:', playerError);
+        }
         // Scroll to the bottom of the console
         consoleElement.scrollTop = consoleElement.scrollHeight;
     } catch (fetchError) {
