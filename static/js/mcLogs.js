@@ -74,7 +74,6 @@ async function fetchMinecraftLogFiltered() {
                 logEntries = data.logs;
             }
             logEntries.forEach(entry => {
-                console.log(entry);
                 const span = document.createElement('span');
                 span.textContent = entry;
 
