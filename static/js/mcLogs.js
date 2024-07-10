@@ -41,10 +41,13 @@ async function fetchMinecraftLogFiltered() {
             body: JSON.stringify({ log_path: log_path, filter_type: filterType })
         });
         const data = await response.json();
-
+    } catch (error) {
+        console.error('Error fetching data minecraft logs :', error);
+    }
         const consoleElement = document.getElementById('console');
         consoleElement.innerHTML = ''; // Clear existing logs
 
+    try {
         // Split the logs string into individual log entries
         const logEntries = data.logs.split('\n').filter(entry => 
             !entry.includes('Thread RCON Client ** started') && 
@@ -72,7 +75,11 @@ async function fetchMinecraftLogFiltered() {
             consoleElement.appendChild(span);
             consoleElement.appendChild(document.createElement('br')); // New line
         });
+    } catch (error) {
+        console.error('Error filtered the logs wanted :', error);
+    }
 
+    try {
         // Optionally, update the online players list if your API also returns this information            
         const playerList = document.getElementById('players-list');
         playerList.innerHTML = ''; // Clear existing list
@@ -81,11 +88,10 @@ async function fetchMinecraftLogFiltered() {
             li.textContent = player;
             playerList.appendChild(li);
         }
-
         // Scroll to the bottom of the console
         consoleElement.scrollTop = consoleElement.scrollHeight;
     } catch (error) {
-        console.error('Error fetching Minecraft log:', error);
+        console.error('Error fetching player list', error);
     }
 }
 
