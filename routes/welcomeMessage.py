@@ -1,4 +1,11 @@
+from flask import current_app
 from rcon.source import Client
+
+# Accéder aux variables globales
+mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
+mc_rcon_host = current_app.config['MC_RCON_HOST']
+mc_rcon_port = current_app.config['MC_RCON_PORT']
+log_path = current_app.config['LOG_PATH']
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):

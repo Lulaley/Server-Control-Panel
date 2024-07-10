@@ -72,17 +72,6 @@ app.config['MC_RCON_HOST'] = '0.0.0.0'
 app.config['MC_RCON_PORT'] = get_rcon_port_from_properties(app) or 25575
 app.config['LOG_PATH'] = '/home/chimea/Bureau/minecraft/logs'
 
-@app.before_first_request
-def initialize():
-    global mc_rcon_password
-    mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
-    global mc_rcon_host
-    mc_rcon_host = current_app.config['MC_RCON_HOST']
-    global mc_rcon_port
-    mc_rcon_port = current_app.config['MC_RCON_PORT']
-    global log_path
-    log_path = current_app.config['LOG_PATH']
-
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
