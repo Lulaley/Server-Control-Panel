@@ -1,13 +1,15 @@
-from rcon.source import Client
+from rcon.source import Client, current_app
 
-mc_rcon_password = "minecraft"
-mc_rcon_host = "0.0.0.0"
-log_path = "/home/chimea/Bureau/minecraft/logs"
+# Accéder aux variables globales
+mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
+mc_rcon_host = current_app.config['MC_RCON_HOST']
+mc_rcon_port = current_app.config['MC_RCON_PORT']
+log_path = current_app.config['LOG_PATH']
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
     try:
-        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
+        with Client(mc_rcon_host, mc_rcon_port, passwd=mc_rcon_password) as client:
             welcome_message = f"tell {new_player} Wesh tu geek encore ? Oublie pas de désactiver le spawn de mobs de mana & artifice via la quête ! Le serveur à peut-être restart ! Après peut-être que l'administrateur à régler le problème des mobs avec la modification en config serveur !."
             client.run(welcome_message)
     except Exception as e:

@@ -2,7 +2,7 @@ import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template
 from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
-from routes.logs import init_get_logs_routes
+from routes.logs import init_get_logs_routes, get_rcon_port_from_properties
 from routes.commandMcServer import init_send_command
 from routes.welcomeMessage import monitor_for_new_players
 from routes.statusMcServer import init_get_mc_folders_routes, init_minecraft_status_routes, init_server_status_routes, is_minecraft_server_running
@@ -46,6 +46,11 @@ def index():
     minecraft_running = is_minecraft_server_running()
     return render_template('index.html', services=services, minecraft_running=minecraft_running)
 
+# Variables globales pour stocker les informations de configuration
+app.config['MC_RCON_PASSWORD'] = 'minecraft'
+app.config['MC_RCON_HOST'] = '0.0.0.0'
+app.config['MC_RCON_PORT'] = get_rcon_port_from_properties(app) or 25575
+app.config['LOG_PATH'] = '/home/chimea/Bureau/minecraft/logs'
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
