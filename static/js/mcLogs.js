@@ -41,7 +41,11 @@ async function fetchMinecraftLogFiltered() {
             body: JSON.stringify({ log_path: log_path, filter_type: filterType })
         });
         const data = await response.json();
+    } catch (error) {
+        console.error('Error fetching Minecraft log since FETCH :', error);
+    }
 
+    try {
         const consoleElement = document.getElementById('console');
         consoleElement.innerHTML = ''; // Clear existing logs
 
@@ -50,6 +54,11 @@ async function fetchMinecraftLogFiltered() {
             !entry.includes('Thread RCON Client ** started') && 
             !entry.includes('Thread RCON Client ** shutting down')
         );
+    } catch (error) {
+        console.error('Split logs for RCON :', error);
+    }
+
+    try {
         logEntries.forEach(entry => {
             const span = document.createElement('span');
             span.textContent = entry;
@@ -85,7 +94,7 @@ async function fetchMinecraftLogFiltered() {
         // Scroll to the bottom of the console
         consoleElement.scrollTop = consoleElement.scrollHeight;
     } catch (error) {
-        console.error('Error fetching Minecraft log:', error);
+        console.error('Treat logs', error);
     }
 }
 
