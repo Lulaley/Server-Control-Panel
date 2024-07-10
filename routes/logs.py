@@ -5,17 +5,20 @@ from flask import request, jsonify, current_app
 from rcon.source import Client
 
 # Accéder aux variables globales
-mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
-mc_rcon_host = current_app.config['MC_RCON_HOST']
-mc_rcon_port = current_app.config['MC_RCON_PORT']
-log_path = current_app.config['LOG_PATH']
+try:
+    mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
+    mc_rcon_host = current_app.config['MC_RCON_HOST']
+    mc_rcon_port = current_app.config['MC_RCON_PORT']
+    log_path = current_app.config['LOG_PATH']
+except Exception as e:
+    print(e)
 
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
 
 def fetchPlayers():
     try:
-        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
+        with Client(mc_rcon_host, mc_rcon_port, passwd=mc_rcon_password) as client:
             response = client.run("list")
             # Typical response: "There are X of Y players online: Player1, Player2, ..."
             player_list = response.split(": ")[1] if ": " in response else ""
