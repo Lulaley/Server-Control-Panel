@@ -15,7 +15,7 @@ def remove_color_codes(text):
 
 def fetchPlayers():
     try:
-        with Client(mc_rcon_host, mc_rcon_port, passwd=mc_rcon_password) as client:
+        with Client(mc_rcon_host, 25575, passwd=mc_rcon_password) as client:
             response = client.run("list")
             # Typical response: "There are X of Y players online: Player1, Player2, ..."
             player_list = response.split(": ")[1] if ": " in response else ""
