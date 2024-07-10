@@ -6,7 +6,7 @@ def init_globals():
     from flask import current_app
     gbl_mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
     gbl_mc_rcon_host = current_app.config['MC_RCON_HOST']
-    gbl_mc_rcon_port = current_app.config['MC_RCON_PORT']
+    gbl_mc_rcon_port = int(current_app.config['MC_RCON_PORT'])
     gbl_log_path = current_app.config['LOG_PATH']
     print('Global variables initialized')
     print('mc_rcon_host:', gbl_mc_rcon_host, 'mc_rcon_port:', gbl_mc_rcon_port, 'mc_rcon_password:', gbl_mc_rcon_password)
