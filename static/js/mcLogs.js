@@ -28,14 +28,11 @@ async function fetchMinecraftLogFiltered() {
     if (document.getElementById('folder-select').value === "") {
         return;
     }
-    try {
-        // Retrieve the filter type from local storage or use a default
-        let filterType = localStorage.getItem('selectedFilterType') || 'all';
-        highlightSelectedButton(filterType);
-    } catch (filterTypeError) {
-        console.error('Erreur la récupération du filtre type:', filterTypeError);
-        throw jsonError; // Optionnel, selon si vous voulez arrêter l'exécution ici
-    }
+    
+    // Retrieve the filter type from local storage or use a default
+    let filterType = localStorage.getItem('selectedFilterType') || 'all';
+    highlightSelectedButton(filterType);
+    
     try {
         const response = await fetch('/minecraft_log', {
             method: 'POST',
