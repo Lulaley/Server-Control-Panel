@@ -103,6 +103,9 @@ async function fetchMinecraftLogFiltered() {
         consoleElement.scrollTop = consoleElement.scrollHeight;
     } catch (fetchError) {
         console.error('Erreur lors de la récupération des logs:', fetchError);
+        console.log(data);
+        console.log(logEntries);
+        console.log(playerList);
     }
 }
 
