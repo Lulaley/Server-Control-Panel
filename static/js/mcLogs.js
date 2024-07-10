@@ -104,7 +104,7 @@ async function fetchMinecraftLogFiltered() {
                 playerList.appendChild(li);
             }
         } catch (playerError) {
-            console.error('Erreur lors de la récupération des jouieurs:', playerError);
+            console.error('Erreur lors de la récupération des joueurs:', playerError);
         }
         // Scroll to the bottom of the console
         consoleElement.scrollTop = consoleElement.scrollHeight;
