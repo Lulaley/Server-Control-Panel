@@ -32,7 +32,13 @@ async function fetchFolders() {
     }
 }
 fetchFolders();
+
+
+// L'élément où les logs sont affichés, par exemple une div avec l'id 'console-display'
+const consoleDisplay = document.getElementById('console-box');
 document.getElementById('folder-select').addEventListener('change', function(event) {
+    // Nettoyer l'affichage de la console
+    consoleDisplay.innerHTML = '';
     const selectedFolder = event.target.value;
     log_path = `/home/chimea/Bureau/${selectedFolder}/logs`;
     console.log(`Log path changed to: ${log_path}`);
