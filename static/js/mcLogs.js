@@ -41,11 +41,7 @@ async function fetchMinecraftLogFiltered() {
             body: JSON.stringify({ log_path: log_path, filter_type: filterType })
         });
         const data = await response.json();
-    } catch (error) {
-        console.error('Error fetching Minecraft log since FETCH :', error);
-    }
 
-    try {
         const consoleElement = document.getElementById('console');
         consoleElement.innerHTML = ''; // Clear existing logs
 
@@ -54,39 +50,29 @@ async function fetchMinecraftLogFiltered() {
             !entry.includes('Thread RCON Client ** started') && 
             !entry.includes('Thread RCON Client ** shutting down')
         );
-    } catch (error) {
-        console.error('Split logs for RCON :', error);
-    }
-
-    try {
         logEntries.forEach(entry => {
             const span = document.createElement('span');
             span.textContent = entry;
 
-                // Determine log level and apply CSS class
-                if (entry.includes('/ERROR')) {
-                    span.className = 'error-message';
-                } else if (entry.includes('/WARN')) {
-                    span.className = 'warning-message';
-                } else if (entry.includes('<') || entry.includes('[Rcon]')) {
-                    // This condition now also checks for entries containing [RCON]
-                    span.className = 'discussion-message';
-                } else if (entry.includes('/INFO')) {
-                    span.className = 'info-message';
-                } else {
-                    // Default class for logs without a clear level, or you can add more conditions for other levels
-                    span.className = 'any-message';
-                }
+            // Determine log level and apply CSS class
+            if (entry.includes('/ERROR')) {
+                span.className = 'error-message';
+            } else if (entry.includes('/WARN')) {
+                span.className = 'warning-message';
+            } else if (entry.includes('<') || entry.includes('[Rcon]')) {
+                // This condition now also checks for entries containing [RCON]
+                span.className = 'discussion-message';
+            } else if (entry.includes('/INFO')) {
+                span.className = 'info-message';
+            } else {
+                // Default class for logs without a clear level, or you can add more conditions for other levels
+                span.className = 'any-message';
+            }
 
-                consoleElement.appendChild(span);
-                consoleElement.appendChild(document.createElement('br')); // New line
+            consoleElement.appendChild(span);
+            consoleElement.appendChild(document.createElement('br')); // New line
         });
 
-    } catch (error) {
-        console.error('Treat logs', error);
-    }
-
-    try {
         // Optionally, update the online players list if your API also returns this information            
         const playerList = document.getElementById('players-list');
         playerList.innerHTML = ''; // Clear existing list
@@ -99,7 +85,7 @@ async function fetchMinecraftLogFiltered() {
         // Scroll to the bottom of the console
         consoleElement.scrollTop = consoleElement.scrollHeight;
     } catch (error) {
-        console.error('Fetch Players', error);
+        console.error('Error fetching Minecraft log:', error);
     }
 }
 
