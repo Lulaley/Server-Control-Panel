@@ -6,6 +6,9 @@ from routes.conf import init_rcon_port
 
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 init_rcon_port(app)
 
 from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
@@ -16,8 +19,6 @@ from routes.statusMcServer import init_get_mc_folders_routes, init_minecraft_sta
 from routes.systemInfo import init_system_info_routes
 from routes.javaGestion import init_get_java_versions_routes, init_change_java_version_routes
 
-# Configure logging
-logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Initialisez les routes pour démarrer, arrêter, redémarrer et supprimer les services
 init_start_service_routes(app)
