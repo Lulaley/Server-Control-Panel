@@ -24,6 +24,7 @@ def set_rcon_port(new_port):
     MC_RCON_PORT = new_port  
 
 def get_rcon_port_from_properties():
+    logging.warning(f'SELECTED_FOLDER: {SELECTED_FOLDER}')
     if not SELECTED_FOLDER:
         return False
     # Construire le chemin vers le fichier server.properties
