@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from rcon.source import Client
-from conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
+from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
 
 
 def init_send_command(app):
