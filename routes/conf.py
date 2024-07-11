@@ -27,7 +27,7 @@ def get_rcon_port_from_properties():
     if not SELECTED_FOLDER:
         return False
     # Construire le chemin vers le fichier server.properties
-    properties_file_path = os.path.join(get_selected_folder(), '/server.properties')
+    properties_file_path = os.path.join(get_selected_folder(), 'server.properties')
 
     # Lire le fichier server.properties et récupérer le port RCON
     try:

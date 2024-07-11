@@ -4,7 +4,7 @@ import subprocess
 import logging
 from flask import request, jsonify, current_app
 from rcon.source import Client
-from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH, SELECTED_FOLDER, set_selected_folder, get_selected_folder, init_rcon_port
+from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, set_selected_folder, get_selected_folder, init_rcon_port
 
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
@@ -25,7 +25,6 @@ def init_get_logs_routes(app):
     
     def fetch_minecraft_log():
         data = request.get_json()
-        global SELECTED_FOLDER
         log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
         
         set_selected_folder(log_path.replace('/logs', ''))
