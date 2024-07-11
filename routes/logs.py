@@ -23,10 +23,12 @@ def init_get_logs_routes(app):
     @app.route('/minecraft_log', methods=['POST'])
     
     def fetch_minecraft_log():
-        init_rcon_port(app)
         data = request.get_json()
         global SELECTED_FOLDER
         SELECTED_FOLDER = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
+        
+        init_rcon_port(app)
+        
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
         latest_log_path = os.path.join(SELECTED_FOLDER, 'latest.log')
