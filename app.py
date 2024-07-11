@@ -25,15 +25,6 @@ def get_rcon_port_from_properties(app):
         return "Le fichier server.properties n'a pas été trouvé."
 
     return "Le port RCON n'a pas été trouvé dans le fichier."
-# Variables globales pour stocker les informations de configuration
-global MC_RCON_PASSWORD
-global MC_RCON_HOST
-global MC_RCON_PORT
-global LOG_PATH
-MC_RCON_PASSWORD = 'minecraft'
-MC_RCON_HOST = '0.0.0.0'
-MC_RCON_PORT = get_rcon_port_from_properties(app) or 25575
-LOG_PATH = '/home/chimea/Bureau/minecraft/logs'
 
 from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
 from routes.logs import init_get_logs_routes
