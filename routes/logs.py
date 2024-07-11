@@ -29,7 +29,6 @@ def init_get_logs_routes(app):
         log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
         
         set_selected_folder(log_path.replace('/logs', ''))
-        logging.warning(f'Selected folder: {get_selected_folder()}')  # Accéder à la valeur mise à jour
         init_rcon_port()
 
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request

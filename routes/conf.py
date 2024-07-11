@@ -42,9 +42,9 @@ def get_rcon_port_from_properties():
 
 def init_rcon_port():
     rcon_port = get_rcon_port_from_properties()
-    logging.warning(f'RCON port from properties: {rcon_port}')
+    logging.warning(f'RCON port from properties: {get_rcon_port()}')
     if rcon_port == False:
         set_rcon_port(25575)
     else:
         set_rcon_port(rcon_port)
-    logging.info(f'RCON port set to {MC_RCON_PORT}')
+    logging.info(f'RCON port set to {get_rcon_port()}')
