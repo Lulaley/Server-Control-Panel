@@ -35,6 +35,7 @@ def get_rcon_port_from_properties():
         with open(properties_file_path, 'r') as file:
             for line in file:
                 if line.startswith('rcon.port='):
+                    logging.warning(f'RCON port from properties: {line.split("=")[1].strip()}')
                     return line.split('=')[1].strip()
     except FileNotFoundError:
         return False
