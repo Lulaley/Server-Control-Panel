@@ -43,10 +43,6 @@ from routes.statusMcServer import init_get_mc_folders_routes, init_minecraft_sta
 from routes.systemInfo import init_system_info_routes
 from routes.javaGestion import init_get_java_versions_routes, init_change_java_version_routes
 
-# Créez un contexte d'application et initialisez les variables globales
-with app.app_context():
-    init_globals()
-
 # Configure logging
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
