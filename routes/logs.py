@@ -16,9 +16,11 @@ def fetchPlayers():
             # Typical response: "There are X of Y players online: Player1, Player2, ..."
             player_list = response.split(": ")[1] if ": " in response else ""
             players = player_list.split(", ") if player_list else []
+            if not players:  # Si la liste des joueurs est vide
+                return ["Aucun joueurs connecté"]  # Retourner le message indiquant qu'aucun joueur n'est connecté
             return players
     except Exception as e:
-        return []
+        return ["Aucun joueurs connecté"]  # Retourner le message en cas d'exception
 
 def init_get_logs_routes(app):
     @app.route('/minecraft_log', methods=['POST'])
