@@ -1,14 +1,19 @@
 import re
+import time
 from flask import current_app
 from rcon.source import Client
-from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
+from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH, init_rcon_port
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
     try:
         with Client(MC_RCON_HOST, MC_RCON_PORT, passwd=MC_RCON_PASSWORD) as client:
-            welcome_message = f"tell {new_player} Wesh tu geek encore ? Oublie pas de désactiver le spawn de mobs de mana & artifice via la quête ! Le serveur à peut-être restart ! Après peut-être que l'administrateur à régler le problème des mobs avec la modification en config serveur !."
+            welcome_message = f"tell {new_player} Wesh tu geek encore ? Va te laver ou Chim ferme le serveur !."
             client.run(welcome_message)
+            for i in range(5, -1, -1):  # Compte à rebours de 5 à 0
+                countdown_message = f"tell {new_player} Le serveur va fermer dans {i} secondes."
+                client.run(countdown_message)
+                time.sleep(1)  # Attendre une seconde avant de continuer
     except Exception as e:
         pass
 

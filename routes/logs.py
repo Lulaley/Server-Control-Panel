@@ -3,7 +3,7 @@ import re
 import subprocess
 from flask import request, jsonify, current_app
 from rcon.source import Client
-from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
+from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH, init_rcon_port
 
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
@@ -21,7 +21,9 @@ def fetchPlayers():
 
 def init_get_logs_routes(app):
     @app.route('/minecraft_log', methods=['POST'])
+    
     def fetch_minecraft_log():
+        init_rcon_port(app)
         data = request.get_json()
         global LOG_PATH
         LOG_PATH = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
