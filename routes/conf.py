@@ -24,7 +24,6 @@ def set_rcon_port(new_port):
     MC_RCON_PORT = new_port  
 
 def get_rcon_port_from_properties():
-    logging.warning(f'SELECTED_FOLDER: {SELECTED_FOLDER}')
     if not SELECTED_FOLDER:
         return False
     # Construire le chemin vers le fichier server.properties
@@ -32,19 +31,19 @@ def get_rcon_port_from_properties():
 
     # Lire le fichier server.properties et récupérer le port RCON
     try:
+        logging.warning(f'properties_file_path: {properties_file_path}')
         with open(properties_file_path, 'r') as file:
             for line in file:
                 if line.startswith('rcon.port='):
-                    logging.warning(f'RCON port from properties: {line.split("=")[1].strip()}')
                     return line.split('=')[1].strip()
     except FileNotFoundError:
+        logging.error(f'File not found: {properties_file_path}')
         return False
 
     return False
 
 def init_rcon_port():
     rcon_port = get_rcon_port_from_properties()
-    logging.warning(f'RCON port from properties: {get_rcon_port()}')
     if rcon_port == False:
         set_rcon_port(25575)
     else:
