@@ -1,4 +1,5 @@
 import os
+import logging
 
 MC_RCON_PASSWORD = 'minecraft'
 MC_RCON_HOST = '0.0.0.0'
@@ -32,4 +33,4 @@ def init_rcon_port(app):
         MC_RCON_PORT = 25575
     else:
         MC_RCON_PORT = rcon_port
-    print(f'RCON Port: {MC_RCON_PORT}')
+    logging.info(f'RCON port set to {MC_RCON_PORT}')
