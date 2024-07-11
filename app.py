@@ -2,6 +2,7 @@ import os
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template
+from conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
 
 app = Flask(__name__)
 
