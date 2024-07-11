@@ -32,6 +32,8 @@ def init_get_logs_routes(app):
 
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
+        logging.info(f'Fetching logs from {log_path} with filter type {filter_type}')
+
         latest_log_path = os.path.join(log_path, 'latest.log')
         filtered_log_path = os.path.join(log_path, 'filtered.log')
 

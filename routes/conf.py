@@ -31,7 +31,6 @@ def get_rcon_port_from_properties():
 
     # Lire le fichier server.properties et récupérer le port RCON
     try:
-        logging.warning(f'properties_file_path: {properties_file_path}')
         with open(properties_file_path, 'r') as file:
             for line in file:
                 if line.startswith('rcon.port='):
