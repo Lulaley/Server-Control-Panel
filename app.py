@@ -37,7 +37,7 @@ LOG_PATH = '/home/chimea/Bureau/minecraft/logs'
 
 from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
 from routes.logs import init_get_logs_routes
-from routes.commandMcServer import init_send_command, init_globals
+from routes.commandMcServer import init_send_command
 from routes.welcomeMessage import monitor_for_new_players
 from routes.statusMcServer import init_get_mc_folders_routes, init_minecraft_status_routes, init_server_status_routes, is_minecraft_server_running
 from routes.systemInfo import init_system_info_routes
