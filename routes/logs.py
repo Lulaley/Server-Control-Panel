@@ -27,8 +27,8 @@ def init_get_logs_routes(app):
         global SELECTED_FOLDER
         SELECTED_FOLDER = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
         
-        init_rcon_port(app)
-        
+        init_rcon_port(SELECTED_FOLDER)
+
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
         latest_log_path = os.path.join(SELECTED_FOLDER, 'latest.log')
