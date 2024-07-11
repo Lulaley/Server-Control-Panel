@@ -2,29 +2,11 @@ import os
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template
+from routes.conf import init_rcon_port
 
 app = Flask(__name__)
 
-
-def get_rcon_port_from_properties(app):
-    # Récupérer le dossier sélectionné à partir de la configuration de l'application
-    selected_folder = app.config.get('folders', '')
-    if not selected_folder:
-        return "Aucun dossier sélectionné."
-
-    # Construire le chemin vers le fichier server.properties
-    properties_file_path = os.path.join('/home/chimea/Bureau', selected_folder, 'server.properties')
-
-    # Lire le fichier server.properties et récupérer le port RCON
-    try:
-        with open(properties_file_path, 'r') as file:
-            for line in file:
-                if line.startswith('rcon.port='):
-                    return line.split('=')[1].strip()
-    except FileNotFoundError:
-        return "Le fichier server.properties n'a pas été trouvé."
-
-    return "Le port RCON n'a pas été trouvé dans le fichier."
+init_rcon_port(app)
 
 from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
 from routes.logs import init_get_logs_routes
