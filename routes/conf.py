@@ -12,7 +12,7 @@ def get_rcon_port_from_properties():
         return False
     logging.warning(f'Selected folder: {SELECTED_FOLDER}')
     # Construire le chemin vers le fichier server.properties
-    properties_file_path = os.path.join('/home/chimea/Bureau', SELECTED_FOLDER, 'server.properties')
+    properties_file_path = os.path.join(SELECTED_FOLDER, '/server.properties')
 
     # Lire le fichier server.properties et récupérer le port RCON
     try:
