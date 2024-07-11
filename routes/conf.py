@@ -7,8 +7,15 @@ MC_RCON_PORT = 25575
 LOG_PATH = '/home/chimea/Bureau/minecraft/logs'
 SELECTED_FOLDER = ''
 
-def get_rcon_port_from_properties():
+def get_selected_folder():
     global SELECTED_FOLDER
+    return SELECTED_FOLDER
+
+def set_selected_folder(new_path):
+    global SELECTED_FOLDER
+    SELECTED_FOLDER = new_path
+
+def get_rcon_port_from_properties():
     logging.warning(f'Selected folder: {SELECTED_FOLDER}')
     if not SELECTED_FOLDER:
         return False
