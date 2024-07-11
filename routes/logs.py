@@ -3,24 +3,14 @@ import re
 import subprocess
 from flask import request, jsonify, current_app
 from rcon.source import Client
-
-# Accéder aux variables globales
-try:
-    mc_rcon_password = current_app.config['MC_RCON_PASSWORD']
-    mc_rcon_host = current_app.config['MC_RCON_HOST']
-    mc_rcon_port = current_app.config['MC_RCON_PORT']
-    log_path = current_app.config['LOG_PATH']
-    print('global variable : ')
-    print('mc_rcon_host : ', mc_rcon_host,' mc_rcon_port : ', mc_rcon_port,' mc_rcon_password : ', mc_rcon_password)
-except Exception as e:
-    print(e)
+from app import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
 
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
 
 def fetchPlayers():
     try:
-        with Client(mc_rcon_host, mc_rcon_port, passwd=mc_rcon_password) as client:
+        with Client(MC_RCON_HOST, MC_RCON_PORT, passwd=MC_RCON_PASSWORD) as client:
             response = client.run("list")
             # Typical response: "There are X of Y players online: Player1, Player2, ..."
             player_list = response.split(": ")[1] if ": " in response else ""
@@ -33,12 +23,12 @@ def init_get_logs_routes(app):
     @app.route('/minecraft_log', methods=['POST'])
     def fetch_minecraft_log():
         data = request.get_json()
-        global log_path
-        log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
+        global LOG_PATH
+        LOG_PATH = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
 
-        latest_log_path = os.path.join(log_path, 'latest.log')
-        filtered_log_path = os.path.join(log_path, 'filtered.log')
+        latest_log_path = os.path.join(LOG_PATH, 'latest.log')
+        filtered_log_path = os.path.join(LOG_PATH, 'filtered.log')
 
         # Si filtered.log n'existe pas, utiliser latest.log à la place
         if not os.path.exists(filtered_log_path):
