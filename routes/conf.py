@@ -7,12 +7,12 @@ MC_RCON_PORT = 25575
 LOG_PATH = '/home/chimea/Bureau/minecraft/logs'
 SELECTED_FOLDER = ''
 
-def get_rcon_port_from_properties(selected_folder):
-    if not selected_folder:
+def get_rcon_port_from_properties():
+    if not SELECTED_FOLDER:
         return False
-    logging.warning(f'Selected folder: {selected_folder}')
+    logging.warning(f'Selected folder: {SELECTED_FOLDER}')
     # Construire le chemin vers le fichier server.properties
-    properties_file_path = os.path.join('/home/chimea/Bureau', selected_folder, 'server.properties')
+    properties_file_path = os.path.join('/home/chimea/Bureau', SELECTED_FOLDER, 'server.properties')
 
     # Lire le fichier server.properties et récupérer le port RCON
     try:
@@ -25,9 +25,9 @@ def get_rcon_port_from_properties(selected_folder):
 
     return False
 
-def init_rcon_port(selected_folder):
+def init_rcon_port():
     global MC_RCON_PORT
-    rcon_port = get_rcon_port_from_properties(selected_folder)
+    rcon_port = get_rcon_port_from_properties()
     logging.warning(f'RCON port from properties: {rcon_port}')
     if rcon_port == False:
         MC_RCON_PORT = 25575
