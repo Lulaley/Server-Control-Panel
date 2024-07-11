@@ -11,7 +11,7 @@ def get_rcon_port_from_properties(app):
     selected_folder = app.config.get('folders', '')
     if not selected_folder:
         return False
-
+    logging.warning(f'Selected folder: {selected_folder}')
     # Construire le chemin vers le fichier server.properties
     properties_file_path = os.path.join('/home/chimea/Bureau', selected_folder, 'server.properties')
 
@@ -29,8 +29,8 @@ def get_rcon_port_from_properties(app):
 def init_rcon_port(app):
     global MC_RCON_PORT
     rcon_port = get_rcon_port_from_properties(app)
-    logging.info(f'RCON port from properties: {rcon_port}')
-    if not rcon_port:
+    logging.warning(f'RCON port from properties: {rcon_port}')
+    if rcon_port == False:
         MC_RCON_PORT = 25575
     else:
         MC_RCON_PORT = rcon_port
