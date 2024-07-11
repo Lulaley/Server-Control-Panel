@@ -47,5 +47,5 @@ def init_rcon_port():
     if rcon_port == False:
         set_rcon_port(25575)
     else:
-        set_rcon_port(rcon_port)
+        set_rcon_port(int(rcon_port))
     logging.info(f'RCON port set to {get_rcon_port()}')
