@@ -1,7 +1,7 @@
 import re
 from flask import current_app
 from rcon.source import Client
-from config import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
+from ..config import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):

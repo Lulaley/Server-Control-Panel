@@ -3,7 +3,7 @@ import re
 import subprocess
 from flask import request, jsonify, current_app
 from rcon.source import Client
-from config import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
+from ..config import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH
 
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
