@@ -4,14 +4,14 @@ import subprocess
 import logging
 from flask import request, jsonify, current_app
 from rcon.source import Client
-from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, set_selected_folder, get_selected_folder, init_rcon_port
+from .conf import MC_RCON_HOST, MC_RCON_PASSWORD, set_selected_folder, init_rcon_port, get_rcon_port
 
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
 
 def fetchPlayers():
     try:
-        with Client(MC_RCON_HOST, MC_RCON_PORT, passwd=MC_RCON_PASSWORD) as client:
+        with Client(MC_RCON_HOST, get_rcon_port(), passwd=MC_RCON_PASSWORD) as client:
             response = client.run("list")
             # Typical response: "There are X of Y players online: Player1, Player2, ..."
             player_list = response.split(": ")[1] if ": " in response else ""

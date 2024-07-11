@@ -2,12 +2,12 @@ import re
 import time
 from flask import current_app
 from rcon.source import Client
-from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH, init_rcon_port
+from .conf import MC_RCON_HOST, MC_RCON_PASSWORD, LOG_PATH, get_rcon_port
 
 # Assuming mc_rcon_password and mc_rcon_host are defined as shown in your excerpt
 def send_welcome_message(new_player):
     try:
-        with Client(MC_RCON_HOST, MC_RCON_PORT, passwd=MC_RCON_PASSWORD) as client:
+        with Client(MC_RCON_HOST, get_rcon_port, passwd=MC_RCON_PASSWORD) as client:
             welcome_message = f"tell {new_player} Wesh tu geek encore ? Va te laver ou Chim ferme le serveur !."
             client.run(welcome_message)
             for i in range(5, -1, -1):  # Compte à rebours de 5 à 0
