@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import logging
 from flask import request, jsonify, current_app
 from rcon.source import Client
 from .conf import MC_RCON_HOST, MC_RCON_PORT, MC_RCON_PASSWORD, LOG_PATH, SELECTED_FOLDER, init_rcon_port
@@ -28,6 +29,7 @@ def init_get_logs_routes(app):
         log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
         
         SELECTED_FOLDER = log_path.replace('/logs', '')
+        logging.warning(f'Selected folder: {SELECTED_FOLDER}')
         init_rcon_port()
 
         filter_type = data.get('filter_type', 'all')  # Get the filter type from the request
