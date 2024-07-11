@@ -15,11 +15,17 @@ def set_selected_folder(new_path):
     global SELECTED_FOLDER
     SELECTED_FOLDER = new_path
 
+def get_rcon_port():
+    global MC_RCON_PORT
+    return MC_RCON_PORT
+
+def set_rcon_port(new_port):
+    global MC_RCON_PORT
+    MC_RCON_PORT = new_port  
+
 def get_rcon_port_from_properties():
-    logging.warning(f'Selected folder: {SELECTED_FOLDER}')
     if not SELECTED_FOLDER:
         return False
-    logging.warning(f'Selected folder: {SELECTED_FOLDER}')
     # Construire le chemin vers le fichier server.properties
     properties_file_path = os.path.join(SELECTED_FOLDER, '/server.properties')
 
@@ -35,11 +41,10 @@ def get_rcon_port_from_properties():
     return False
 
 def init_rcon_port():
-    global MC_RCON_PORT
     rcon_port = get_rcon_port_from_properties()
     logging.warning(f'RCON port from properties: {rcon_port}')
     if rcon_port == False:
-        MC_RCON_PORT = 25575
+        set_rcon_port(25575)
     else:
-        MC_RCON_PORT = rcon_port
+        set_rcon_port(rcon_port)
     logging.info(f'RCON port set to {MC_RCON_PORT}')
