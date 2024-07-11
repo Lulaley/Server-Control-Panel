@@ -29,6 +29,7 @@ def get_rcon_port_from_properties(app):
 def init_rcon_port(app):
     global MC_RCON_PORT
     rcon_port = get_rcon_port_from_properties(app)
+    logging.info(f'RCON port from properties: {rcon_port}')
     if not rcon_port:
         MC_RCON_PORT = 25575
     else:
