@@ -1,3 +1,4 @@
+import datetime
 import os
 import re
 import subprocess
@@ -73,7 +74,7 @@ def init_get_logs_routes(app):
             online_players = fetchPlayers()
 
             with open(filtered_log_path, 'r') as log_file:
-                log_lines = log_file.readlines()[-500:]  # Get the last 50 lines of the log
+                log_lines = log_file.readlines()[-500:]  # Get the last 500 lines of the log
                 # Filter out RCON listener and client messages based on the filter_type
                 filtered_lines = []
                 for line in log_lines:
@@ -86,15 +87,23 @@ def init_get_logs_routes(app):
                         match = re.search(r'(<.*?>|\[Rcon\])', line)
                         if match:
                             # Extract the timestamp
-                            timestamp_match = re.search(r'\[(.*?)\]', line)
+                            timestamp_match = re.search(r'\[(\d{2}[A-Za-z]{3}\d{4} \d{2}:\d{2}:\d{2}\.\d{3})\]', line)
                             if timestamp_match:
-                                timestamp = timestamp_match.group(1)
-                                line = f'[{timestamp}] {line[match.start():]}'
+                                timestamp_str = timestamp_match.group(1)
+                                # Convert the timestamp to the desired format
+                                timestamp = datetime.strptime(timestamp_str, '%d%b%Y %H:%M:%S.%f')
+                                formatted_timestamp = timestamp.strftime('%d-%m-%Y %H:%M:%S')
+                                line = f'[{formatted_timestamp}] {line[match.start():]}'
                         filtered_lines.append(line)
                     elif filter_type == 'info' and '/INFO]' in line and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line and not ('[Rcon]' in line or '<' in line and '>' in line):
                         filtered_lines.append(line)
                     elif filter_type == 'all':
                         filtered_lines.append(line)
+
+                # Write the filtered lines to filtered.log
+                with open('filtered.log', 'w') as filtered_log_file:
+                    for filtered_line in filtered_lines:
+                        filtered_log_file.write(filtered_line)
 
                 # Colorize and escape the log messages
                 colored_lines = filtered_lines
