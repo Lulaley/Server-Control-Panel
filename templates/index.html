@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/selecteurMcLog.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/serveurStatus.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modals.css') }}">
 </head>
     <body>
         <div id="super-container">
@@ -106,7 +107,37 @@
                 <h2>Players List :</h2>
                 <ul id="players-list">
                     <!-- Player items will be added here dynamically -->
+                    <!-- Example player item -->
+                    <li>
+                        PlayerName
+                        <button onclick="showMessageBox('PlayerName')">Send Message</button>
+                        <button onclick="showKickBanBox('PlayerName')">Kick/Ban</button>
+                    </li>
                 </ul>
+            </div>
+            
+            <!-- Message Box Modal -->
+            <div id="message-box" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeMessageBox()">&times;</span>
+                    <h2>Send Message to Player</h2>
+                    <input type="text" id="message-input" placeholder="Enter your message">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+            
+            <!-- Kick/Ban Box Modal -->
+            <div id="kick-ban-box" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeKickBanBox()">&times;</span>
+                    <h2>Kick or Ban Player</h2>
+                    <select id="action-select">
+                        <option value="kick">Kick</option>
+                        <option value="ban">Ban</option>
+                    </select>
+                    <input type="text" id="reason-input" placeholder="Enter the reason">
+                    <button onclick="performAction()">Submit</button>
+                </div>
             </div>
 
             <div id="main-container">
@@ -137,6 +168,7 @@
         <script src="../static/js/javaVersion.js"></script>
         <script src="../static/js/mcserveurStatus.js"></script>
         <script src="../static/js/services.js"></script>
+        <script src="../static/js/modals.js"></script>
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {       
                 let lastStatus = { minecraft_running };
