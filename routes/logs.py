@@ -85,7 +85,11 @@ def init_get_logs_routes(app):
                         # Find the first occurrence of <pseudo> or [Rcon] and remove everything before it
                         match = re.search(r'(<.*?>|\[Rcon\])', line)
                         if match:
-                            line = line[match.start():]
+                            # Extract the timestamp
+                            timestamp_match = re.search(r'\[(.*?)\]', line)
+                            if timestamp_match:
+                                timestamp = timestamp_match.group(1)
+                                line = f'[{timestamp}] {line[match.start():]}'
                         filtered_lines.append(line)
                     elif filter_type == 'info' and '/INFO]' in line and ('[net.minecraft.server.dedicated.DedicatedServer/]') in line and not ('[Rcon]' in line or '<' in line and '>' in line):
                         filtered_lines.append(line)
