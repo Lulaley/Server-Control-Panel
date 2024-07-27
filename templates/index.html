@@ -107,12 +107,6 @@
                 <h2>Players List :</h2>
                 <ul id="players-list">
                     <!-- Player items will be added here dynamically -->
-                    <!-- Example player item -->
-                    <li>
-                        PlayerName
-                        <button onclick="showMessageBox('PlayerName')">Send Message</button>
-                        <button onclick="showKickBanBox('PlayerName')">Kick/Ban</button>
-                    </li>
                 </ul>
             </div>
             
@@ -167,9 +161,9 @@
         <script src="../static/js/services.js"></script>
         <script src="../static/js/modals.js"></script>
         <script type="text/javascript">
-            document.addEventListener('DOMContentLoaded', function() {       
+            document.addEventListener('DOMContentLoaded', function() {
                 let lastStatus = { minecraft_running };
-
+        
                 function checkMinecraftStatus() {
                     console.log('Checking Minecraft status...');
                     fetch('/api/minecraft_status')
@@ -181,76 +175,68 @@
                         })
                         .catch(error => console.error('Error fetching Minecraft status:', error));
                 }
-
+        
                 // Vérifier le statut toutes les 30 secondes
                 setInterval(checkMinecraftStatus, 30000);
-
+        
                 async function fetchAndDisplayPlayers() {
                     const playersContainer = document.getElementById('players-list');
                     playersContainer.innerHTML = ''; // Clear existing list items
-
+        
                     // Example: Fetch player list from an API or server
                     const players = await fetchPlayers(); // Implement this function based on your backend
-
+        
                     players.forEach(player => {
                         const listItem = document.createElement('li');
                         listItem.textContent = player.name; // Assuming each player has a 'name' property
-
+        
                         // Create Send Message button
                         const sendMessageButton = document.createElement('button');
                         sendMessageButton.textContent = 'Send Message';
                         sendMessageButton.onclick = () => showMessageBox(player.name);
-
+        
                         // Create Kick/Ban button
                         const kickBanButton = document.createElement('button');
                         kickBanButton.textContent = 'Kick/Ban';
                         kickBanButton.onclick = () => showKickBanBox(player.name);
-
+        
                         listItem.appendChild(sendMessageButton);
                         listItem.appendChild(kickBanButton);
                         playersContainer.appendChild(listItem);
                     });
                 }
-
+        
                 // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
                 fetchAndDisplayPlayers();
             });
-
-            document.addEventListener('DOMContentLoaded', (event) => {
-                // Get the selected service and tag button from cookies after the page reloads
-                const serveurSelectIndex = getCookie('serveurSelectIndex');
-                const selectedTagButton = getCookie('selectedTagButton');
-
-                console.log(serveurSelectIndex, selectedTagButton);
-            });
-
+        
             let currentPlayer = '';
-
+        
             function showMessageBox(playerName) {
                 currentPlayer = playerName;
                 document.getElementById('message-box').style.display = 'block';
             }
-
+        
             function closeMessageBox() {
                 document.getElementById('message-box').style.display = 'none';
             }
-
+        
             function sendMessage() {
                 const message = document.getElementById('message-input').value;
                 // Send message via Rcon
                 sendRconCommand(`/tell ${currentPlayer} ${message}`);
                 closeMessageBox();
             }
-
+        
             function showKickBanBox(playerName) {
                 currentPlayer = playerName;
                 document.getElementById('kick-ban-box').style.display = 'block';
             }
-
+        
             function closeKickBanBox() {
                 document.getElementById('kick-ban-box').style.display = 'none';
             }
-
+        
             function performAction() {
                 const action = document.getElementById('action-select').value;
                 const reason = document.getElementById('reason-input').value;
@@ -258,94 +244,20 @@
                 sendRconCommand(`/${action} ${currentPlayer} ${reason}`);
                 closeKickBanBox();
             }
-
+        
             function sendRconCommand(command) {
                 // Implement the function to send the command via Rcon
                 console.log(`Sending Rcon command: ${command}`);
             }
-
-            document.addEventListener('DOMContentLoaded', function() {       
-                let lastStatus = { minecraft_running };
-
-                function checkMinecraftStatus() {
-                    console.log('Checking Minecraft status...');
-                    fetch('/api/minecraft_status')
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.minecraft_running !== lastStatus) {
-                                window.location.reload();
-                            }
-                        })
-                        .catch(error => console.error('Error fetching Minecraft status:', error));
-                }
-
-                // Vérifier le statut toutes les 30 secondes
-                setInterval(checkMinecraftStatus, 30000);
-
-                async function fetchAndDisplayPlayers() {
-                    const playersContainer = document.getElementById('players-list');
-                    playersContainer.innerHTML = ''; // Clear existing list items
-
-                    // Example: Fetch player list from an API or server
-                    const players = await fetchPlayers(); // Implement this function based on your backend
-
-                    players.forEach(player => {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = player.name; // Assuming each player has a 'name' property
-                        playersContainer.appendChild(listItem);
-                    });
-                }
-
-                // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
-                fetchAndDisplayPlayers();
-            });
-
-            document.addEventListener('DOMContentLoaded', (event) => {
-                // Get the selected service and tag button from cookies after the page reloads
-                const serveurSelectIndex = getCookie('serveurSelectIndex');
-                const selectedTagButton = getCookie('selectedTagButton');
-
-                console.log(serveurSelectIndex, selectedTagButton);
-
-                if (serveurSelectIndex !== "") {
-                    // Select the service
-                    const selectServeur = document.getElementById('folder-select');
-                    selectServeur.selectedIndex = Number(serveurSelectIndex);
-                }
-
-                if (selectedTagButton !== "") {
-                    // Select the tag button
-                    const button = document.getElementById(selectedTagButton);
-                    button.classList.add('selected');
-                }
-            });
-
-            // Get the modal
-            var modal = document.getElementById("add-service-form");
-
-            // Get the button that opens the modal
-            var btn = document.getElementById("add-service-btn");
-
-            // Get the <span> element that closes the modal
-            var span = document.getElementsByClassName("close")[0];
-
-            // When the user clicks the button, open the modal 
-            btn.onclick = function() {
-                modal.style.display = "block";
+        
+            async function fetchPlayers() {
+                // Example implementation, replace with your actual API call
+                return [
+                    { name: 'Player1' },
+                    { name: 'Player2' },
+                    { name: 'Player3' }
+                ];
             }
-
-            // When the user clicks on <span> (x), close the modal
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
-
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
-
         </script>
     </body>
 </html>
