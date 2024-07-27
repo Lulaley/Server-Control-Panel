@@ -96,7 +96,8 @@ async function fetchMinecraftLogFiltered() {
                 consoleElement.appendChild(document.createElement('br')); // New line
             });
         } catch (processingError) {
-            console.info('Erreur lors du traitement des entrées de log:', processingError);
+            
+            //console.info('Erreur lors du traitement des entrées de log:', processingError);
         }
 
         try {
