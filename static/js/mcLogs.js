@@ -96,7 +96,7 @@ async function fetchMinecraftLogFiltered() {
                 consoleElement.appendChild(document.createElement('br')); // New line
             });
         } catch (processingError) {
-            console.error('Erreur lors du traitement des entrées de log:', processingError);
+            console.info('Erreur lors du traitement des entrées de log:', processingError);
         }
 
         try {
@@ -115,12 +115,12 @@ async function fetchMinecraftLogFiltered() {
                 playerList.appendChild(div);
             }
         } catch (playerError) {
-            console.error('Erreur lors de la récupération des joueurs:', playerError);
+            console.info('Erreur lors de la récupération des joueurs:', playerError);
         }
         // Scroll to the bottom of the console
         consoleElement.scrollTop = consoleElement.scrollHeight;
     } catch (fetchError) {
-        console.error('Erreur lors de la récupération des logs:', fetchError);
+        console.info('Erreur lors de la récupération des logs:', fetchError);
     }
 }
 

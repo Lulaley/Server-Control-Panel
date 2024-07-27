@@ -52,7 +52,7 @@ async function fetchServices() {
         servicesList.appendChild(li);
         });
     } catch (error) {
-        console.error('Error fetching services:', error);
+        //console.error('Error fetching services:', error);
     }
 }
 
