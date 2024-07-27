@@ -161,15 +161,109 @@
             </div>
         </div>
 
-        <script src="../static/js/systemInfo.js"></script>
-        <script src="../static/js/sendCmdMc.js"></script>
-        <script src="../static/js/selecteurMcLog.js"></script>
         <script src="../static/js/mcLogs.js"></script>
         <script src="../static/js/javaVersion.js"></script>
         <script src="../static/js/mcserveurStatus.js"></script>
         <script src="../static/js/services.js"></script>
         <script src="../static/js/modals.js"></script>
         <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {       
+                let lastStatus = { minecraft_running };
+
+                function checkMinecraftStatus() {
+                    console.log('Checking Minecraft status...');
+                    fetch('/api/minecraft_status')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.minecraft_running !== lastStatus) {
+                                window.location.reload();
+                            }
+                        })
+                        .catch(error => console.error('Error fetching Minecraft status:', error));
+                }
+
+                // Vérifier le statut toutes les 30 secondes
+                setInterval(checkMinecraftStatus, 30000);
+
+                async function fetchAndDisplayPlayers() {
+                    const playersContainer = document.getElementById('players-list');
+                    playersContainer.innerHTML = ''; // Clear existing list items
+
+                    // Example: Fetch player list from an API or server
+                    const players = await fetchPlayers(); // Implement this function based on your backend
+
+                    players.forEach(player => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = player.name; // Assuming each player has a 'name' property
+
+                        // Create Send Message button
+                        const sendMessageButton = document.createElement('button');
+                        sendMessageButton.textContent = 'Send Message';
+                        sendMessageButton.onclick = () => showMessageBox(player.name);
+
+                        // Create Kick/Ban button
+                        const kickBanButton = document.createElement('button');
+                        kickBanButton.textContent = 'Kick/Ban';
+                        kickBanButton.onclick = () => showKickBanBox(player.name);
+
+                        listItem.appendChild(sendMessageButton);
+                        listItem.appendChild(kickBanButton);
+                        playersContainer.appendChild(listItem);
+                    });
+                }
+
+                // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
+                fetchAndDisplayPlayers();
+            });
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                // Get the selected service and tag button from cookies after the page reloads
+                const serveurSelectIndex = getCookie('serveurSelectIndex');
+                const selectedTagButton = getCookie('selectedTagButton');
+
+                console.log(serveurSelectIndex, selectedTagButton);
+            });
+
+            let currentPlayer = '';
+
+            function showMessageBox(playerName) {
+                currentPlayer = playerName;
+                document.getElementById('message-box').style.display = 'block';
+            }
+
+            function closeMessageBox() {
+                document.getElementById('message-box').style.display = 'none';
+            }
+
+            function sendMessage() {
+                const message = document.getElementById('message-input').value;
+                // Send message via Rcon
+                sendRconCommand(`/tell ${currentPlayer} ${message}`);
+                closeMessageBox();
+            }
+
+            function showKickBanBox(playerName) {
+                currentPlayer = playerName;
+                document.getElementById('kick-ban-box').style.display = 'block';
+            }
+
+            function closeKickBanBox() {
+                document.getElementById('kick-ban-box').style.display = 'none';
+            }
+
+            function performAction() {
+                const action = document.getElementById('action-select').value;
+                const reason = document.getElementById('reason-input').value;
+                // Send kick/ban command via Rcon
+                sendRconCommand(`/${action} ${currentPlayer} ${reason}`);
+                closeKickBanBox();
+            }
+
+            function sendRconCommand(command) {
+                // Implement the function to send the command via Rcon
+                console.log(`Sending Rcon command: ${command}`);
+            }
+
             document.addEventListener('DOMContentLoaded', function() {       
                 let lastStatus = { minecraft_running };
 
