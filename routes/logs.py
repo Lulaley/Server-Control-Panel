@@ -95,6 +95,8 @@ def init_get_logs_routes(app):
                                     if len(timestamp_str) > 8:  # Format is like [27Jul2024 23:28:48.567]
                                         timestamp = datetime.strptime(timestamp_str, '%d%b%Y %H:%M:%S.%f')
                                         formatted_timestamp = timestamp.strftime('%d-%m-%Y %H:%M:%S')
+                                        print(formatted_timestamp)
+                                        print(timestamp_str)
                                     else:  # Format is [23:40:48]
                                         formatted_timestamp = timestamp_str
                                     line = f'[{formatted_timestamp}] {line[match.start():]}'
