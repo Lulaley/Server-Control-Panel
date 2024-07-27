@@ -37,7 +37,7 @@ window.onload = function() {
     if (selectedTagButton !== "") {
         // Select the tag button
         const button = document.getElementById(selectedTagButton);
-        button.classList.add('selected');
+        button.className += ' selected';
     }
 }
 
