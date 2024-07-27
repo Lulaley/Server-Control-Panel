@@ -165,7 +165,14 @@
 
                     players.forEach(player => {
                         const listItem = document.createElement('li');
-                        listItem.textContent = player.name; // Assuming each player has a 'name' property
+                        listItem.textContent = player.name;
+                        listItem.className = 'player-item';
+
+                        const buttonTell = document.createElement('button');
+                        buttonTell.textContent = 'Tell';
+                        buttonTell.className = 'btn btn-tell modal';
+                        listItem.appendChild(buttonTell);
+
                         playersContainer.appendChild(listItem);
                     });
                 }
