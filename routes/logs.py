@@ -100,7 +100,7 @@ def init_get_logs_routes(app):
                                     line = f'[{formatted_timestamp}] {line[match.start():]}'
                                 except ValueError:
                                     # Handle the case where the timestamp format is incorrect
-                                    line = f'[{timestamp_str}] {line[match.start():]}'
+                                    line = line
                                     pass
                         filtered_lines.append(line)
                     elif filter_type == 'info' and '/INFO]' in line:
