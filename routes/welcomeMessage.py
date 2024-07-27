@@ -8,12 +8,8 @@ from .conf import MC_RCON_HOST, MC_RCON_PASSWORD, LOG_PATH, get_rcon_port
 def send_welcome_message(new_player):
     try:
         with Client(MC_RCON_HOST, get_rcon_port, passwd=MC_RCON_PASSWORD) as client:
-            welcome_message = f"tell {new_player} Wesh tu geek encore ? Va te laver ou Chim ferme le serveur !."
+            welcome_message = f"tell {new_player} Bon jeu."
             client.run(welcome_message)
-            for i in range(5, -1, -1):  # Compte à rebours de 5 à 0
-                countdown_message = f"tell {new_player} Le serveur va fermer dans {i} secondes."
-                client.run(countdown_message)
-                time.sleep(1)  # Attendre une seconde avant de continuer
     except Exception as e:
         pass
 
