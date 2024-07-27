@@ -88,6 +88,7 @@ def init_get_logs_routes(app):
                         if match:
                             # Extract the timestamp
                             timestamp_match = re.search(r'\[(\d{2}[A-Za-z]{3}\d{4} \d{2}:\d{2}:\d{2}\.\d{3}|\d{2}:\d{2}:\d{2})\]', line)
+                            logging.info(f'timestamp_match {timestamp_match}')
                             if timestamp_match:
                                 timestamp_str = timestamp_match.group(1)
                                 logging.info(f'catch {timestamp_str}')
