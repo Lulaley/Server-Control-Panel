@@ -164,7 +164,7 @@
                     const players = await fetchPlayers(); // Implement this function based on your backend
 
                     players.forEach(player => {
-                        const listItem = document.createElement('li');
+                        const listItem = document.createElement('div');
                         listItem.textContent = player.name;
                         listItem.className = 'player-item';
 
