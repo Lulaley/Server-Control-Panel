@@ -113,7 +113,7 @@
     background-color: rgba(139, 0, 0, 0.5); /* darkred */
 }
 
-#errors-tag-button:hover {
+#errors-tag-button:hover, #errors-tag-button.selected {
     background-color: rgba(139, 0, 0, 5);
 }
 
@@ -121,7 +121,7 @@
     background-color: rgba(255, 140, 0, 0.5); /* darkorange */
 }
 
-#warnings-tag-button:hover {
+#warnings-tag-button:hover, #warnings-tag-button.selected {
     background-color: rgba(255, 140, 0, 5); /* darkorange */
 }
 
@@ -129,7 +129,7 @@
     background-color: rgba(169, 169, 169, 0.5); /* darkgray */
 }
 
-#info-tag-button:hover {
+#info-tag-button:hover, #info-tag-button.selected {
     background-color: rgba(169, 169, 169, 5); /* darkgray */
 }
 
@@ -137,7 +137,7 @@
     background-color: rgba(0, 0, 139, 0.5); /* darkblue */
 }
 
-#discussion-tag-button:hover {
+#discussion-tag-button:hover, #discussion-tag-button.selected {
     background-color: rgba(0, 0, 139, 5); /* darkblue */
 }
 
@@ -145,7 +145,7 @@
     background-color: rgba(148, 0, 211, 0.5); /* darkviolet */
 }
 
-#all-tag-button:hover {
+#all-tag-button:hover, #all-tag-button.selected {
     background-color: rgba(148, 0, 211, 5); /* darkviolet */
 }
 
