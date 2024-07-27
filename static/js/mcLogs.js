@@ -104,9 +104,15 @@ async function fetchMinecraftLogFiltered() {
             const playerList = document.getElementById('players-list');
             playerList.innerHTML = ''; // Clear existing list
             for (const player of data.online_players) {
-                const li = document.createElement('li');
-                li.textContent = player;
-                playerList.appendChild(li);
+                const div = document.createElement('div');
+                div.textContent = player;
+
+                const tellButton = document.createElement('button');
+                tellButton.textContent = 'Tell';
+                tellButton.className = 'modal';
+                div.appendChild(tellButton);
+
+                playerList.appendChild(div);
             }
         } catch (playerError) {
             console.error('Erreur lors de la récupération des joueurs:', playerError);
