@@ -90,6 +90,7 @@ def init_get_logs_routes(app):
                             timestamp_match = re.search(r'\[(\d{2}[A-Za-z]{3}\d{4} \d{2}:\d{2}:\d{2}\.\d{3}|\d{2}:\d{2}:\d{2})\]', line)
                             if timestamp_match:
                                 timestamp_str = timestamp_match.group(1)
+                                print(timestamp_str)
                                 # Convert the timestamp to the desired format if necessary
                                 try:
                                     if len(timestamp_str) > 8:  # Format is like [27Jul2024 23:28:48.567]
