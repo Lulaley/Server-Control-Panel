@@ -155,22 +155,3 @@
 .btn-valider-form:hover {
     background: #4caf50;
 }
-
-/* Ajoutez ce code à services.css */
-.btn-add-service {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.btn-stop {
-    background-color: #f44336;
-    color: white;
-}
-
-/* Media queries pour les petits écrans */
-@media (max-width: 768px) {
-    .btn {
-        width: 100%;
-        margin: 5px 0;
-    }
-}

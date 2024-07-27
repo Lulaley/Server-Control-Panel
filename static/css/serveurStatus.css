@@ -32,28 +32,3 @@
     border-bottom: 1px solid #ddd;
     margin: 10px 0;
 }
-
-/* Ajoutez ce code à serveurStatus.css */
-#services-container {
-    width: 100%;
-    max-width: 800px;
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Media queries pour les petits écrans */
-@media (max-width: 768px) {
-    #services-container {
-        width: 100%;
-    }
-}
