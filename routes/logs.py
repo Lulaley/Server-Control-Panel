@@ -101,7 +101,6 @@ def init_get_logs_routes(app):
                                 except ValueError:
                                     # Handle the case where the timestamp format is incorrect
                                     line = line
-                                    pass
                         filtered_lines.append(line)
                     elif filter_type == 'info' and '/INFO]' in line:
                         filtered_lines.append(line)
