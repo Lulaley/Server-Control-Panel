@@ -167,58 +167,12 @@
                         const listItem = document.createElement('div');
                         listItem.textContent = player.name;
                         listItem.className = 'player-item';
-
-                        const buttonTell = document.createElement('button');
-                        buttonTell.textContent = 'Tell';
-                        buttonTell.className = 'btn btn-tell modal';
-                        listItem.appendChild(buttonTell);
-
                         playersContainer.appendChild(listItem);
                     });
                 }
 
                 // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
                 fetchAndDisplayPlayers();
-            });
-
-            document.addEventListener('DOMContentLoaded', function() {
-                // Function to save button classes to localStorage
-                function saveButtonClasses() {
-                    const buttons = document.querySelectorAll('.tag-button');
-                    buttons.forEach(button => {
-                        localStorage.setItem(button.id, button.className);
-                    });
-                }
-
-                // Function to load button classes from localStorage
-                function loadButtonClasses() {
-                    const buttons = document.querySelectorAll('.tag-button');
-                    buttons.forEach(button => {
-                        const savedClass = localStorage.getItem(button.id);
-                        if (savedClass) {
-                            button.className = savedClass;
-                        }
-                    });
-                }
-
-                // Load button classes on page load
-                loadButtonClasses();
-
-                // Example function to update filter type and save button classes
-                function updateFilterType(type) {
-                    // Your existing logic to update filter type
-                    console.log(`Filter type updated to: ${type}`);
-
-                    // Save button classes after updating filter type
-                    saveButtonClasses();
-                }
-
-                // Attach event listeners to buttons
-                document.getElementById('errors-tag-button').onclick = () => updateFilterType('errors');
-                document.getElementById('warnings-tag-button').onclick = () => updateFilterType('warnings');
-                document.getElementById('info-tag-button').onclick = () => updateFilterType('info');
-                document.getElementById('discussion-tag-button').onclick = () => updateFilterType('discussion');
-                document.getElementById('all-tag-button').onclick = () => updateFilterType('all');
             });
 
             // Get the modal
