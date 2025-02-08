@@ -31,7 +31,6 @@ async function fetchFolders() {
         console.error('Error fetching folders:', error);
     }
 }
-fetchFolders();
 
 document.getElementById('folder-select').addEventListener('change', function(event) {
     const selectedFolder = event.target.value;
@@ -40,7 +39,12 @@ document.getElementById('folder-select').addEventListener('change', function(eve
     fetchMinecraftLogFiltered('all');
 });
 
-document.getElementById('server-type-select').addEventListener('change', function() {
+document.getElementById('server-type-select').addEventListener('change', function(event) {
     const folderSelect = document.getElementById('folder-select');
     folderSelect.innerHTML = ''; // Clear all options
+
+    const selectedServerType = event.target.value;
+    if (selectedServerType === 'minecraft') {
+        fetchFolders(); // Fetch and populate folders if "minecraft" is selected
+    }
 });
