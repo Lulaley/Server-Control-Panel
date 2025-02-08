@@ -3,6 +3,7 @@
     height: fit-content;
     grid-column-start: 3;
     width: 230px;
+    width: fit-content;
 }
 
 .folder-select-container {
