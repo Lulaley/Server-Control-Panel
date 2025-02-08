@@ -32,6 +32,24 @@ async function fetchFolders() {
     }
 }
 
+async function fetchPalWorldLogs() {
+    try {
+        const response = await fetch('/palworld/logs');
+        const data = await response.json();
+
+        const logContainer = document.getElementById('console');
+        logContainer.innerHTML = ''; // Clear previous logs
+
+        data.logs.forEach(log => {
+            const logEntry = document.createElement('div');
+            logEntry.textContent = log;
+            logContainer.appendChild(logEntry);
+        });
+    } catch (error) {
+        console.error('Error fetching PalWorld logs:', error);
+    }
+}
+
 document.getElementById('folder-select').addEventListener('change', function(event) {
     const selectedFolder = event.target.value;
     log_path = `/home/chimea/Bureau/${selectedFolder}/logs`;
@@ -46,5 +64,7 @@ document.getElementById('server-type-select').addEventListener('change', functio
     const selectedServerType = event.target.value;
     if (selectedServerType === 'minecraft') {
         fetchFolders(); // Fetch and populate folders if "minecraft" is selected
+    } else if (selectedServerType === 'palword') {
+        fetchPalWorldLogs(); // Fetch and display logs if "palword" is selected
     }
 });
