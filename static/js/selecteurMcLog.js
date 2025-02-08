@@ -39,3 +39,8 @@ document.getElementById('folder-select').addEventListener('change', function(eve
     console.log(`Log path changed to: ${log_path}`);
     fetchMinecraftLogFiltered('all');
 });
+
+document.getElementById('server-type-select').addEventListener('change', function() {
+    const folderSelect = document.getElementById('folder-select');
+    folderSelect.innerHTML = ''; // Clear all options
+});
