@@ -25,7 +25,6 @@ def fetchPlayers():
 
 def init_get_logs_routes(app):
     @app.route('/minecraft_log', methods=['POST'])
-    
     def fetch_minecraft_log():
         data = request.get_json()
         log_path = data.get('log_path', '/home/chimea/Bureau/minecraft/logs')
@@ -116,5 +115,15 @@ def init_get_logs_routes(app):
                 colored_lines = filtered_lines
                 log_content = ''.join(colored_lines)
                 return jsonify({'logs': log_content, 'online_players': online_players})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    @app.route('/palworld/logs', methods=['GET'])
+    def fetch_palworld_logs():
+        try:
+            # Execute the journalctl command to fetch the logs for the PalWorld service
+            result = subprocess.run(['journalctl', '-u', 'palworld.service', '--no-pager', '-n', '500'], capture_output=True, text=True)
+            logs = result.stdout.splitlines()
+            return jsonify({'logs': logs})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
