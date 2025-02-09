@@ -1,7 +1,7 @@
 import subprocess
 from flask import Blueprint, jsonify, request
 from flask_socketio import emit
-from app import socketio  # Use absolute import
+from socketio_instance import socketio  # Import socketio from the new file
 
 update_bp = Blueprint('update', __name__)
 

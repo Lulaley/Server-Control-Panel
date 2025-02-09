@@ -2,11 +2,11 @@ import os
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template
-from flask_socketio import SocketIO
+from socketio_instance import socketio  # Import socketio from the new file
 from routes.conf import init_rcon_port
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio.init_app(app)  # Initialize socketio with the app
 
 # Configure logging
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
