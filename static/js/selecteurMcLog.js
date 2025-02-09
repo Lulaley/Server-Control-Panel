@@ -72,8 +72,10 @@ document.getElementById('server-type-select').addEventListener('change', functio
 
     const selectedServerType = event.target.value;
     if (selectedServerType === 'minecraft') {
+        serverType = 'minecraft';
         fetchFolders(); // Fetch and populate folders if "minecraft" is selected
-    } else if (selectedServerType === 'palword') {
-        fetchPalWorldLogs(); // Fetch and display logs if "palword" is selected
+    } else if (selectedServerType === 'palworld') {
+        serverType = 'palworld';
+        fetchPalWorldLogs(); // Fetch and display logs if "palworld" is selected
     }
 });
