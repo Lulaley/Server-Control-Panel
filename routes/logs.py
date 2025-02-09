@@ -175,6 +175,6 @@ def init_get_logs_routes(app):
             else:
                 players_list = list(players)
 
-            return jsonify({'logs': cleaned_logs, 'players': players_list})
+            return jsonify({'logs': cleaned_logs, 'online_players': players_list})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
