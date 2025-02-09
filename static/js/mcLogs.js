@@ -64,6 +64,11 @@ async function fetchLogs() {
     }
 }
 
+async function fetchMinecraftLogFiltered(filterType) {
+    currentFilterType = filterType;
+    await fetchLogs();
+}
+
 // Call the fetchLogs function every 1000 milliseconds
 setInterval(() => fetchLogs(), 1000);
 
