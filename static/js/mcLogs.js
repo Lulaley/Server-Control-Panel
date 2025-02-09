@@ -1,5 +1,5 @@
 let currentFilterType = 'all'; // Default filter type
-let selectedButton = document.getElementById('all-tag-button');  // Par défaut, le bouton "Show All" est sélectionné
+let selectedButton = document.getElementById('all-tag-button');  // Default selected button
 let serverType = 'minecraft'; // Default server type
 
 function updateFilterType(filterType) {
@@ -28,7 +28,7 @@ async function fetchLogs() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ filter_type: currentFilterType })
+                body: JSON.stringify({ filter_type: currentFilterType, log_path: log_path })
             });
         } else if (serverType === 'palworld') {
             response = await fetch('/palworld/logs');
