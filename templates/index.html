@@ -71,11 +71,13 @@
         </div>
 
         <div id="update_server">
-        </div>
-
-        <div id="update_server">
             <button id="update-server-btn" class="btn btn-update-server">Update Server</button>
             <button id="restart-server-btn" class="btn btn-restart-server">Restart Server</button>
+        </div>
+
+        <div id="update-status-container">
+            <h3>Update Status:</h3>
+            <pre id="update-status"></pre>
         </div>
 
         <div id="add-service-form" class="modal">
@@ -305,6 +307,14 @@
                 })
                 .catch(error => console.error('Error restarting server:', error));
             }
+
+            // WebSocket connection for real-time updates
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            socket.on('update_status', function(data) {
+                const updateStatusContainer = document.getElementById('update-status');
+                updateStatusContainer.textContent += data.message + '\n';
+            });
 
         });
     </script>
