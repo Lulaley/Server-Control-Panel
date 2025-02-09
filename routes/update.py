@@ -15,7 +15,7 @@ def run_command(command):
             socketio.emit('update_status', {'message': line.strip()})
         raise subprocess.CalledProcessError(process.returncode, command)
 
-@update_bp.route('/api/action_server', methods=['POST'])
+@update_bp.route('/api/aaction_server', methods=['POST'])
 def aaction_server():
     data = request.get_json()
     action = data.get('action')
