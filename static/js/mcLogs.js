@@ -109,11 +109,6 @@ async function fetchLogs() {
                 const div = document.createElement('div');
                 div.textContent = player;
 
-                const tellButton = document.createElement('button');
-                tellButton.textContent = 'Tell';
-                tellButton.className = 'modal';
-                div.appendChild(tellButton);
-
                 playerList.appendChild(div);
             }
         } catch (playerError) {
