@@ -2,27 +2,20 @@ let currentFilterType = 'all'; // Default filter type
 let selectedButton = document.getElementById('all-tag-button');  // Par défaut, le bouton "Show All" est sélectionné
 
 function updateFilterType(filterType) {
+    currentFilterType = filterType;
     localStorage.setItem('selectedFilterType', filterType);
-    fetchLogs(filterType);
-
-    // Supprimer la classe 'selected' du bouton précédemment sélectionné
-    selectedButton.classList.remove('selected');
-
-    // Ajouter la classe 'selected' au bouton actuellement sélectionné
-    const buttonId = filterType + '-tag-button';
-    selectedButton = document.getElementById(buttonId);
-    selectedButton.classList.add('selected');
+    highlightSelectedButton(filterType);
+    fetchLogs();
 }
 
 function highlightSelectedButton(filterType) {
-    const buttons = document.querySelectorAll('#filter-buttons button');
-    buttons.forEach(button => {
-        if (button.getAttribute('data-filter') === filterType) {
-            button.classList.add('selected');
-        } else {
-            button.classList.remove('selected');
-        }
-    });
+    if (selectedButton) {
+        selectedButton.classList.remove('selected');
+    }
+    selectedButton = document.getElementById(`${filterType}-tag-button`);
+    if (selectedButton) {
+        selectedButton.classList.add('selected');
+    }
 }
 
 async function fetchLogs() {
