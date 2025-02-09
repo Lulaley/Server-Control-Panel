@@ -18,9 +18,13 @@
     padding: 8px 16px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, font-weight 0.3s;
 }
 
 .btn-restart-server {
-    background-color: #FF5733; /* Different color for restart button */
+    background-color: #ffa033; /* Different color for restart button */
+}
+
+.btn-update-server:hover, .btn-restart-server:hover {
+    font-weight: bold;
 }
