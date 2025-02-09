@@ -2,9 +2,11 @@ import os
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template
+from flask_socketio import SocketIO
 from routes.conf import init_rcon_port
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 # Configure logging
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -59,4 +61,4 @@ if __name__ == '__main__':
     scheduler.add_job(update_players, 'interval', seconds=30)  # Update players every 30 seconds
     scheduler.start()
     # Important to use use_reloader=False to avoid duplicate scheduler instances
-    app.run(host='0.0.0.0', port=5000, use_reloader=False, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, use_reloader=False, debug=True)
