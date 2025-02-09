@@ -19,6 +19,7 @@ from routes.statusMcServer import init_get_mc_folders_routes, init_minecraft_sta
 from routes.systemInfo import init_system_info_routes
 from routes.javaGestion import init_get_java_versions_routes, init_change_java_version_routes
 from routes.query_service import query_service_bp
+from routes.update import update_bp
 
 # Initialisez les routes pour démarrer, arrêter, redémarrer et supprimer les services
 init_start_service_routes(app)
@@ -48,6 +49,9 @@ init_change_java_version_routes(app)
 
 # Register the query service blueprint
 app.register_blueprint(query_service_bp)
+
+# Register the update blueprint
+app.register_blueprint(update_bp)
 
 @app.route('/')
 def index():

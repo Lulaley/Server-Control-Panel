@@ -69,6 +69,10 @@
             </table>
         </div>
 
+        <div id="update_server">
+            <button id="update-server-btn" class="btn btn-update-server">Update Server</button>
+        </div>
+
         <div id="add-service-form" class="modal">
             <div class="modal-content">
                 <span class="title-service-form">Création d'un service</span>
@@ -249,6 +253,25 @@
                 if (event.target == modal) {
                     modal.style.display = "none";
                 }
+            }
+
+            // Get the update server button
+            var updateServerBtn = document.getElementById("update-server-btn");
+
+            // When the user clicks the button, send a request to update the server
+            updateServerBtn.onclick = function() {
+                fetch('/api/update_server', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Server update started successfully.');
+                    } else {
+                        alert('Failed to start server update.');
+                    }
+                })
+                .catch(error => console.error('Error updating server:', error));
             }
 
         });
