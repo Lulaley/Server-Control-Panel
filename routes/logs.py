@@ -70,7 +70,7 @@ def init_get_logs_routes(app):
 
         # Si filtered.log n'existe pas, utiliser latest.log à la place
         if not os.path.exists(filtered_log_path):
-            filtered_log_path = latest_log
+            filtered_log_path = latest_log_path
 
         # Vérifier si "RCON" est présent dans les logs
         rcon_present_in_logs = False
