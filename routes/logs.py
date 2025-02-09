@@ -122,7 +122,8 @@ def init_get_logs_routes(app):
     def fetch_palworld_logs():
         try:
             # Execute the journalctl command to fetch the logs for the PalWorld service
-            logs = subprocess.run(['journalctl', '-u', 'palworld.service', '--no-pager', '-n', '500'], capture_output=True, text=True).stdout
+            result = subprocess.run(['journalctl', '-u', 'palworld.service', '--no-pager', '-n', '500'], capture_output=True, text=True)
+            logs = result.stdout.splitlines()
             return jsonify({'logs': logs})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
