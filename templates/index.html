@@ -14,226 +14,244 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-    <body>
-        <div id="super-container">
-            <div class="cat-bar">
-                <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
-            </div>
+<body>
+    <div id="super-container">
+        <div class="cat-bar">
+            <img src="{{ url_for('static', filename='images/cat-image.png') }}" alt="Cat" class="cat-image">
+        </div>
 
-            <div id="percentages-container">
-                <div id="java-version" style="padding-left: 5px;padding-top: 5px;"></div>
-                <div class="plain-bar"></div>
-            
-                <div id="cpu-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
-                <div class="progress-bar" id="cpu-progress-bar"></div>
-            
-                <div id="memory-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
-                <div class="progress-bar" id="memory-progress-bar"></div>
-            
-                <div id="disk-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
-                <div class="progress-bar" id="disk-progress-bar"></div>
-            </div>
+        <div id="percentages-container">
+            <div id="java-version" style="padding-left: 5px;padding-top: 5px;"></div>
+            <div class="plain-bar"></div>
+        
+            <div id="cpu-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
+            <div class="progress-bar" id="cpu-progress-bar"></div>
+        
+            <div id="memory-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
+            <div class="progress-bar" id="memory-progress-bar"></div>
+        
+            <div id="disk-percentage" style="padding-left: 5px;padding-top: 5px;"></div>
+            <div class="progress-bar" id="disk-progress-bar"></div>
+        </div>
 
-            <div id="services-container">
-                <button id="add-service-btn" class="btn btn-add-service">Ajouter un service</button>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Service</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for service, info in services.items() %}
-                    <tr>
-                        <td>{{ service }}</td>
-                        <td>
-                            <span style="display: inline-block; width: 20px; height: 20px; background-color: 
-                            {% if info['status'] == 'active' %}green
-                            {% elif info['status'] == 'inactive' %}orange
-                            {% else %}red{% endif %}; margin-left: 10px;"></span>
-                        </td>
-                        <td>
-                            {% if info['status'] == 'active' %}
-                            <button type="button" class="btn btn-stop" onclick="stop_service('{{ service }}')">Stop</button>
-                            {% elif info['status'] == 'inactive' or info['status'] == 'not_found' %}
-                                <button type="button" class="btn btn-start" onclick="start_service('{{ service }}')">Start</button>
-                                <button type="button" class="btn btn-delete" onclick="delete_service('{{ service }}')">Supprimer</button>
-                            {% endif %}
-                            <button type="button" class="btn btn-restart" onclick="restart_service('{{ service }}')">Restart</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <div id="services-container">
+            <button id="add-service-btn" class="btn btn-add-service">Ajouter un service</button>
+            <table>
+                <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for service, info in services.items() %}
+                <tr>
+                    <td>{{ service }}</td>
+                    <td>
+                        <span style="display: inline-block; width: 20px; height: 20px; background-color: 
+                        {% if info['status'] == 'active' %}green
+                        {% elif info['status'] == 'inactive' %}orange
+                        {% else %}red{% endif %}; margin-left: 10px;"></span>
+                    </td>
+                    <td>
+                        {% if info['status'] == 'active' %}
+                        <button type="button" class="btn btn-stop" onclick="stop_service('{{ service }}')">Stop</button>
+                        {% elif info['status'] == 'inactive' or info['status'] == 'not_found' %}
+                            <button type="button" class="btn btn-start" onclick="start_service('{{ service }}')">Start</button>
+                            <button type="button" class="btn btn-delete" onclick="delete_service('{{ service }}')">Supprimer</button>
+                        {% endif %}
+                        <button type="button" class="btn btn-restart" onclick="restart_service('{{ service }}')">Restart</button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-            <div id="add-service-form" class="modal">
-                <div class="modal-content">
-                    <span class="title-service-form">Création d'un service</span>
-                    <span class="close">&times;</span>
-                    <form id="new-service-form">
-                        <label for="service-name">Nom du service:</label>
-                        <input type="text" id="service-name" name="service-name" required><br><br>
-                        <label for="service-description">Description du service:</label>
-                        <input type="text" id="service-description" name="service-description" required><br><br>
-                        <label for="service-command">Commande à exécuter:</label>
-                        <input type="text" id="service-command" name="service-command" required><br><br>
-                        <input type="submit" class="btn btn-valider-form" value="Créer le service">
-                    </form>
-                </div>
+        <div id="add-service-form" class="modal">
+            <div class="modal-content">
+                <span class="title-service-form">Création d'un service</span>
+                <span class="close">&times;</span>
+                <form id="new-service-form">
+                    <label for="service-name">Nom du service:</label>
+                    <input type="text" id="service-name" name="service-name" required><br><br>
+                    <label for="service-description">Description du service:</label>
+                    <input type="text" id="service-description" name="service-description" required><br><br>
+                    <label for="service-command">Commande à exécuter:</label>
+                    <input type="text" id="service-command" name="service-command" required><br><br>
+                    <input type="submit" class="btn btn-valider-form" value="Créer le service">
+                </form>
             </div>
+        </div>
 
-            {% if not minecraft_running %}
-            <div id="java-version-container" class="folder-select-container">
-                <label for="java-version-select">Select Java version :</label>
-                <select id="java-version-select">
-                    <option value="">Select...</option>
-                </select>
-            </div>
-            {% endif %}
+        {% if not minecraft_running %}
+        <div id="java-version-container" class="folder-select-container">
+            <label for="java-version-select">Select Java version :</label>
+            <select id="java-version-select">
+                <option value="">Select...</option>
+            </select>
+        </div>
+        {% endif %}
 
-            <div id="control-container">
+        <div id="control-container">
+            <div class="folder-select-container">
                 <div class="folder-select-container">
-                    <div class="folder-select-container">
-                        <label for="folder-select" style="width: 257px;">Select a 
-                                <select id="server-type-select">
-                                    <option value="">Select...</option>
-                                    <option value="minecraft">Minecraft</option>
-                                    <option value="palword">PalWorld</option>
-                                    <option value="satisfactory">Satisfactory</option>
-                                </select> server log :
-                        <select id="folder-select">
-                            <option value="">Select...</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div id="players-container">
-                <h2>Players List :</h2>
-                <div id="players-list">
-                    <!-- Player items will be added here dynamically -->
-                </div>
-            </div>
-
-            <div id="main-container">
-                <div id="filter-buttons">
-                    <button id="errors-tag-button" class="tag-button" onclick="updateFilterType('errors')">Show Errors</button>
-                    <button id="warnings-tag-button" class="tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
-                    <button id="info-tag-button" class="tag-button" onclick="updateFilterType('info')">Show Info</button>
-                    <button id="discussion-tag-button" class="tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
-                    <button id="all-tag-button" class="tag-button" onclick="updateFilterType('all')">Show All</button>
-                </div>
-                <div id="console-container">
-                    <div id="console-box">
-                        <div id="console" class="console-box"></div>
-                    </div>
-            
-                    <form id="command-form">
-                        <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
-                        <div id="command-error"></div>
-                    </form>
+                    <label for="folder-select" style="width: 257px;">Select a 
+                            <select id="server-type-select">
+                                <option value="">Select...</option>
+                                <option value="minecraft">Minecraft</option>
+                                <option value="palword">PalWorld</option>
+                                <option value="satisfactory">Satisfactory</option>
+                            </select> server log :
+                    <select id="folder-select">
+                        <option value="">Select...</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <script src="../static/js/systemInfo.js"></script>
-        <script src="../static/js/sendCmdMc.js"></script>
-        <script src="../static/js/selecteurMcLog.js"></script>
-        <script src="../static/js/mcLogs.js"></script>
-        <script src="../static/js/javaVersion.js"></script>
-        <script src="../static/js/mcserveurStatus.js"></script>
-        <script src="../static/js/services.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {       
-                let lastStatus = { minecraft_running };
+        <div id="players-container">
+            <h2>Players List :</h2>
+            <div id="players-list">
+                <!-- Player items will be added here dynamically -->
+            </div>
+        </div>
 
-                function checkMinecraftStatus() {
-                    console.log('Checking Minecraft status...');
-                    fetch('/api/minecraft_status')
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.minecraft_running !== lastStatus) {
-                                window.location.reload();
-                            }
-                        })
-                        .catch(error => console.error('Error fetching Minecraft status:', error));
-                }
+        <div id="main-container">
+            <div id="filter-buttons">
+                <button id="errors-tag-button" class="tag-button" onclick="updateFilterType('errors')">Show Errors</button>
+                <button id="warnings-tag-button" class="tag-button" onclick="updateFilterType('warnings')">Show Warnings</button>
+                <button id="info-tag-button" class="tag-button" onclick="updateFilterType('info')">Show Info</button>
+                <button id="discussion-tag-button" class="tag-button" onclick="updateFilterType('discussion')">Show Discussion</button>
+                <button id="all-tag-button" class="tag-button" onclick="updateFilterType('all')">Show All</button>
+            </div>
+            <div id="console-container">
+                <div id="console-box">
+                    <div id="console" class="console-box"></div>
+                </div>
+        
+                <form id="command-form">
+                    <input type="text" id="command-input" placeholder="Enter command..." autocomplete="off">
+                    <div id="command-error"></div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-                // Vérifier le statut toutes les 30 secondes
-                setInterval(checkMinecraftStatus, 30000);
+    <script src="../static/js/systemInfo.js"></script>
+    <script src="../static/js/sendCmdMc.js"></script>
+    <script src="../static/js/selecteurMcLog.js"></script>
+    <script src="../static/js/mcLogs.js"></script>
+    <script src="../static/js/javaVersion.js"></script>
+    <script src="../static/js/mcserveurStatus.js"></script>
+    <script src="../static/js/services.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {       
+            let lastStatus = { minecraft_running };
 
-                async function fetchAndDisplayPlayers() {
-                    const playersContainer = document.getElementById('players-list');
-                    playersContainer.innerHTML = ''; // Clear existing list items
+            function checkMinecraftStatus() {
+                console.log('Checking Minecraft status...');
+                fetch('/api/minecraft_status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.minecraft_running !== lastStatus) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error fetching Minecraft status:', error));
+            }
 
-                    // Example: Fetch player list from an API or server
-                    const response = await fetch('/api/players');
-                    const players = await response.json();
+            // Vérifier le statut toutes les 30 secondes
+            setInterval(checkMinecraftStatus, 30000);
 
-                    players.forEach(player => {
-                        const listItem = document.createElement('div');
-                        listItem.textContent = player;
-                        listItem.className = 'player-item';
-                        playersContainer.appendChild(listItem);
-                    });
-                }
+            async function fetchAndDisplayPlayers() {
+                const playersContainer = document.getElementById('players-list');
+                playersContainer.innerHTML = ''; // Clear existing list items
 
-                // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
-                fetchAndDisplayPlayers();
+                // Fetch player list from the server
+                const response = await fetch('/api/players');
+                const players = await response.json();
 
-                // WebSocket connection for real-time updates
-                const socket = io.connect('http://' + document.domain + ':' + location.port);
-
-                socket.on('player_connect', function(data) {
-                    const playersContainer = document.getElementById('players-list');
+                players.forEach(player => {
                     const listItem = document.createElement('div');
-                    listItem.textContent = data.player;
+                    listItem.textContent = player;
                     listItem.className = 'player-item';
                     playersContainer.appendChild(listItem);
                 });
+            }
 
-                socket.on('player_disconnect', function(data) {
-                    const playersContainer = document.getElementById('players-list');
-                    const playerItems = playersContainer.getElementsByClassName('player-item');
-                    for (let i = 0; i < playerItems.length; i++) {
-                        if (playerItems[i].textContent === data.player) {
-                            playersContainer.removeChild(playerItems[i]);
-                            break;
-                        }
+            // Call this function when appropriate, e.g., after the page loads or when the players list needs to be refreshed
+            fetchAndDisplayPlayers();
+
+            // WebSocket connection for real-time updates
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            socket.on('player_connect', function(data) {
+                const playersContainer = document.getElementById('players-list');
+                const listItem = document.createElement('div');
+                listItem.textContent = data.player;
+                listItem.className = 'player-item';
+                playersContainer.appendChild(listItem);
+            });
+
+            socket.on('player_disconnect', function(data) {
+                const playersContainer = document.getElementById('players-list');
+                const playerItems = playersContainer.getElementsByClassName('player-item');
+                for (let i = 0; i < playerItems.length; i++) {
+                    if (playerItems[i].textContent === data.player) {
+                        playersContainer.removeChild(playerItems[i]);
+                        break;
                     }
-                });
-
-                // Get the modal
-                var modal = document.getElementById("add-service-form");
-
-                // Get the button that opens the modal
-                var btn = document.getElementById("add-service-btn");
-
-                // Get the <span> element that closes the modal
-                var span = document.getElementsByClassName("close")[0];
-
-                // When the user clicks the button, open the modal 
-                btn.onclick = function() {
-                    modal.style.display = "block";
                 }
+            });
 
-                // When the user clicks on <span> (x), close the modal
-                span.onclick = function() {
+            // Function to scroll to the bottom of the console
+            function scrollToBottom() {
+                const consoleBox = document.getElementById('console');
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+            }
+
+            // Example function to add log entries and scroll to the bottom
+            function addLogEntry(log) {
+                const logContainer = document.getElementById('console');
+                const logEntry = document.createElement('div');
+                logEntry.textContent = log;
+                logContainer.appendChild(logEntry);
+                scrollToBottom();
+            }
+
+            // Example usage of addLogEntry
+            addLogEntry('Example log entry');
+
+            // Get the modal
+            var modal = document.getElementById("add-service-form");
+
+            // Get the button that opens the modal
+            var btn = document.getElementById("add-service-btn");
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+
+            // When the user clicks the button, open the modal 
+            btn.onclick = function() {
+                modal.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
                     modal.style.display = "none";
                 }
+            }
 
-                // When the user clicks anywhere outside of the modal, close it
-                window.onclick = function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                }
-
-            });
-        </script>
-    </body>
+        });
+    </script>
+</body>
 </html>
