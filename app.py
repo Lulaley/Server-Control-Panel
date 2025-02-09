@@ -10,7 +10,7 @@ app = Flask(__name__)
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 from routes.service import get_services, init_start_service_routes, init_stop_service_routes, init_restart_service_routes, init_delete_service_routes, init_create_service_routes
-from routes.logs import init_get_logs_routes
+from routes.logs import init_get_logs_routes, update_players
 from routes.commandMcServer import init_send_command
 from routes.welcomeMessage import monitor_for_new_players
 from routes.statusMcServer import init_get_mc_folders_routes, init_minecraft_status_routes, init_server_status_routes, is_minecraft_server_running
@@ -56,6 +56,7 @@ def index():
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(monitor_for_new_players, 'interval', minutes=1)
+    scheduler.add_job(update_players, 'interval', seconds=30)  # Update players every 30 seconds
     scheduler.start()
     # Important to use use_reloader=False to avoid duplicate scheduler instances
     app.run(host='0.0.0.0', port=5000, use_reloader=False, debug=True)

@@ -185,27 +185,26 @@
                 fetchAndDisplayPlayers();
 
                 // WebSocket connection for real-time updates
-                const socket = new WebSocket('ws://your_server_address/ws');
+                const socket = io.connect('http://' + document.domain + ':' + location.port);
 
-                socket.onmessage = function(event) {
-                    const message = JSON.parse(event.data);
-                    if (message.type === 'player_connect') {
-                        const playersContainer = document.getElementById('players-list');
-                        const listItem = document.createElement('div');
-                        listItem.textContent = message.player;
-                        listItem.className = 'player-item';
-                        playersContainer.appendChild(listItem);
-                    } else if (message.type === 'player_disconnect') {
-                        const playersContainer = document.getElementById('players-list');
-                        const playerItems = playersContainer.getElementsByClassName('player-item');
-                        for (let i = 0; i < playerItems.length; i++) {
-                            if (playerItems[i].textContent === message.player) {
-                                playersContainer.removeChild(playerItems[i]);
-                                break;
-                            }
+                socket.on('player_connect', function(data) {
+                    const playersContainer = document.getElementById('players-list');
+                    const listItem = document.createElement('div');
+                    listItem.textContent = data.player;
+                    listItem.className = 'player-item';
+                    playersContainer.appendChild(listItem);
+                });
+
+                socket.on('player_disconnect', function(data) {
+                    const playersContainer = document.getElementById('players-list');
+                    const playerItems = playersContainer.getElementsByClassName('player-item');
+                    for (let i = 0; i < playerItems.length; i++) {
+                        if (playerItems[i].textContent === data.player) {
+                            playersContainer.removeChild(playerItems[i]);
+                            break;
                         }
                     }
-                };
+                });
 
                 // Get the modal
                 var modal = document.getElementById("add-service-form");
