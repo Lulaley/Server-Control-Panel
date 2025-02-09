@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Server Control</title>
+    <title>Server Control Panel</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/serveur.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/commun.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/console.css') }}">
@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/selecteurMcLog.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/serveurStatus.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
     <body>
         <div id="super-container">
@@ -145,7 +146,7 @@
         <script src="../static/js/javaVersion.js"></script>
         <script src="../static/js/mcserveurStatus.js"></script>
         <script src="../static/js/services.js"></script>
-        <script type="text/javascript">
+        <script>
             document.addEventListener('DOMContentLoaded', function() {       
                 let lastStatus = { minecraft_running };
 
