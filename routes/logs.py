@@ -70,7 +70,7 @@ def init_get_logs_routes(app):
 
         # Si filtered.log n'existe pas, utiliser latest.log à la place
         if not os.path.exists(filtered_log_path):
-            filtered_log_path = latest_log_path
+            filtered_log_path = latest_log
 
         # Vérifier si "RCON" est présent dans les logs
         rcon_present_in_logs = False
@@ -153,13 +153,13 @@ def init_get_logs_routes(app):
             # Execute the journalctl command to fetch the logs for the PalWorld service
             result = subprocess.run(['journalctl', '-u', 'palworld.service', '--no-pager', '-n', '500'], capture_output=True, text=True)
             logs = result.stdout.splitlines()
-            
-            # Filter out unwanted log entries
-            filtered_logs = [log for log in logs if '[S_APi FAIL]' not in log and '[LOG]' not in log and 'systemd[1]' not in log]
+
+            # Remove specific words from each line of the logs
+            cleaned_logs = [log.replace('chimea-System-Product-Name', '').replace('PalServer.sh', '') for log in logs]
 
             # Update the player list based on log entries
             players = set()
-            for log in logs:
+            for log in cleaned_logs:
                 if 'joined the server' in log:
                     match = re.search(r'\[LOG\] (.+?) joined the server', log)
                     if match:
@@ -169,6 +169,6 @@ def init_get_logs_routes(app):
                     if match:
                         players.discard(match.group(1))
 
-            return jsonify({'logs': filtered_logs, 'players': list(players)})
+            return jsonify({'logs': cleaned_logs, 'players': list(players)})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
