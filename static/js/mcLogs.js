@@ -1,8 +1,9 @@
 let currentFilterType = 'all'; // Default filter type
 let selectedButton = document.getElementById('all-tag-button');  // Par défaut, le bouton "Show All" est sélectionné
+
 function updateFilterType(filterType) {
     localStorage.setItem('selectedFilterType', filterType);
-    fetchMinecraftLogFiltered(filterType);
+    fetchLogs(filterType);
 
     // Supprimer la classe 'selected' du bouton précédemment sélectionné
     selectedButton.classList.remove('selected');
@@ -24,19 +25,20 @@ function highlightSelectedButton(filterType) {
     });
 }
 
-async function fetchMinecraftLogFiltered() {
-    if (document.getElementById('folder-select').value === "") {
+async function fetchLogs() {
+    const serverType = document.getElementById('server-type-select').value;
+    if (serverType === "") {
         return;
     }
 
     // Retrieve the filter type from local storage or use a default
     let filterType = localStorage.getItem('selectedFilterType') || 'all';
     highlightSelectedButton(filterType);
-    
+
     try {
         let data;
         try {
-            const response = await fetch('/minecraft_log', {
+            const response = await fetch(`/${serverType}_log`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -96,8 +98,7 @@ async function fetchMinecraftLogFiltered() {
                 consoleElement.appendChild(document.createElement('br')); // New line
             });
         } catch (processingError) {
-            
-            //console.info('Erreur lors du traitement des entrées de log:', processingError);
+            console.info('Erreur lors du traitement des entrées de log:', processingError);
         }
 
         try {
@@ -125,11 +126,11 @@ async function fetchMinecraftLogFiltered() {
     }
 }
 
-// Call the fetchMinecraftLogFiltered function every 3800 milliseconds
-setInterval(() => fetchMinecraftLogFiltered(), 1000);
+// Call the fetchLogs function every 1000 milliseconds
+setInterval(() => fetchLogs(), 1000);
 
 document.addEventListener('DOMContentLoaded', function() {
     const filterType = localStorage.getItem('selectedFilterType') || 'all';
     highlightSelectedButton(filterType);
-    fetchMinecraftLogFiltered(); // This will now use the filter type from local storage
+    fetchLogs(); // This will now use the filter type from local storage
 });
