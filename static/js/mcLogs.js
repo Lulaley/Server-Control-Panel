@@ -43,46 +43,20 @@ async function fetchLogs() {
         const consoleElement = document.getElementById('console');
         consoleElement.innerHTML = ''; // Clear existing logs
 
-        try {
-            const logEntries = data.logs.split('\n');
-            logEntries.forEach(entry => {
-                const span = document.createElement('span');
-                span.textContent = entry;
+        data.logs.forEach(log => {
+            const logEntry = document.createElement('div');
+            logEntry.textContent = log;
+            consoleElement.appendChild(logEntry);
+        });
 
-                if (entry.includes('/ERROR')) {
-                    span.className = 'error-message';
-                } else if (entry.includes('/WARN')) {
-                    span.className = 'warning-message';
-                } else if (entry.includes('<') || entry.includes('[Rcon]')) {
-                    // This condition now also checks for entries containing [RCON]
-                    span.className = 'discussion-message';
-                } else if (entry.includes('/INFO')) {
-                    span.className = 'info-message';
-                } else {
-                    // Default class for logs without a clear level, or you can add more conditions for other levels
-                    span.className = 'any-message';
-                }
+        const playerList = document.getElementById('players-list');
+        playerList.innerHTML = ''; // Clear existing list
+        data.online_players.forEach(player => {
+            const playerEntry = document.createElement('div');
+            playerEntry.textContent = player;
+            playerList.appendChild(playerEntry);
+        });
 
-                consoleElement.appendChild(span);
-                consoleElement.appendChild(document.createElement('br')); // New line
-            });
-        } catch (processingError) {
-            console.info('Erreur lors du traitement des entrées de log:', processingError);
-        }
-
-        try {
-            // Optionally, update the online players list if your API also returns this information            
-            const playerList = document.getElementById('players-list');
-            playerList.innerHTML = ''; // Clear existing list
-            for (const player of data.online_players) {
-                const div = document.createElement('div');
-                div.textContent = player;
-
-                playerList.appendChild(div);
-            }
-        } catch (playerError) {
-            console.info('Erreur lors de la récupération des joueurs:', playerError);
-        }
         // Scroll to the bottom of the console
         consoleElement.scrollTop = consoleElement.scrollHeight;
     } catch (fetchError) {

@@ -42,15 +42,6 @@ async function fetchPalWorldLogs() {
 
         data.logs.forEach(log => {
             const logEntry = document.createElement('div');
-            if (log.includes('[S_APi FAIL]')) {
-                logEntry.style.color = 'red';
-            } else if (log.includes('[LOG]')) {
-                logEntry.style.color = 'blue';
-            } else if (log.includes('systemd[1]')) {
-                logEntry.style.color = 'orange';
-            } else {
-                logEntry.style.color = 'white';
-            }
             logEntry.textContent = log;
             logContainer.appendChild(logEntry);
         });
