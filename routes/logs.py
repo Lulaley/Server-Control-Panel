@@ -3,16 +3,9 @@ import os
 import re
 import subprocess
 import logging
-from flask import request, jsonify, current_app, Flask
-from flask_socketio import SocketIO, emit
+from flask import request, jsonify, current_app
 from rcon.source import Client
 from .conf import MC_RCON_HOST, MC_RCON_PASSWORD, set_selected_folder, init_rcon_port, get_rcon_port
-
-app = Flask(__name__)
-socketio = SocketIO(app)
-
-# Example player list
-players = []
 
 def remove_color_codes(text):
     return re.sub(r'\x1b\[[0-9;]*[mK]', '', text)
@@ -29,35 +22,6 @@ def fetchPlayers():
             return players
     except Exception as e:
         return ["Aucun joueurs connecté"]  # Retourner le message en cas d'exception
-
-@app.route('/api/players', methods=['GET'])
-def get_players():
-    return jsonify(players)
-
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')
-
-def fetch_players():
-    # Example: Fetch player list from the server
-    result = subprocess.run(['your_command_to_get_players'], capture_output=True, text=True)
-    return result.stdout.splitlines()
-
-def update_players():
-    global players
-    new_players = fetch_players()
-    for player in new_players:
-        if player not in players:
-            players.append(player)
-            socketio.emit('player_connect', {'player': player})
-    for player in players:
-        if player not in new_players:
-            players.remove(player)
-            socketio.emit('player_disconnect', {'player': player})
 
 def init_get_logs_routes(app):
     @app.route('/minecraft_log', methods=['POST'])
@@ -163,6 +127,3 @@ def init_get_logs_routes(app):
             return jsonify({'logs': logs})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-
-if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
