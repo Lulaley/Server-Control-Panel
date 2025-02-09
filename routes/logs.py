@@ -155,7 +155,7 @@ def init_get_logs_routes(app):
             logs = result.stdout.splitlines()
 
             # Remove specific words from each line of the logs
-            cleaned_logs = [log.replace('chimea-System-Product-Name', '').replace('PalServer.sh', '') for log in logs]
+            cleaned_logs = [log.replace('chimea-System-Product-Name [1083188]', '').replace('PalServer.sh', '') for log in logs]
 
             # Update the player list based on log entries
             players = set()
