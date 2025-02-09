@@ -169,6 +169,12 @@ def init_get_logs_routes(app):
                     if match:
                         players.discard(match.group(1))
 
-            return jsonify({'logs': cleaned_logs, 'players': list(players)})
+            # Format the player list to match the Minecraft player list format
+            if not players:
+                players_list = ["Aucun joueurs connecté"]
+            else:
+                players_list = list(players)
+
+            return jsonify({'logs': cleaned_logs, 'players': players_list})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
