@@ -71,7 +71,11 @@
         </div>
 
         <div id="update_server">
+        </div>
+
+        <div id="update_server">
             <button id="update-server-btn" class="btn btn-update-server">Update Server</button>
+            <button id="restart-server-btn" class="btn btn-restart-server">Restart Server</button>
         </div>
 
         <div id="add-service-form" class="modal">
@@ -261,8 +265,12 @@
 
             // When the user clicks the button, send a request to update the server
             updateServerBtn.onclick = function() {
-                fetch('/api/update_server', {
-                    method: 'POST'
+                fetch('/api/aaction_server', {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'update' }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -273,6 +281,29 @@
                     }
                 })
                 .catch(error => console.error('Error updating server:', error));
+            }
+
+            // Get the restart server button
+            var restartServerBtn = document.getElementById("restart-server-btn");
+
+            // When the user clicks the button, send a request to restart the server
+            restartServerBtn.onclick = function() {
+                fetch('/api/aaction_server', {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'restart' }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Server restart started successfully.');
+                    } else {
+                        alert('Failed to start server restart.');
+                    }
+                })
+                .catch(error => console.error('Error restarting server:', error));
             }
 
         });

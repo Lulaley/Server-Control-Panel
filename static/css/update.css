@@ -10,7 +10,7 @@
     overflow-y: auto;
 }
 
-.btn-update-server {
+.btn-update-server, .btn-restart-server {
     background-color: #4CAF50;
     color: black;
     border: none;
@@ -19,4 +19,8 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+}
+
+.btn-restart-server {
+    background-color: #FF5733; /* Different color for restart button */
 }
