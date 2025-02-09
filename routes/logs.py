@@ -153,6 +153,22 @@ def init_get_logs_routes(app):
             # Execute the journalctl command to fetch the logs for the PalWorld service
             result = subprocess.run(['journalctl', '-u', 'palworld.service', '--no-pager', '-n', '500'], capture_output=True, text=True)
             logs = result.stdout.splitlines()
-            return jsonify({'logs': logs})
+            
+            # Filter out unwanted log entries
+            filtered_logs = [log for log in logs if '[S_APi FAIL]' not in log and '[LOG]' not in log and 'systemd[1]' not in log]
+
+            # Update the player list based on log entries
+            players = set()
+            for log in logs:
+                if 'joined the server' in log:
+                    match = re.search(r'\[LOG\] (.+?) joined the server', log)
+                    if match:
+                        players.add(match.group(1))
+                elif 'left the server' in log:
+                    match = re.search(r'\[LOG\] (.+?) left the server', log)
+                    if match:
+                        players.discard(match.group(1))
+
+            return jsonify({'logs': filtered_logs, 'players': list(players)})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
