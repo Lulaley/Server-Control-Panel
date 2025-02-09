@@ -36,24 +36,21 @@ async function fetchPalWorldLogs() {
     try {
         const response = await fetch('/palworld/logs');
         const data = await response.json(); // Get the response as JSON
-
-        try {
-            printLogs(data);
-        } catch (error) {
-            console.error('Error fetching PalWorld logs:', error);
-        }
-
+        
         const logContainer = document.getElementById('console');
         logContainer.innerHTML = ''; // Clear previous logs
 
-        try {
-            printLogs(logContainer);
-        } catch (error) {
-            console.error('error geting console box:', error);
-        }
-
         data.logs.forEach(log => {
             const logEntry = document.createElement('div');
+            if (log.includes('[S_APi FAIL]')) {
+                logEntry.style.color = 'red';
+            } else if (log.includes('[LOG]')) {
+                logEntry.style.color = 'blue';
+            } else if (log.includes('systemd[1]')) {
+                logEntry.style.color = 'orange';
+            } else {
+                logEntry.style.color = 'white';
+            }
             logEntry.textContent = log;
             logContainer.appendChild(logEntry);
         });
