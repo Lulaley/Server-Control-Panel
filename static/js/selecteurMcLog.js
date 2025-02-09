@@ -35,16 +35,23 @@ async function fetchFolders() {
 async function fetchPalWorldLogs() {
     try {
         const response = await fetch('/palworld/logs');
-        const data = await response.json();
+        const text = await response.text(); // Get the response as text
 
-        const logContainer = document.getElementById('console');
-        logContainer.innerHTML = ''; // Clear previous logs
+        try {
+            const data = JSON.parse(text); // Try to parse the text as JSON
 
-        data.logs.forEach(log => {
-            const logEntry = document.createElement('div');
-            logEntry.textContent = log;
-            logContainer.appendChild(logEntry);
-        });
+            const logContainer = document.getElementById('console');
+            logContainer.innerHTML = ''; // Clear previous logs
+
+            data.logs.forEach(log => {
+                const logEntry = document.createElement('div');
+                logEntry.textContent = log;
+                logContainer.appendChild(logEntry);
+            });
+        } catch (jsonError) {
+            console.error('Error parsing JSON:', jsonError);
+            console.error('Response text:', text); // Log the response text for debugging
+        }
     } catch (error) {
         console.error('Error fetching PalWorld logs:', error);
     }
