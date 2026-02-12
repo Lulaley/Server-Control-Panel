@@ -1,6 +1,8 @@
-## Description
+# Description
 
-<!-- Résume brièvement le besoin, la solution, et l'impact utilisateur -->
+Server-Control-Panel est un site permettant de monitorer une machine de serveurs (métriques CPU, RAM, disque, réseau, threads CPU), de visionner et contrôler les différents services de jeux, avec gestion de comptes utilisateurs et configurations individuelles.
+
+<!-- Résume brièvement le besoin, la solution et l'impact utilisateur de cette PR -->
 
 ## Type de changement
 
