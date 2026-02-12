@@ -1,0 +1,25 @@
+.site-box {
+    max-width: 720px;
+    margin: 24px auto;
+    padding: 16px;
+}
+
+.color-input-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+#main-color {
+    width: 56px;
+    height: 40px;
+    vertical-align: middle;
+}
+
+/* small screens */
+@media (max-width: 540px) {
+    .site-box { margin: 12px; padding: 12px; width: calc(100% - 24px); }
+    .styled-select { margin-left: 0; width: 100%; }
+    .color-input-group { flex-direction: row; gap: 6px; }
+}

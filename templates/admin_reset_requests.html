@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+{% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="site-box" style="max-width:900px;margin:24px auto;">
+        <h1>Demandes de Reset de Mot de Passe</h1>
+        <div id="reset-requests-list">Chargement...</div>
+        <p><a href="/admin/pending" class="styled-select">Gérer les comptes en attente</a></p>
+        <p><a href="/admin/users" class="styled-select">Gérer les comptes existants</a></p>
+    </div>
+
+    <!-- replaced inline style with external stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_reset_requests.css') }}">
+
+    <script src="{{ url_for('static', filename='js/admin_reset_requests.js') }}"></script>
+    {% include 'footer.html' %}
+</body>
+</html>

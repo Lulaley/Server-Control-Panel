@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="site-box settings-box">
+        <h1>Paramètres du site</h1>
+        <div class="settings-section">
+            <h3>Personnalisation</h3>
+            <form id="color-form">
+                <div class="form-group">
+                    <label for="main-color">Couleur principale&nbsp;:</label>
+                    <div class="color-input-group">
+                        <input type="color" id="main-color" name="main-color" value="#4caf50">
+                        <button type="submit" class="styled-select">Changer</button>
+                    </div>
+                </div>
+            </form>
+            <p style="margin-top:20px;">La couleur principale modifie tous les éléments verts du site et est personnalisée pour votre compte.</p>
+        </div>
+    </div>
+
+    <!-- replaced inline style with external stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings_extra.css') }}">
+
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,47 @@
+<nav>
+    <div>
+        <a href="/">
+            <img src="{{ url_for('static', filename='images/linux.png') }}" alt="Accueil" class="navbar-logo" id="navbar-acceuil" style="width:4%;">
+        </a>
+        <!-- Nouveau lien vers la page regroupant les jeux/serveurs -->
+        <a href="/games" title="Serveurs par jeu" class="navbar-link">
+            <img src="{{ url_for('static', filename='images/services.png') }}" alt="Services" class="navbar-logo" id="navbar-services" style="width:4%;">
+        </a>
+    </div>
+    <div class="navbar-actions">
+        <a class="right" href="/settings">
+            <img src="{{ url_for('static', filename='images/parametres-cog.png') }}" alt="Paramètres" id="navbar-settings">
+        </a>
+        <a class="right" href="/about">
+            À propos
+        </a>
+        {# Affiche lien Admin si rôle admin #}
+        {% if session.get('role') == 'admin' %}
+        <div class="dropdown right">
+            <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">
+                Admin
+                <span class="dropdown-arrow">▼</span>
+            </a>
+            <div class="dropdown-content">
+                <a href="/admin/pending">Comptes en attente</a>
+                <a href="/admin/users">Gestion utilisateurs</a>
+                <a href="/admin/reset-requests">Reset mots de passe</a>
+            </div>
+        </div>
+        {% endif %}
+        <a class="right" href="/profile">Profil</a>
+        {# Affiche déconnexion si connecté, sinon lien vers login #}
+        {% if session.get('user') %}
+          <a class="right auth-sep" href="/logout">
+            Déconnexion ({{ session.get('user') }})
+          </a>
+        {% else %}
+          <a class="right auth-sep" href="/login">
+            Se connecter
+          </a>
+        {% endif %}
+    </div>
+</nav>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+<script src="{{ url_for('static', filename='js/navbar.js') }}"></script>

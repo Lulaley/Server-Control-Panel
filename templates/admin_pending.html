@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fr">
+    {% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="site-box" style="max-width:900px;margin:24px auto;">
+        <h1>Demandes d'inscription en attente</h1>
+        <div id="pending-container">Chargement...</div>
+        <p><a href="/admin/users" class="styled-select">Gérer les comptes existants</a></p>
+        <p><a href="/admin/reset-requests" class="styled-select">Gérer les demandes de reset de mot de passe</a></p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin_pending.js') }}"></script>
+
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+{% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="site-box profile-box" style="max-width:800px;margin:24px auto;">
+        <h1>Mon Profil</h1>
+
+        <!-- Section Informations du compte -->
+        <div class="profile-section">
+            <h2>Informations du compte</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Nom d'utilisateur:</strong> {{ current_user }}
+                </div>
+                <div class="info-item">
+                    <strong>Rôle:</strong> {{ current_role }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- nouvelle section: Photo de profil -->
+        <div class="profile-section avatar-section">
+            <h2>Photo de profil</h2>
+            <div class="current-info" style="display:flex;align-items:center;gap:16px;">
+                <img id="profile-avatar"
+                     src="{{ avatar_url if avatar_url else url_for('static', filename='images/utilisateur.png') }}"
+                     alt="Avatar" width="120" height="120" style="border-radius:50%;object-fit:cover;">
+                <div>
+                    <form id="avatar-form" method="post" action="{{ url_for('user_avatar') }}" enctype="multipart/form-data" style="display:flex;flex-direction:row;align-items:center;gap:8px;">
+                        <input type="hidden" name="avatar_action" value="upload_avatar">
+                        <input type="file" id="avatar-input" name="avatar" accept="image/*">
+                        <button type="button" id="upload-avatar-btn" class="styled-select">Téléverser</button>
+                        <button type="button" id="remove-avatar" class="styled-select" style="margin-left:6px;">Supprimer</button>
+                    </form>
+                    <div id="avatar-message" class="message" style="margin-top:6px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Changement de nom d'utilisateur -->
+        <div class="profile-section">
+            <h2>Modifier le nom d'utilisateur</h2>
+            <div class="current-info">
+                <strong>Nom d'utilisateur actuel:</strong> <span id="current-username">{{ current_user }}</span>
+            </div>
+            <form id="username-form" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label for="new-username">Nouveau nom d'utilisateur:</label>
+                    <input type="text" id="new-username" name="new_username" required>
+                </div>
+                <div class="form-group">
+                    <label for="username-password">Mot de passe actuel (pour confirmation):</label>
+                    <input type="password" id="username-password" name="current_password" required>
+                </div>
+                <button type="submit" class="styled-select">Modifier le nom d'utilisateur</button>
+                <div id="username-message" class="message"></div>
+            </form>
+        </div>
+
+        <!-- Section Changement de mot de passe -->
+        <div class="profile-section">
+            <h2>Modifier le mot de passe</h2>
+            <form id="password-form">
+                <div class="form-group">
+                    <label for="current-password">Mot de passe actuel:</label>
+                    <input type="password" id="current-password" name="current_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Nouveau mot de passe:</label>
+                    <input type="password" id="new-password" name="new_password" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirmer le nouveau mot de passe:</label>
+                    <input type="password" id="confirm-password" name="confirm_password" required minlength="6">
+                </div>
+                <button type="submit" class="styled-select">Modifier le mot de passe</button>
+                <div id="password-message" class="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- replaced inline style with external stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+
+    <!-- small inline script to preview avatar and call delete endpoint -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const input = document.getElementById('avatar-input');
+        const img = document.getElementById('profile-avatar');
+        const msg = document.getElementById('avatar-message');
+        const removeBtn = document.getElementById('remove-avatar');
+        const form = document.getElementById('avatar-form');
+        const uploadBtn = document.getElementById('upload-avatar-btn');
+
+        if(input){
+            input.addEventListener('change', function(e){
+                const f = e.target.files && e.target.files[0];
+                if(!f) return;
+                if(!f.type.startsWith('image/')) {
+                    msg.textContent = 'Veuillez choisir une image.';
+                    input.value = '';
+                    return;
+                }
+                msg.textContent = '';
+                img.src = URL.createObjectURL(f);
+            });
+        }
+
+        if(uploadBtn && form){
+            uploadBtn.addEventListener('click', function(evt){
+                evt.preventDefault();
+                if(!input.files || !input.files[0]) { msg.textContent = 'Aucun fichier sélectionné.'; return; }
+                msg.textContent = 'Téléversement en cours...';
+                const fd = new FormData();
+                // inclure les champs existants du formulaire (utile si CSRF token présent)
+                new FormData(form).forEach((v,k) => fd.append(k, v));
+                // s'assurer que le fichier est présent
+                fd.set('avatar', input.files[0]);
+                const target = form.getAttribute('action') || window.location.pathname;
+                fetch(target, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(async res => {
+                        if(res.status === 404){
+                            msg.textContent = "Endpoint d'upload introuvable (404). Vérifiez la route côté serveur.";
+                            return;
+                        }
+                        let j;
+                        try { j = await res.json(); } catch(e){ msg.textContent = 'Réponse invalide du serveur.'; return; }
+                        if(j && j.success){
+                            img.src = j.avatar_url || img.src;
+                            msg.textContent = 'Téléversement réussi.';
+                            // révoquer object URL si utilisé précédemment
+                            try{ URL.revokeObjectURL(img.src); }catch(e){}
+                        } else {
+                            msg.textContent = j && j.error ? j.error : 'Erreur lors du téléversement.';
+                        }
+                    }).catch(()=>{ msg.textContent = 'Erreur réseau.'; });
+             });
+         }
+ 
+         if(removeBtn){
+             removeBtn.addEventListener('click', function(){
+                 if(!confirm('Supprimer la photo de profil ?')) return;
+                 // Envoi vers la même URL que le formulaire (fallback vers la page actuelle)
+                 const target = form.getAttribute('action') || window.location.pathname;
+                 fetch(target, {
+                     method: 'POST',
+                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ avatar_action: 'delete_avatar' })
+                 }).then(r => {
+                     if(r.status === 404){
+                         msg.textContent = "Endpoint de suppression introuvable (404). Vérifiez la route côté serveur.";
+                         return {};
+                     }
+                     return r.json();
+                 })
+                 .then(j => {
+                     if(j && j.success){
+                         img.src = '{{ url_for("static", filename="images/utilisateur.png") }}';
+                         msg.textContent = 'Photo supprimée.';
+                     } else {
+                         msg.textContent = j && j.error ? j.error : 'Erreur lors de la suppression.';
+                     }
+                 }).catch(()=>{ msg.textContent = 'Erreur réseau.'; });
+             });
+         }
+     });
+     </script>
+
+    <!-- replaced inline script with external JS -->
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+    {% include 'footer.html' %}
+</body>
+</html>

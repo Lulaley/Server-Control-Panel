@@ -1,0 +1,12 @@
+#home-grid .site-box {
+    overflow: hidden;
+}
+
+#home-grid .site-box * {
+    overflow: hidden;
+}
+
+/* Cas spécifiques pour les canvas */
+#home-grid canvas {
+    overflow: hidden;
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+    {% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <main class="container">
+    {% if True %}
+      {% if machine_info is defined %}
+        {% set m = machine_info %}
+      {% elif machine is defined %}
+        {% set m = machine %}
+      {% elif host is defined %}
+        {% set m = host %}
+      {% else %}
+        {% set m = None %}
+      {% endif %}
+      <aside id="machine-card" class="machine-card" aria-label="Informations machine">
+        <h4>Machine <span class="small">État système</span></h4>
+
+        <div class="metric">
+          <span class="label">CPU</span>
+          <div class="metric-info">
+            <div class="value" id="cpu-value">
+              {% if m and m.cpu_percent is not none %}{{ m.cpu_percent }}%{% else %}<em>—</em>{% endif %}
+            </div>
+            {% if m and m.cpu_percent is not none %}
+              <div class="progress" aria-hidden="true">
+                <i class="progress-bar" data-metric="cpu" style="width:{{ m.cpu_percent }}%; background:{% if m.cpu_percent < 60 %}#1b7a1b{% elif m.cpu_percent < 85 %}#b26900{% else %}#c62828{% endif %};"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="metric">
+          <span class="label">RAM</span>
+          <div class="metric-info">
+            <div class="value" id="ram-value">
+              {% if m and m.ram_used is defined and m.ram_total is defined and m.ram_percent is not none %}
+                {{ m.ram_used }} / {{ m.ram_total }} ({{ m.ram_percent }}%)
+              {% elif m and m.ram_percent is not none %}
+                {{ m.ram_percent }}%
+              {% else %}
+                <em>—</em>
+              {% endif %}
+            </div>
+            {% if m and m.ram_percent is not none %}
+              <div class="progress" aria-hidden="true">
+                <i class="progress-bar" data-metric="ram" style="width:{{ m.ram_percent }}%; background:{% if m.ram_percent < 60 %}#1b7a1b{% elif m.ram_percent < 85 %}#b26900{% else %}#c62828{% endif %};"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="metric">
+          <span class="label">Disque</span>
+          <div class="metric-info">
+            <div class="value" id="disk-value">
+              {% if m and m.disk_used is defined and m.disk_total is defined and m.disk_percent is not none %}
+                {{ m.disk_used }} / {{ m.disk_total }} ({{ m.disk_percent }}%)
+              {% elif m and m.disk_percent is not none %}
+                {{ m.disk_percent }}%
+              {% else %}
+                <em>—</em>
+              {% endif %}
+            </div>
+            {% if m and m.disk_percent is not none %}
+              <div class="progress" aria-hidden="true">
+                <i class="progress-bar" data-metric="disk" style="width:{{ m.disk_percent }}%; background:{% if m.disk_percent < 60 %}#1b7a1b{% elif m.disk_percent < 85 %}#b26900{% else %}#c62828{% endif %};"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </aside>
+    {% endif %}
+    <h1 class="page-hero"><img src="{{ url_for('static', filename='images/satisfactory.png') }}" alt="Satisfactory" style="width:10%;"></h1>
+    <div class="satisfactory-box">
+        <label for="satisfactory-select">Choisir un serveur satisfactory :</label>
+        <select id="satisfactory-select" class="styled-select"></select>
+        <span id="satisfactory-status"></span>
+        {% if can_control_satisfactory %}
+        <div id="satisfactory-controls" style="display: inline-block; margin-left: 10px;">
+            <button id="sf-btn-start" onclick="controlSatisfactory('start')" class="styled-select btn-success" style="margin-left: 10px;">Démarrer</button>
+            <button id="sf-btn-stop" onclick="controlSatisfactory('stop')" class="styled-select btn-danger" style="margin-left: 5px;">Arrêter</button>
+            <button id="sf-btn-restart" onclick="controlSatisfactory('restart')" class="styled-select btn-warning" style="margin-left: 5px;">Redémarrer</button>
+        </div>
+        {% endif %}
+    </div>
+    <div id="satisfactory-info" style="margin-top:24px;">
+        <div class="minecraft-row">
+            <div class="site-box logs-box">
+                <h2>Logs du satisfactory</h2>
+                <pre id="satisfactory-logs"></pre>
+            </div>
+        </div>
+    </div>
+
+     <!-- ensure same font/colors -->
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/games.css') }}">
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/satisfactory.css') }}">
+
+     <script src="{{ url_for('static', filename='js/satisfactory.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/machine-card.js') }}"></script>
+   </main>
+   {% include 'footer.html' %}
+
+     <script>
+     // select server from ?server=... if provided (retry a few times if options not yet populated)
+     (function(){
+       function trySelectServer(serverId, attemptsLeft){
+         const sel = document.getElementById('satisfactory-select');
+         if(!sel) return;
+         if(Array.from(sel.options).some(o=>o.value===serverId)){
+           sel.value = serverId;
+           sel.dispatchEvent(new Event('change', { bubbles: true }));
+           return;
+         }
+         if(attemptsLeft>0){
+           setTimeout(()=>trySelectServer(serverId, attemptsLeft-1), 200);
+         }
+       }
+       document.addEventListener('DOMContentLoaded', function(){
+         const p = new URLSearchParams(location.search);
+         const srv = p.get('server');
+         if(srv){
+           trySelectServer(srv, 10);
+         }
+       });
+     })();
+     </script>
+ </body>
+ </html>

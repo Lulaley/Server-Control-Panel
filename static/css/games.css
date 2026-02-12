@@ -1,0 +1,311 @@
+:root{
+  --card:#ffffff;
+  --muted:#424447;
+  --border:#e6e9ee;
+  --primary:#0b66ff;
+  --success:#28a745;
+  --danger:#dc3545;
+  --accent:#f6f8fb;
+  --radius:8px;
+  --shadow: 0 6px 18px rgba(15,23,42,0.06);
+  --gap:16px;
+  --page-title-color: #0b1726;
+  --card-height: 220px; /* hauteur par défaut des cartes */
+  --container-max-width: 1200px; /* nouvelle variable pour largeur max du contenu */
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* retirer body background pour hériter du thème global */
+body { margin:0; padding:0; color:#0f1724; }
+
+/* --- CHANGED: conteneur limité et centré, éviter overflow horizontal --- */
+.container { 
+  max-width: var(--container-max-width);
+  width: 100%;
+  margin: 20px auto;
+  padding: 16px var(--page-gutter);
+  box-sizing: border-box;
+}
+
+/* global box-sizing pour éviter débordements */
+html, body { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
+/* page header - forcer couleur visible */
+.container > .page-title {
+  margin:0 0 18px 0;
+  font-size:1.4rem;
+  font-weight:600;
+  color: var(--page-title-color) !important;
+}
+
+/* groups */
+.game-group { margin-top:26px; padding:12px 0; border-top:1px solid transparent; }
+.group-title {
+  font-size:1.05rem;
+  margin:0 0 10px 6px;
+  color:#0b1726;
+  text-transform:capitalize;
+  font-weight:600;
+  display:inline-block;
+}
+
+/* grid of cards */
+.cards {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-auto-rows: auto;
+  grid-auto-flow: dense;
+  gap: var(--gap);
+  align-items:stretch; /* forcer les éléments de la grille à s'étirer */
+  margin-top:8px;
+  justify-content: start; /* force les colonnes à démarrer à gauche */
+  justify-items: start; /* aligne le contenu des cellules à gauche */
+  width:100%; /* ne pas dépasser le conteneur */
+  overflow: visible; /* laisser le sticky fonctionner correctement */
+}
+
+/* server card - high specificity and !important to override global */
+main.container .server-card,
+.container main .server-card,
+.server-card {
+  background:#f3f4f6 !important; /* light gray card background */
+  border:1px solid #e5e7eb !important; /* neutral light border */
+  border-radius:var(--radius) !important;
+  box-shadow:var(--shadow) !important;
+  padding:14px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  height: var(--card-height) !important; /* conserver hauteur uniforme */
+  width: 100% !important; /* occuper toute la cellule de la grille */
+  box-sizing: border-box !important;
+  transition:transform .12s ease, box-shadow .12s ease !important;
+  position:relative !important;
+  z-index: 30 !important;
+  color: #0f1724 !important; /* ensure text inside card is dark */
+}
+.server-card:hover{ transform:translateY(-4px) !important; box-shadow:0 10px 30px rgba(15,23,42,0.12) !important; }
+
+.card-header{ display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px !important; padding-bottom:6px !important; }
+.card-header h3{ margin:0 !important; font-size:1.05rem !important; line-height:1.2 !important; font-weight:700 !important; color:#071126 !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; max-width:65% !important; }
+
+.status{
+  display:inline-block !important;
+  font-size:.72rem !important;
+  padding:6px 10px !important;
+  border-radius:999px !important;
+  color:#fff !important;
+  text-transform:uppercase !important;
+  letter-spacing:.6px !important;
+  font-weight:700 !important;
+  box-shadow:0 1px 0 rgba(0,0,0,0.04) inset !important;
+}
+/* status colour mapping */
+.status.online{ background:#28a745 !important; } /* ACTIVE -> vert */
+.status.offline{ background:#dc3545 !important; } /* STOPPED -> rouge */
+.status.unknown{ background:#424447 !important; }
+
+/* body */
+.card-body{ margin-top:10px !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap:10px !important;
+  overflow: auto !important; /* internal scroll when content exceeds fixed height */
+  color:#424447 !important;
+  font-size:.95rem !important;
+  line-height:1.35 !important;
+  padding-right:4px !important; /* give room for scrollbar */
+ }
+
+.address{ margin:0 !important;
+  font-size:.92rem !important;
+  color:#374151 !important;
+  font-weight:600 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace !important;
+  background: transparent !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+ }
+
+.last-log{ 
+  margin:0 !important;
+  font-size:.82rem !important;
+  color:#4b5563 !important;
+}
+.last-log strong{ display:block !important; font-size:.78rem !important; color:#374151 !important; margin-bottom:6px !important; font-weight:700 !important; text-transform:uppercase !important; letter-spacing:0.6px !important; }
+.last-log span{
+  display:block !important;
+  background:#ffffff !important;
+  border:1px solid #eef2f6 !important;
+  padding:8px !important;
+  border-radius:6px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace !important;
+  font-size:.82rem !important;
+  color:#111827 !important;
+  line-height:1.4 !important;
+  max-height:4.6em !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,0.03) !important;
+ }
+
+/* actions */
+.card-actions{ margin-top:10px !important; display:flex !important; justify-content:flex-end !important; gap:10px !important; align-items:center !important; }
+.btn-open{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:7px 12px !important;
+  border-radius:8px !important;
+  text-decoration:none !important;
+  background:#0b66ff !important;
+  color:#fff !important;
+  font-weight:700 !important;
+  font-size:.88rem !important;
+  border:1px solid rgba(11,102,255,0.12) !important;
+  box-shadow: 0 6px 14px rgba(11,102,255,0.06) !important;
+}
+.btn-open:hover{ background:#0658e6 !important; transform:translateY(-1px) !important; }
+
+/* empty state */
+.empty{ color:var(--muted) !important; font-style:italic !important; padding:12px !important; }
+
+/* responsiveness adjustments */
+@media (max-width:540px){
+  .container { padding:12px; margin:16px auto; }
+  :root{ --card-height: 180px; } /* hauteur réduite sur petits écrans */
+  .card-header h3{ max-width:60%; font-size:.98rem; }
+  .last-log span{ font-size:.78rem; }
+  .btn-open{ padding:7px 10px; font-size:.85rem; }
+}
+
+/* ensure cards visually stand above fixed navbar/footer */
+main.container { position: relative; z-index: 20; }
+
+/* --- FORCE: faire prévaloir les couleurs définies dans ce fichier --- */
+/* Règles à forte spécificité + uso de !important pour surcharger le reste */
+/* removed broad global override that could let user color leak into cards */
+/* Cartes */
+html body main.container .server-card,
+main.container .server-card {
+  background: #f3f4f6 !important;
+  color: #0f1724 !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: var(--shadow) !important;
+  height: var(--card-height) !important; /* garantir la hauteur uniquement sur la carte */
+}
+
+/* Titres / groupe */
+main.container .group-title,
+main.container .page-title {
+  color: var(--page-title-color) !important;
+}
+
+/* En-têtes de carte */
+main.container .card-header h3 {
+  color: #071126 !important;
+}
+
+/* Corps / adresse / logs */
+main.container .card-body,
+main.container .address,
+main.container .last-log {
+  color: #424447 !important;
+}
+main.container .last-log span {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* Statuts */
+main.container .status.online { background: #28a745 !important; }
+main.container .status.offline { background: #dc3545 !important; }
+main.container .status.unknown { background: #424447 !important; }
+
+/* Boutons / actions */
+main.container .btn-open {
+  background: #0b66ff !important;
+  color: #fff !important;
+  border-color: rgba(11,102,255,0.12) !important;
+}
+
+/* Empty state */
+main.container .empty { color: var(--muted) !important; }
+
+/* Small-screen keep overrides intact */
+@media (max-width:540px){
+  /* nothing here that forces user color into cards */
+ }
+
+/* 1) Aligner la grille de cartes à gauche (placer la carte d'info machine tout à gauche) */
+.cards {
+  /* ...existing properties... */
+  justify-content: start; /* force les colonnes à démarrer à gauche */
+  justify-items: start; /* aligne le contenu des cellules à gauche */
+}
+
+/* 2) Classe dédiée pour la carte d'information machine : garantir première colonne et alignement */
+/* garder sticky (dans le flux) pour qu'elle prenne la même taille que les autres cartes */
+.server-card.machine-info {
+  grid-column: 1 / 2 !important;
+  justify-self: start !important;
+  align-self: start !important;
+  width: 100% !important;       /* occuper la cellule comme les autres */
+  max-width: none !important;   /* éviter max-width global */
+  top: 22px !important;
+  z-index: 20 !important; /* plus bas que les cartes interactives pour ne pas masquer */
+}
+
+/* Supprimer le comportement fixed (fallback supprimé) pour conserver la place dans la grille */
+/* ...existing code... */
+
+/* --- NEW: réserver une colonne fixe sur grands écrans pour éviter tout chevauchement --- */
+@media (min-width: 900px){
+  /* Transformer le container en grille à deux colonnes :
+     - colonne 1 : carte d'état (largeur fixe / minmax)
+     - colonne 2 : contenu principal (jeux) */
+  main.container {
+    display: grid !important;
+    column-gap: var(--gap);
+    align-items: start;
+  }
+
+  /* Carte d'état : dans la colonne de gauche, au-dessus (sticky) */
+  .server-card.machine-info {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+    top: 22px !important;
+    z-index: 20 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Blocs de jeux : placer dans la colonne de droite et laisser le flux implicite
+     pour qu'ils s'empilent verticalement sous la carte d'état (ne pas forcer grid-row) */
+  .game-group {
+    grid-column: 2 / -1 !important;
+    align-self: start !important;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  /* S'assurer que la grille interne des cartes occupe bien la colonne de droite */
+  .game-group .cards {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Sur petits écrans, garder le flux normal (éviter chevauchement) */
+@media (max-width:540px){
+  .server-card.machine-info {
+    position: relative !important;
+    width: 100% !important;
+    max-width: none !important;
+    grid-column: auto !important;
+  }
+}

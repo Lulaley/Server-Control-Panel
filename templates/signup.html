@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Server Control Panel</title>
+    <!-- replaced inline style with external stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Créer un compte</h2>
+        
+        <div class="info">
+            Votre demande de compte sera soumise à un administrateur pour validation.
+        </div>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="role">Rôle demandé:</label>
+                <select id="role" name="role">
+                    <option value="user">Utilisateur</option>
+                    <option value="manager">Manager</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn">Créer le compte</button>
+            
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+            
+            {% if success %}
+            <div class="success">{{ success }}</div>
+            {% endif %}
+        </form>
+        
+        <div class="login-link">
+            <a href="{{ url_for('login') }}" class="btn btn-secondary">Retour à la connexion</a>
+        </div>
+
+    </div>
+    {% include 'footer.html' %}
+</body>
+</html>

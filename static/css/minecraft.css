@@ -1,0 +1,350 @@
+/* Conteneur principal */
+#minecraft-info {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: stretch; /* ne pas centrer, étirer sur toute la largeur */
+    justify-content: flex-start; /* aligner en haut/gauche */
+    width: 100%;
+}
+
+#server-controls {
+    margin-left: 20px;
+    display: flex;
+    gap: 8px;
+}
+
+#server-status {
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+/* status dot + text */
+.server-status { display: inline-flex; align-items: center; gap:8px; font-weight:600; color:initial !important; }
+.status-dot {
+    display:inline-block;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#888;
+    vertical-align:middle;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06) inset;
+    transition: background-color 200ms ease, transform 160ms ease, box-shadow 200ms ease;
+    border: 2px solid rgba(255,255,255,0.06);
+}
+
+/* explicit fixed state colors (use !important to override theme variables) */
+.status-dot.online {
+  background: #1b7a1b !important; /* green */
+  box-shadow: 0 0 10px rgba(27,122,27,0.28) !important;
+  transform: translateY(-1px) !important;
+  border-color: rgba(27,122,27,0.15) !important;
+}
+.status-dot.offline {
+  background: #dc3545 !important; /* red */
+  box-shadow: 0 0 10px rgba(220,53,69,0.18) !important;
+  transform: translateY(-1px) !important;
+  border-color: rgba(220,53,69,0.12) !important;
+}
+.status-dot.unknown {
+  background: #888 !important; /* grey */
+  box-shadow: none !important;
+  transform: none !important;
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* force text colors to fixed values as well */
+.server-status.status-online .status-text { color: #1b7a1b !important; }
+.server-status.status-offline .status-text { color: #dc3545 !important; }
+.server-status.status-unknown .status-text { color: #666 !important; }
+
+.status-text { font-size:0.95em; color:inherit; }
+
+/* tweak clickable appearance (optional) */
+.server-status { cursor:default; user-select:none; }
+
+#server-logs {
+    background: #222 !important;
+    color: #fff !important;
+    padding: 10px;
+    max-height: 300px;
+    min-width: 0;
+    overflow: auto;
+    border-radius: 8px;
+    border: 1.5px solid var(--main-color, #4caf50);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+#no-players {
+    color: #888;
+    display: none;
+}
+
+#rcon-response {
+    margin-top:10px;
+    color:#fff;
+}
+
+#rcon-command {
+    width: 70%;
+}
+
+/* Ligne supérieure : logs + joueurs */
+.minecraft-row {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    justify-content: flex-start; /* ne pas centrer la ligne */
+    width: 100%;
+}
+
+/* Logs : 70% */
+.site-box.logs-box {
+    flex: 2 1 0;
+    max-width: none;
+}
+
+/* Joueurs : 30% */
+.site-box.players-box {
+    flex: 1 1 220px;
+    max-width: none;
+}
+
+/* Commandes RCON : 100% */
+.rcon-box {
+    height: fit-content;
+}
+.site-box.rcon-box {
+    width: 100%;
+    min-width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
+    max-height: fit-content;
+}
+
+/* Responsive : empile les boîtes sur mobile */
+@media (max-width: 900px) {
+    .minecraft-row {
+        flex-direction: column;
+        max-width: 100%;
+    }
+    .site-box.logs-box,
+    .site-box.players-box {
+        max-width: 100%;
+        width: 100%;
+    }
+    .site-box.rcon-box {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+.server-box {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
+.styled-select {
+    background: #222;
+    color: var(--main-color, #4caf50);
+    border: 1.5px solid var(--main-color, #4caf50);
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 1em;
+    font-family: inherit;
+    margin-left: 10px;
+    outline: none;
+    transition: border 0.2s;
+}
+.styled-select:focus {
+    border-color: var(--main-color, #4caf50);
+}
+.styled-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.styled-list li {
+    background: #333;
+    color: #fff;
+    border-left: 4px solid var(--main-color, #4caf50);
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: background 0.2s;
+}
+.styled-list li:hover {
+    background: #444;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: #aaa;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.modal-actions {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.modal-actions button {
+    margin-left: 10px;
+}
+
+.player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.player-name {
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+.player-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.player-action-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-message { background-color: #007bff; }
+.btn-kick { background-color: #ffc107; color: #212529; }
+.btn-ban { background-color: #dc3545; }
+
+.btn-message:hover { background-color: #0056b3; }
+.btn-kick:hover { background-color: #e0a800; }
+.btn-ban:hover { background-color: #c82333; }
+
+/* Masquer les barres (progress / usage) pour n'afficher que les valeurs textuelles */
+.progress, .progress-bar, .bar, .meter, .usage-bar, .stat-bar, .resource-bar, .range, .vbar {
+  display: none !important;
+}
+
+/* Assurer l'affichage des valeurs textuelles */
+.stat-value, .value, .metric, .number {
+  display: inline-block !important;
+  text-align: left !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace !important;
+  font-weight: 600 !important;
+}
+
+/* Machine card styles (from games.css) */
+.machine-card{
+  padding:16px;
+  border-radius:10px;
+  background:linear-gradient(180deg,#ffffff,#fbfdff);
+  border:1px solid rgba(16,24,40,0.06);
+  box-shadow:0 8px 22px rgba(16,24,40,0.06);
+  margin-right:16px;
+  font-family:inherit;
+  color:#0f172a;
+  display:flex;
+  flex-direction:column;
+}
+.machine-card h4{
+  margin:0;
+  font-size:15px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.machine-card h4 .small{
+  font-size:12px;
+  color:#64748b;
+  font-weight:500;
+}
+.machine-card .metric{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:6px 0;
+  font-size:13px;
+}
+.machine-card .metric .label{
+  min-width:60px;
+  color:#334155;
+}
+.metric-info{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.metric .value{
+  min-width:80px;
+  text-align:right;
+  color:#0b1220;
+  font-weight:600;
+}
+.progress{
+  flex:1;
+  height:10px;
+  background:#eef2f7;
+  border-radius:999px;
+  overflow:hidden;
+}
+.progress > i{
+  display:block;
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  transition:width .6s ease, background .3s ease;
+}
+.status-green{color:#1b7a1b}
+.status-warning{color:#b26900}
+.status-danger{color:#c62828}
+@media (max-width:800px){
+  .machine-card{max-width:100%;margin-bottom:12px;float:none}
+}
+

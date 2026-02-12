@@ -1,0 +1,23 @@
+{
+  "services": [
+    {
+      "name": "minecraft-1",
+      "domain": "minecraft-1.chimea.fr",
+      "port": 25565,
+      "type": "minecraft",
+      "rcon_domain": "minecraft-1-rcon.chimea.fr"
+    },
+    {
+      "name": "web-1",
+      "domain": "web-1.chimea.fr",
+      "port": 8080,
+      "type": "web"
+    },
+    {
+      "name": "remote",
+      "domain": "remote.chimea.fr",
+      "port": 22,
+      "type": "ssh"
+    }
+  ]
+}

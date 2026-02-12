@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Server Control Panel</title>
+    <!-- replaced inline style with external stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Connexion</h2>
+        <form method="POST">
+            {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn">Se connecter</button>
+            
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+        </form>
+        
+        <div class="signup-link">
+            <a href="{{ url_for('signup') }}" class="btn btn-secondary">Créer un compte</a>
+        </div>
+        
+        <div class="additional-actions">
+            <a href="{{ url_for('reset_password') }}" class="btn btn-secondary">Mot de passe oublié ?</a>
+        </div>
+
+        {% include 'footer.html' %}
+    </div>
+</body>
+</html>

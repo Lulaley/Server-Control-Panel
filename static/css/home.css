@@ -1,0 +1,154 @@
+/* Nouveau conteneur pour la grille centrale */
+#content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    margin: 0 auto;
+}
+
+/* Grille pour les 4 boîtes */
+#home-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    grid-auto-rows: auto;
+    gap: 20px;
+    justify-items: stretch;
+    align-items: start;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Chaque boîte occupe la même taille */
+.site-box {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow: auto;
+    margin: 0px 0;
+}
+
+/* Responsive : 2x2 sur desktop, 1x4 sur mobile */
+@media (max-width: 900px) {
+    #home-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+        gap: 16px;
+    }
+    .site-box {
+        height: auto;
+        max-height: none;
+        overflow: auto;
+    }
+}
+
+/* Ligne 1 et Ligne 2 */
+.flex-row {
+    display: flex;
+    flex-direction: row; /* Aligner les éléments horizontalement */
+    justify-content: space-between; /* Espacer les éléments */
+    align-items: flex-start; /* Aligner les éléments en haut */
+    gap: 20px; /* Espacement entre les colonnes */
+    flex-wrap: wrap; /* Permet de passer à la ligne si l'espace est insuffisant */
+}
+
+/* Ligne 2 : Graphiques du flux réseau et des threads CPU */
+#line-2 {
+    display: flex;
+    flex-direction: row; /* Aligner les graphiques horizontalement */
+    justify-content: space-between; /* Espacer les graphiques */
+    align-items: flex-start; /* Aligner les graphiques en haut */
+    gap: 20px; /* Espacement entre les graphiques */
+    flex-wrap: wrap; /* Permet de passer à la ligne si l'espace est insuffisant */
+}
+
+.graph-section {
+    flex: 1; /* Chaque graphique occupe un espace égal */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 400px; /* Limite la largeur de chaque graphique */
+    margin: 0 auto;
+}
+
+canvas {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+}
+
+/* Titres des graphiques */
+.graph-section h2 {
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #ffffff;
+}
+
+
+/* Conteneur des barres de progression */
+#system-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%; /* Prend toute la largeur disponible */
+    max-width: 400px; /* Limite la largeur des barres */
+}
+
+/* Barres de progression */
+.progress-bar {
+    width: 100%;
+    margin: 10px 0;
+    background-color: #4a4a4a;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    color: #ffffff;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+/* Couleurs des barres selon la dangerosité */
+.normal {
+    background-color: #4caf50;
+}
+
+.warning {
+    background-color: #ffa500;
+}
+
+.critical {
+    background-color: #f44336;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .flex-row {
+        flex-direction: column; /* Passe en colonne sur les petits écrans */
+        align-items: center;
+    }
+
+    #system-info {
+        max-width: 100%; /* Prend toute la largeur sur les petits écrans */
+    }
+
+    .graph-section {
+        max-width: 100%; /* Prend toute la largeur sur les petits écrans */
+    }
+}

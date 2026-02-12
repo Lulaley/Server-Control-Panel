@@ -1,0 +1,12 @@
+[
+  {
+    "name": "minecraft-1",
+    "type": "minecraft",
+    "port": 25565
+  },
+  {
+    "name": "web-1",
+    "type": "web",
+    "port": 8080
+  }
+]

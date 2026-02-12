@@ -1,0 +1,121 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Control Panel</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/icone_server_control_panel.jpeg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/minecraft.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/satisfactory.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hytale.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hytale.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/user_main_color.js') }}"></script>
+
+    <!-- Avatar in navbar: styles + injector -->
+    <style>
+        .navbar-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+            margin-right: 8px;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+        .navbar-avatar-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+    <script>
+        // filepath: /home/Server-Control-Panel-V2/flask-template/templates/head.html
+        const USER_AVATAR_URL = {{ (avatar_url|default(url_for('static', filename='images/utilisateur.png'))) | tojson }};
+        const PROFILE_PATH = {{ url_for('profile') | tojson }};
+
+        (function injectNavbarAvatar(){
+            const MAX_RETRIES = 3;
+            const RETRY_DELAY_MS = 300; // espacement entre tentatives
+            let tries = 0;
+
+            function tryInsert(){
+                tries++;
+                try {
+                    console && console.debug && console.debug('[avatar] tryInsert', {tries, PROFILE_PATH, USER_AVATAR_URL});
+                    // chercher lien correspondant
+                    let anchor = document.querySelector(`a[href="${PROFILE_PATH}"]`) || null;
+                    if(!anchor){
+                        const anchors = Array.from(document.querySelectorAll('a'));
+                        anchor = anchors.find(a => {
+                            const hrefAttr = a.getAttribute('href') || '';
+                            if(hrefAttr === PROFILE_PATH) return true;
+                            try {
+                                const resolved = new URL(hrefAttr, location.origin).pathname;
+                                if(resolved === PROFILE_PATH) return true;
+                            } catch(e){}
+                            const t = (a.textContent || '').trim();
+                            return t === 'Profil' || t === 'Mon Profil' || t.includes('Profil');
+                        }) || null;
+                    }
+
+                    // fallback : chercher élément nav ou header et insérer à la fin
+                    let parentForFallback = null;
+                    if(!anchor){
+                        parentForFallback = document.querySelector('nav') || document.querySelector('header') || document.body;
+                    }
+
+                    const already = (el) => {
+                        if(!el) return false;
+                        if(el.previousElementSibling && el.previousElementSibling.classList && el.previousElementSibling.classList.contains('navbar-avatar')) return true;
+                        if(el.querySelector && el.querySelector('img.navbar-avatar')) return true;
+                        return false;
+                    };
+
+                    if(anchor && !already(anchor)){
+                        const img = document.createElement('img');
+                        img.src = USER_AVATAR_URL || '';
+                        img.alt = 'Avatar';
+                        img.loading = 'lazy';
+                        img.className = 'navbar-avatar';
+                        anchor.parentNode.insertBefore(img, anchor);
+                        anchor.classList.add('navbar-avatar-link');
+                        console && console.debug && console.debug('[avatar] inserted before anchor', anchor);
+                        return;
+                    }
+
+                    if(!anchor && parentForFallback && !already(parentForFallback)){
+                        const img = document.createElement('img');
+                        img.src = USER_AVATAR_URL || '';
+                        img.alt = 'Avatar';
+                        img.loading = 'lazy';
+                        img.className = 'navbar-avatar';
+                        parentForFallback.insertBefore(img, parentForFallback.firstChild);
+                        console && console.debug && console.debug('[avatar] inserted fallback into', parentForFallback.tagName);
+                        return;
+                    }
+
+                    // si échec et on peut réessayer
+                    if(tries < MAX_RETRIES){
+                        setTimeout(tryInsert, RETRY_DELAY_MS);
+                    } else {
+                        console && console.debug && console.debug('[avatar] insertion failed after retries');
+                    }
+                } catch (e){
+                    console && console.error && console.error('[avatar] injection error', e);
+                    if(tries < MAX_RETRIES) setTimeout(tryInsert, RETRY_DELAY_MS);
+                }
+            }
+
+            if(document.readyState === 'loading'){
+                document.addEventListener('DOMContentLoaded', tryInsert);
+            } else {
+                setTimeout(tryInsert, 0);
+            }
+        })();
+    </script>
+</head>

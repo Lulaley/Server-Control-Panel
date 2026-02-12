@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="fr">
+    {% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="site-box" style="max-width:1000px;margin:24px auto;">
+        <h1>Gestion des comptes</h1>
+        <div id="users-container">Chargement...</div>
+    </div>
+
+    <!-- script moved to static/js/admin_users.js -->
+    <script src="{{ url_for('static', filename='js/admin_users.js') }}"></script>
+    {% include 'footer.html' %}
+</body>
+</html>

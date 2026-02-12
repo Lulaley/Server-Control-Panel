@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'head.html' %}
+<body>
+    <!-- Inclure la barre de navigation -->
+    {% include 'navbar.html' %}
+
+    <div class="site-box about-box">
+        <h1>À propos</h1>
+
+        <p>Ce panneau permet de surveiller et contrôler le serveur depuis une interface web. Les informations se mettent à jour automatiquement (rafraîchissement par défaut : 5s).</p>
+
+        <h2>Pages principales</h2>
+        <ul>
+            <li><strong>Accueil</strong> — Vue générale : CPU, mémoire, disque, charge, température (si disponible).</li>
+            <li><strong>Processus</strong> — Liste des processus avec options : trier, chercher, terminer (kill), changer priorité.</li>
+            <li><strong>Services</strong> — État des services système ; actions : démarrer, arrêter, redémarrer.</li>
+            <li><strong>Utilisateurs</strong> — Sessions actives et gestion basique des utilisateurs (affichage, déconnexion).</li>
+            <li><strong>Réseau</strong> — Adresses, interfaces, trafic en temps réel et connexions actives.</li>
+            <li><strong>Disques / Stockage</strong> — Utilisation, montage, détails des partitions.</li>
+            <li><strong>Logs</strong> — Visualisation des journaux système et d'application, filtres et recherche.</li>
+            <li><strong>Paramètres</strong> — Réglages du panneau : fréquence de rafraîchissement, thèmes, accès API.</li>
+        </ul>
+
+        <h2>Fonctionnalités clés</h2>
+        <ul>
+            <li>Monitoring temps réel (polling ou WebSocket selon configuration).</li>
+            <li>Actions administratives : tuer un processus, gérer services, gérer sessions.</li>
+            <li>Terminal/SSH embarqué (optionnel) pour accès shell sécurisé.</li>
+            <li>Téléchargement/export des logs et rapports système.</li>
+            <li>Notifications visuelles en cas d'alerte (haute charge, mémoire faible, disque plein).</li>
+        </ul>
+
+        <h2>Rafraîchissement et polling</h2>
+        <p>Par défaut les vues critiques sont mises à jour toutes les 5 secondes. Vous pouvez modifier cet intervalle dans <em>Paramètres</em> ou désactiver le polling pour économiser des ressources.</p>
+
+        <h2>API (exemples)</h2>
+        <p>Endpoints REST exposés (exemples) :</p>
+        <ul>
+            <li>GET /api/status — statut global (CPU, mémoire, disque)</li>
+            <li>GET /api/processes — liste des processus</li>
+            <li>POST /api/processes/kill — corps: {"pid": 1234}</li>
+            <li>GET /api/services — liste et statut des services</li>
+            <li>POST /api/services/control — corps: {"name":"nginx","action":"restart"}</li>
+            <li>GET /api/logs?file=syslog&lines=200 — récupérer logs</li>
+        </ul>
+        <p>Les requêtes sensibles requièrent authentification (token/session). Limitez l'accès via pare-feu et HTTPS.</p>
+
+        <h2>Sécurité</h2>
+        <ul>
+            <li>Utiliser HTTPS et authentification forte (mots de passe robustes, tokens).</li>
+            <li>Restreindre l'accès aux IP de confiance si possible.</li>
+            <li>Les actions critiques (kill, restart) sont loggées pour audit.</li>
+        </ul>
+
+        <h2>Raccourcis et ergonomie</h2>
+        <ul>
+            <li>Touche R : rafraîchir la vue actuelle.</li>
+            <li>Ctrl+K : focuser la recherche de processus.</li>
+            <li>Hover sur éléments pour obtenir actions rapides (ex. redémarrer service).</li>
+        </ul>
+
+        <h2>Dépannage et contributions</h2>
+        <p>Consultez les logs (page Logs) pour les erreurs. Les contributions sont bienvenues : créez des issues ou PR sur le dépôt du projet et décrivez l'environnement et la version.</p>
+
+        <h2>Contact</h2>
+        <p>Pour support ou signaler un bug, ouvrez une issue dans le dépôt ou contactez l'administrateur système.</p>
+    </div>
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,79 @@
+:root {
+    --main-color: #4caf50;
+    --navbar-height: 72px;
+    --page-gutter: clamp(12px, 3.5vw, 36px);
+    --container-max: 1200px;
+}
+
+body {
+    background-color: #2c2c2c;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding-left: var(--page-gutter);
+    padding-right: var(--page-gutter);
+    padding-top: var(--navbar-height);
+    padding-bottom: calc(var(--navbar-height) - 16px);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+h1, h2, h3, h4, h5, h6, p, label {
+    color: #fff;
+}
+
+label {
+    font-weight: bold;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 56px;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 16px 0;
+    background: rgba(20,20,20,0.95);
+    border-top: 1px solid rgba(255,255,255,0.04);
+    color: #bbb;
+    font-size: 14px;
+    z-index: 1000;
+}
+
+.about-box {
+    height: 100% !important;
+    width: 100% !important;
+    max-height: 100% !important;
+    max-width: 100% !important;
+    overflow: auto !important;
+}
+
+.container {
+    padding-top: 4% !important;
+    max-width: var(--container-max);
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    :root { --navbar-height: 64px; }
+    body { padding-top: var(--navbar-height); padding-left: 12px; padding-right: 12px; }
+    .container { padding: 18px; width: 100%; }
+}
+
+@media (max-width: 540px) {
+    :root { --navbar-height: 56px; }
+    body { padding-top: var(--navbar-height); padding-left: 8px; padding-right: 8px; }
+    h1 { font-size: 1.25rem; margin-top: 12px; }
+}

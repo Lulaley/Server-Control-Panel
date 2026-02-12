@@ -1,0 +1,171 @@
+.hytale-box {
+    display: flex; 
+    align-items: stretch; /* ne pas centrer verticalement */
+    gap: 16px;
+}
+
+#hytale-status {
+    margin-left: 10px; 
+    font-weight: bold;
+}
+
+#hytale-controls {
+    margin-left: 20px; 
+    display: flex; 
+    gap: 8px;
+}
+
+#hytale-logs {
+    background:#222;
+    color:#fff;
+    padding:10px;
+    max-height:300px;
+    overflow:auto;
+    border-radius:8px;
+    border:1.5px solid var(--main-color,#4caf50);
+}
+
+.logs-and-players {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.logs-box {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.players-box,
+.site-box.players-box {
+    flex: 1 1 320px; /* laisser grandir pour afficher la liste entière */
+    min-width: 200px;
+    max-width: 480px; /* facultatif : limite raisonnable sur grands écrans */
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+#hytale-players {
+    background:#111;
+    color:#fff;
+    padding:10px;
+    max-height: none;
+    overflow: visible;
+    border-radius:8px;
+    border:1.5px solid var(--main-color,#2196f3);
+}
+
+#hytale-players h3 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+}
+
+#hytale-players .player-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#hytale-players .player-list li {
+    padding: 4px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-family: monospace;
+    font-size: 0.95rem;
+}
+
+#hytale-players .no-players {
+    color: #bbb;
+    font-style: italic;
+    font-size: 0.95rem;
+}
+
+.progress, .progress-bar, .bar, .meter, .usage-bar, .stat-bar, .resource-bar, .range, .vbar {
+  display: none !important;
+}
+.stat-value, .value, .metric, .number {
+  display: inline-block !important;
+  text-align: left !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace !important;
+  font-weight: 600 !important;
+}
+
+/* 2) Classe dédiée pour la carte d'information machine : garantir première colonne et alignement */
+/* garder sticky (dans le flux) pour qu'elle prenne la même taille que les autres cartes */
+.machine-card {
+  grid-column: 1 / 2 !important;
+  justify-self: start !important;
+  align-self: start !important;
+  z-index: 20 !important; /* plus bas que les cartes interactives pour ne pas masquer */
+}
+
+/* Machine card styles (from games.css) */
+.machine-card{
+  padding:16px;
+  border-radius:10px;
+  background:linear-gradient(180deg,#ffffff,#fbfdff);
+  border:1px solid rgba(16,24,40,0.06);
+  box-shadow:0 8px 22px rgba(16,24,40,0.06);
+  margin-right:16px;
+  font-family:inherit;
+  color:#0f172a;
+  display:flex;
+  flex-direction:column;
+}
+.machine-card h4{
+  margin:0;
+  font-size:15px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.machine-card h4 .small{
+  font-size:12px;
+  color:#64748b;
+  font-weight:500;
+}
+.machine-card .metric{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:6px 0;
+  font-size:13px;
+}
+.machine-card .metric .label{
+  min-width:60px;
+  color:#334155;
+}
+.metric-info{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.metric .value{
+  min-width:80px;
+  text-align:right;
+  color:#0b1220;
+  font-weight:600;
+}
+.progress{
+  flex:1;
+  height:10px;
+  background:#eef2f7;
+  border-radius:999px;
+  overflow:hidden;
+}
+.progress > i{
+  display:block;
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  transition:width .6s ease, background .3s ease;
+}
+.status-green{color:#1b7a1b}
+.status-warning{color:#b26900}
+.status-danger{color:#c62828}
+@media (max-width:800px){
+  .machine-card{max-width:100%;margin-bottom:12px;float:none}
+}

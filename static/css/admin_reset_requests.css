@@ -1,0 +1,72 @@
+.reset-request-item {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ddd;
+}
+.reset-request-info {
+    font-weight: bold;
+}
+.reset-request-actions {
+    display: flex;
+    gap: 10px;
+}
+.btn-approve {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-reject {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-approve:hover {
+    opacity: 0.8;
+}
+.btn-reject:hover {
+    background-color: #c82333;
+}
+.no-requests {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 40px 0;
+}
+.password-info {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-family: monospace;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background-color: #4caf50;
+    color: white;
+}
+button {
+    margin-right: 5px;
+}

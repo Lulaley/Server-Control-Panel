@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'head.html' %}
+<body>
+    <!-- Inclure la barre de navigation -->
+    {% include 'navbar.html' %}
+
+    <h1>Informations Générales de la Machine</h1>
+    <div id="content-container">
+        <div id="home-grid" class="sortable-grid">
+            <div id="performance-box" class="graph-section site-box">
+                <h2>Historique des Performances</h2>
+                <label>
+                    Scale:
+                    <select id="performance-scale" class="chart-scale-select">
+                        <option value="auto">Auto</option>
+                        <option value="10">10 %</option>
+                        <option value="25">25 %</option>
+                        <option value="50">50 %</option>
+                        <option value="70">70 %</option>
+                        <option value="100">100 %</option>
+                    </select>
+                </label>
+                <canvas id="performanceChart"></canvas>
+            </div>
+            <div id="network-box" class="graph-section site-box">
+                <h2>Flux Réseau</h2>
+                <label>
+                    Scale:
+                    <select id="network-scale" class="chart-scale-select">
+                        <option value="auto">Auto</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="70">70</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                        <option value="500">500</option>
+                    </select>
+                </label>
+                <canvas id="networkChart"></canvas>
+            </div>
+            <div id="cpu-threads-box" class="graph-section site-box">
+                <h2>Utilisation des Threads CPU</h2>
+                <label>
+                    Scale:
+                    <select id="cpu-threads-scale" class="chart-scale-select">
+                        <option value="auto">Auto</option>
+                        <option value="10">10 %</option>
+                        <option value="25">25 %</option>
+                        <option value="50">50 %</option>
+                        <option value="70">70 %</option>
+                        <option value="100">100 %</option>
+                    </select>
+                </label>
+                <canvas id="cpuThreadsChart"></canvas>
+            </div>
+            <div id="system-box" class="site-box">
+                <div>
+                    <p><strong>Utilisation CPU :</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill normal" id="cpu-bar">{{ system_info.cpu_percent }}%</div>
+                    </div>
+                </div>
+                <div>
+                    <p><strong>Utilisation Mémoire :</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill normal" id="memory-bar">{{ system_info.memory_percent }}%</div>
+                    </div>
+                    <p>({{ system_info.memory_used }} / {{ system_info.memory_total }})</p>
+                </div>
+                <div>
+                    <p><strong>Utilisation Disque :</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill normal" id="disk-bar">{{ system_info.disk_percent }}%</div>
+                    </div>
+                    <p>({{ system_info.disk_used }} / {{ system_info.disk_total }})</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- replaced inline style with external stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home_extra.css') }}">
+
+    <!-- SortableJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+    <script>
+        // Initialisation du drag & drop
+        new Sortable(document.getElementById('home-grid'), {
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            handle: '.site-box',
+        });
+    </script>
+    {% include 'footer.html' %}
+</body>
+</html>

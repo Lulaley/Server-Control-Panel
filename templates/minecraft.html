@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <main class="container">
+    {% if True %}
+      {% if machine_info is defined %}
+        {% set m = machine_info %}
+      {% elif machine is defined %}
+        {% set m = machine %}
+      {% elif host is defined %}
+        {% set m = host %}
+      {% else %}
+        {% set m = None %}
+      {% endif %}
+      <!-- ...existing code... -->
+
+      {# replaced inline style + old aside with games-style machine card #}
+      <aside id="machine-card" class="machine-card" aria-label="Informations machine">
+        <h4>Machine <span class="small">État système</span></h4>
+
+        <div class="metric">
+          <span class="label">CPU</span>
+          <div class="metric-info">
+            <div class="value" id="cpu-value">
+              {% if m and m.cpu_percent is not none %}{{ m.cpu_percent }}%{% else %}<em>—</em>{% endif %}
+            </div>
+            {% if m and m.cpu_percent is not none %}
+              <div class="progress" aria-hidden="true">
+                <i class="progress-bar" data-metric="cpu" style="width:{{ m.cpu_percent }}%; background:{% if m.cpu_percent < 60 %}#1b7a1b{% elif m.cpu_percent < 85 %}#b26900{% else %}#c62828{% endif %};"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="metric">
+          <span class="label">RAM</span>
+          <div class="metric-info">
+            <div class="value" id="ram-value">
+              {% if m and m.ram_used is defined and m.ram_total is defined and m.ram_percent is not none %}
+                {{ m.ram_used }} / {{ m.ram_total }} ({{ m.ram_percent }}%)
+              {% elif m and m.ram_percent is not none %}
+                {{ m.ram_percent }}%
+              {% else %}
+                <em>—</em>
+              {% endif %}
+            </div>
+            {% if m and m.ram_percent is not none %}
+              <div class="progress" aria-hidden="true">
+                <i class="progress-bar" data-metric="ram" style="width:{{ m.ram_percent }}%; background:{% if m.ram_percent < 60 %}#1b7a1b{% elif m.ram_percent < 85 %}#b26900{% else %}#c62828{% endif %};"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="metric">
+          <span class="label">Disque</span>
+          <div class="metric-info">
+            <div class="value" id="disk-value">
+              {% if m and m.disk_used is defined and m.disk_total is defined and m.disk_percent is not none %}
+                {{ m.disk_used }} / {{ m.disk_total }} ({{ m.disk_percent }}%)
+              {% elif m and m.disk_percent is not none %}
+                {{ m.disk_percent }}%
+              {% else %}
+                <em>—</em>
+              {% endif %}
+            </div>
+            {% if m and m.disk_percent is not none %}
+              <div class="progress" aria-hidden="true">
+                <i class="progress-bar" data-metric="disk" style="width:{{ m.disk_percent }}%; background:{% if m.disk_percent < 60 %}#1b7a1b{% elif m.disk_percent < 85 %}#b26900{% else %}#c62828{% endif %};"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </aside>
+    {% endif %}
+    <h1><img src="{{ url_for('static', filename='images/minecraft.png') }}" alt="Minecraft" style="width:10%;"></h1>
+    <div class="server-box" style="width:100%;max-width:100%;box-sizing:border-box;">
+        <label for="server-select">Choisir un serveur :</label>
+        <select id="server-select" class="styled-select"></select>
+        <span id="server-status" class="server-status">
+            <span class="status-dot unknown" id="server-status-dot"></span>
+            <span class="status-text" id="server-status-text">Inconnu</span>
+        </span>
+        {% if can_control_services %}
+        <div id="server-controls" style="display:inline-block; margin-left:10px;">
+            <button id="mc-btn-start" onclick="controlMinecraft('start')" class="styled-select btn-success" style="margin-left: 10px;">Démarrer</button>
+            <button id="mc-btn-stop" onclick="controlMinecraft('stop')" class="styled-select btn-danger" style="margin-left: 5px;">Arrêter</button>
+            <button id="mc-btn-restart" onclick="controlMinecraft('restart')" class="styled-select btn-warning" style="margin-left: 5px;">Redémarrer</button>
+        </div>
+        {% endif %}
+        <!-- Bluemap button : ouvert dans un nouvel onglet -->
+        <div id="bluemap-control" style="display:inline-block; margin-left:10px;">
+            <button id="btn-bluemap" class="styled-select" style="display:none;">Ouvrir Bluemap</button>
+        </div>
+    </div>
+    <div id="minecraft-info">
+        <div class="minecraft-row">
+            <div class="site-box logs-box">
+                <h2>Logs du serveur</h2>
+                <div>
+                    <pre id="server-logs"></pre>
+                </div>
+                <form method="get" action="/minecraft" style="margin-top:8px;">
+                  <button type="submit" class="styled-select">Rafraîchir</button>
+                </form>
+            </div>
+            <div class="site-box players-box">
+                <h2>Joueurs connectés</h2>
+                <div id="players-container">
+                    <ul id="players-list" class="styled-list"></ul>
+                    <p id="no-players">Aucun joueur connecté</p>
+                </div>
+            </div>
+        </div>
+        {% if can_control_services %}
+        <div class="site-box rcon-box">
+            <h2>Envoyer une commande RCON</h2>
+            {% if current_role == 'manager' %}
+            <p><em>En tant que manager, vous ne pouvez utiliser que les commandes "tell" pour envoyer des messages.</em></p>
+            {% endif %}
+            <form id="rcon-form">
+                <input type="text" id="rcon-command" placeholder="{% if current_role == 'manager' %}tell joueur message...{% else %}Commande...{% endif %}">
+                <button type="submit" class="styled-select">Envoyer</button>
+            </form>
+            <pre id="rcon-response"></pre>
+        </div>
+        {% endif %}
+
+        {% if current_role == 'admin' %}
+        <div id="properties-toggle" style="margin-bottom:8px;">
+            <label><input type="checkbox" id="toggle-properties-checkbox"> Afficher server.properties</label>
+        </div>
+        <div class="site-box properties-box" id="admin-properties-box">
+            <h2>Paramètres server.properties (admin)</h2>
+            <p>Choisissez un serveur et modifiez les valeurs, puis cliquez sur <strong>Enregistrer</strong>.</p>
+            <div>
+                <label for="prop-server-select">Serveur :</label>
+                <select id="prop-server-select" class="styled-select"></select>
+            </div>
+            <div id="properties-container" style="margin-top:10px;">
+                 <div id="properties-grid" class="properties-grid"></div>
+             </div>
+            <div class="properties-actions" style="margin-top:10px;">
+                <button id="save-properties" class="styled-select btn-success">Enregistrer</button>
+                <button id="reload-properties" class="styled-select">Recharger</button>
+            </div>
+            <div id="props-feedback" style="margin-top:8px;color:#d00;"></div>
+        </div>
+        <script>
+            // Toggle visibility and persist preference
+            (function(){
+                const KEY = 'showServerProperties';
+                const checkbox = document.getElementById('toggle-properties-checkbox');
+                const box = document.getElementById('admin-properties-box');
+                function apply(show){
+                    if(!box) return;
+                    box.style.display = show ? '' : 'none';
+                    if(checkbox) checkbox.checked = show;
+                    try { localStorage.setItem(KEY, show ? '1' : '0'); } catch(e) {}
+                }
+                document.addEventListener('DOMContentLoaded', function(){
+                    if(!checkbox || !box) return;
+                    const stored = (function(){ try { return localStorage.getItem(KEY); } catch(e){ return null; } })();
+                    const shouldShow = stored === null ? true : stored === '1';
+                    checkbox.addEventListener('change', function(){ apply(checkbox.checked); });
+                    apply(shouldShow);
+                });
+            })();
+        </script>
+        {% endif %}
+
+    </div>
+
+    <!-- Modals pour les actions joueurs -->
+    <div id="message-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('message-modal')">&times;</span>
+            <h3>Envoyer un message à <span id="message-player-name"></span></h3>
+            <textarea id="message-text" placeholder="Tapez votre message ici..." rows="3" style="width: 100%; margin-bottom: 10px;"></textarea>
+            <div class="modal-actions">
+                <button onclick="sendPlayerMessage()" class="styled-select btn-success">Envoyer</button>
+                <button onclick="closeModal('message-modal')" class="styled-select">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="kick-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('kick-modal')">&times;</span>
+            <h3>Expulser <span id="kick-player-name"></span></h3>
+            <textarea id="kick-reason" placeholder="Raison de l'expulsion (optionnel)" rows="2" style="width: 100%; margin-bottom: 10px;"></textarea>
+            <div class="modal-actions">
+                <button onclick="kickPlayer()" class="styled-select btn-warning">Expulser</button>
+                <button onclick="closeModal('kick-modal')" class="styled-select">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ban-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('ban-modal')">&times;</span>
+            <h3>Bannir <span id="ban-player-name"></span></h3>
+            <textarea id="ban-reason" placeholder="Raison du bannissement (optionnel)" rows="2" style="width: 100%; margin-bottom: 10px;"></textarea>
+            <div class="modal-actions">
+                <button onclick="banPlayer()" class="styled-select btn-danger">Bannir</button>
+                <button onclick="closeModal('ban-modal')" class="styled-select">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- add games.css to inherit same font/vars, then keep local css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/games.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/minecraft.css') }}">
+    <!-- properties specific styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/minecraft-properties.css') }}">
+
+    <script src="{{ url_for('static', filename='js/minecraft-properties.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/minecraft.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/machine-card.js') }}"></script>
+     {% include 'footer.html' %}
+</body>
+</html>
