@@ -4,5 +4,31 @@
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#6d28d9",
+        "titleBar.activeForeground": "#ffffff",
+        "titleBar.inactiveBackground": "#5b21b6",
+        "titleBar.inactiveForeground": "#e9d5ff",
+        "statusBarItem.hoverBackground": "#7c3aed",
+        "activityBar.background": "#5b21b6",
+        "activityBar.foreground": "#ffffff",
+        "activityBar.inactiveForeground": "#e9d5ff",
+        "activityBarBadge.background": "#a855f7",
+        "activityBarBadge.foreground": "#ffffff",
+        "sideBar.background": "#1f1436",
+        "sideBar.foreground": "#f5f3ff",
+        "sideBarSectionHeader.background": "#2a1a4a",
+        "sideBarSectionHeader.foreground": "#f5f3ff",
+        "editorGroupHeader.tabsBackground": "#1f1436",
+        "tab.activeBackground": "#2a1a4a",
+        "tab.activeForeground": "#ffffff",
+        "tab.inactiveBackground": "#1a1230",
+        "tab.inactiveForeground": "#d8b4fe",
+        "editor.background": "#140d24",
+        "editor.foreground": "#f5f3ff",
+        "panel.background": "#140d24",
+        "panel.border": "#3b1b66",
+        "terminal.background": "#140d24"
+    }
 }
