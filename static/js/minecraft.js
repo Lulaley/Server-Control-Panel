@@ -62,7 +62,6 @@ document.addEventListener('change', function(event) {
             updateServerStatus(selectedServer);
             loadServerLogs(selectedServer);
             loadServerPlayers(selectedServer);
-            setupBluemapButton(selectedServer);
         } else {
             currentSelectedServer = null;
             // Réinitialiser les affichages
@@ -70,13 +69,11 @@ document.addEventListener('change', function(event) {
             const logsEl = document.getElementById('server-logs');
             const playersEl = document.getElementById('players-list');
             const noPlayersEl = document.getElementById('no-players');
-            const bluemapEl = document.getElementById('btn-bluemap');
             
             if (statusEl) statusEl.textContent = '';
             if (logsEl) logsEl.textContent = '';
             if (playersEl) playersEl.innerHTML = '';
             if (noPlayersEl) noPlayersEl.style.display = 'block';
-            if (bluemapEl) bluemapEl.style.display = 'none';
         }
     }
 });
@@ -178,6 +175,13 @@ function loadServerLogs(server) {
         .catch(error => {
             console.error('Erreur lors du chargement des logs:', error);
         });
+}
+
+// Rafraîchir uniquement les logs (bouton Rafraîchir)
+function refreshLogs() {
+    if (currentSelectedServer) {
+        loadServerLogs(currentSelectedServer);
+    }
 }
 
 // Charger la liste des joueurs connectés
@@ -340,19 +344,6 @@ function setupRconForm() {
                 console.error('Erreur RCON:', error);
             });
         });
-    }
-}
-
-// Configuration du bouton Bluemap
-function setupBluemapButton(server) {
-    const bluemapBtn = document.getElementById('btn-bluemap');
-    if (bluemapBtn) {
-        const bluemapPort = 8100; // Port par défaut Bluemap
-        bluemapBtn.style.display = 'inline-block';
-        bluemapBtn.onclick = function() {
-            const bluemapUrl = `http://${window.location.hostname}:${bluemapPort}`;
-            window.open(bluemapUrl, '_blank');
-        };
     }
 }
 

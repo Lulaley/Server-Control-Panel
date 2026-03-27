@@ -90,10 +90,6 @@
             <button id="mc-btn-restart" onclick="controlMinecraft('restart')" class="styled-select btn-warning" style="margin-left: 5px;">Redémarrer</button>
         </div>
         {% endif %}
-        <!-- Bluemap button : ouvert dans un nouvel onglet -->
-        <div id="bluemap-control" style="display:inline-block; margin-left:10px;">
-            <button id="btn-bluemap" class="styled-select" style="display:none;">Ouvrir Bluemap</button>
-        </div>
     </div>
     <div id="minecraft-info">
         <div class="minecraft-row">
@@ -102,9 +98,7 @@
                 <div>
                     <pre id="server-logs"></pre>
                 </div>
-                <form method="get" action="/minecraft" style="margin-top:8px;">
-                  <button type="submit" class="styled-select">Rafraîchir</button>
-                </form>
+                <button type="button" class="styled-select" onclick="refreshLogs()" style="margin-top:8px;">Rafraîchir</button>
             </div>
             <div class="site-box players-box">
                 <h2>Joueurs connectés</h2>

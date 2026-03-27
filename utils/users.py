@@ -1,9 +1,6 @@
 import os
 import json
 import logging
-import re
-import hashlib
-import base64
 from werkzeug.security import generate_password_hash, check_password_hash
 
 logger = logging.getLogger(__name__)
@@ -70,15 +67,7 @@ def save_pending(pending_list):
     old_usernames = {p.get("username") for p in old if p}
     new_entries = [p for p in pending_list if p and p.get("username") not in old_usernames]
 
-    # déterminer le chemin du fichier utilisé originellement par ce module
-    try:
-        path = PENDING_FILE  # si défini dans ce module
-    except NameError:
-        try:
-            path = PENDING_PATH
-        except NameError:
-            # fallback : tentative de position relative (modifier si nécessaire)
-            path = os.path.join(os.path.dirname(__file__), "..", "data", "pending.json")
+    path = PENDING_PATH
 
     # écrire la nouvelle liste pending
     try:
@@ -146,63 +135,3 @@ def verify_scrypt_hash(stored_hash, password):
     # Pour tous les anciens hashes scrypt, on considère qu'ils sont cassés
     # et on demande une réinitialisation
     return False
-
-def migrate_user_to_pbkdf2(username, password):
-    """Migre un utilisateur vers pbkdf2 avec un nouveau mot de passe"""
-    from werkzeug.security import generate_password_hash
-    try:
-        users = load_users()
-        if username not in users:
-            return False
-        
-        # Générer un nouveau hash pbkdf2
-        new_hash = generate_password_hash(password)
-        users[username]["password"] = new_hash
-        
-        if save_users_dict(users):
-            logger.info("Successfully migrated user %s to pbkdf2", username)
-            return True
-        else:
-            logger.error("Failed to save migrated user %s", username)
-            return False
-    except Exception as e:
-        logger.error("Error migrating user %s: %s", username, e)
-        return False
-
-def create_user(username, password, role="user", main_color="#4caf50"):
-    """Créer un nouvel utilisateur avec un hash de mot de passe sécurisé"""
-    try:
-        # Charger les utilisateurs existants
-        users = load_users()
-        
-        # Vérifier si l'utilisateur existe déjà
-        if username in users:
-            logger.warning("User '%s' already exists", username)
-            return False
-        
-        # Créer le hash du mot de passe
-        password_hash = generate_password_hash(password)
-        
-        # Créer l'enregistrement utilisateur
-        user_record = {
-            "username": username,
-            "password": password_hash,
-            "role": role,
-            "main_color": main_color
-        }
-        
-        # Ajouter à la liste des utilisateurs
-        users[username] = user_record
-        
-        # Sauvegarder
-        success = save_users_dict(users)
-        if success:
-            logger.info("User '%s' created successfully with role '%s'", username, role)
-        else:
-            logger.error("Failed to save user '%s'", username)
-        
-        return success
-        
-    except Exception as e:
-        logger.exception("Error creating user '%s': %s", username, e)
-        return False

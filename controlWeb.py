@@ -6,7 +6,6 @@ from logging.handlers import RotatingFileHandler
 from urllib.parse import quote
 import json, re  # <-- added imports
 import psutil
-import time
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 import secrets
@@ -86,10 +85,12 @@ try_register('routes.game_servers', 'game_servers_bp', "")
 def about():
     return render_template("about.html")
 
-# secret key for sessions (prefer to set FLASK_SECRET in env)
-SECRET = os.getenv("FLASK_SECRET") or "change-me-in-production"
-if SECRET == "change-me-in-production":
-    logger.warning("Using default secret key - change FLASK_SECRET environment variable in production")
+
+# secret key for sessions (must be set in env, refuse default)
+SECRET = os.getenv("FLASK_SECRET")
+if not SECRET or SECRET == "change-me-in-production":
+    logger.critical("FLASK_SECRET environment variable is not set or uses the default value. Refusing to start for security reasons.")
+    raise RuntimeError("FLASK_SECRET environment variable must be set to a strong random value in production.")
 controlWeb.secret_key = SECRET
 
 # Hook global pour forcer login (exemptions gérées ici)
@@ -140,7 +141,7 @@ def _ensure_login():
 def index():
     if session.get("user"):
         try:
-            return redirect(url_for("home.dashboard"))
+            return redirect(url_for("home.home"))
         except Exception:
             return render_template("about.html")
     else:
@@ -525,4 +526,11 @@ logger.info("Secret key configured: %s", bool(controlWeb.secret_key))
 # Protection contre l'exécution multiple
 if __name__ == '__main__':
     logger.info("Starting Flask app...")
-    controlWeb.run(debug=True, host='0.0.0.0', port=5000)
+    cert_path = "/home/web_server/certs/certificate.crt"
+    key_path = "/home/web_server/certs/private.key"
+    if os.path.exists(cert_path) and os.path.exists(key_path):
+        logger.info(f"Using SSL context: cert={cert_path}, key={key_path}")
+        controlWeb.run(debug=True, host='0.0.0.0', port=5000, ssl_context=(cert_path, key_path))
+    else:
+        logger.warning("Certificat SSL ou clé privée manquants, lancement sans HTTPS !")
+        controlWeb.run(debug=True, host='0.0.0.0', port=5000)

@@ -34,3 +34,37 @@ config/pending_users.json
 config/reset_requests.json
 config/services_config.json
 config/mail_config.py
+
+# SonarQube/Scanner
+sonar-scanner/
+sonar-scanner-cli-*.zip
+sonar-project.properties
+.scannerwork/
+
+# Rapport d'analyse et outils de sécurité
+trivy*.txt
+
+# Jetons, secrets, tokens
+*.token
+*.secret
+sonar_cookies.txt
+
+# Fichiers d'installation temporaires
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Fichiers de configuration locaux
+.vscode/
+*.swp
+images/*/
+*~
+.DS_Store
+node_modules/
+
+# IDEs et éditeurs
+.vscode/
+
+# GitHub Actions
+.github/
