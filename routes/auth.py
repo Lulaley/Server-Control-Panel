@@ -2,9 +2,10 @@ from flask import Blueprint, render_template, request, session, redirect, url_fo
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils.users import (
     load_users, save_users_dict, load_pending, save_pending,
-    load_reset_requests, save_reset_requests, save_user_record, verify_scrypt_hash
+    load_reset_requests, save_reset_requests
 )
 import logging
+import traceback
 
 logger = logging.getLogger(__name__)
 auth_bp = Blueprint('auth', __name__)
@@ -40,59 +41,36 @@ def login():
         logger.info("Login attempt for username=%r", username)
         
         u = users.get(username)
+        # Toujours retourner le même message d'erreur, que l'utilisateur existe ou non
         if not u:
             logger.warning("Login failed: user %r not found", username)
+            # Délai pour ralentir l'énumération
+            import time; time.sleep(1)
             return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
-        
+
         stored = u.get("password", "")
         logger.debug("Stored password starts with: %s", stored[:20] if stored else "EMPTY")
-        ok = False
-        
+
+        # Refuser toute connexion avec un hash faible ou mot de passe en clair
+        if not stored.startswith("pbkdf2:"):
+            logger.warning("User %s has weak or legacy password hash, forcing migration", username)
+            return redirect(url_for("auth.migrate_password", username=username, next=request.args.get("next", "/")))
+
         try:
-            # Vérifier d'abord si c'est un hash pbkdf2 moderne (priorité absolue)
-            if stored.startswith("pbkdf2:"):
-                ok = check_password_hash(stored, password)
-                logger.debug("pbkdf2 check result: %s", ok)
-                
-                if ok:
-                    session["user"] = username
-                    session["role"] = u.get("role", "user")
-                    logger.info("Login successful for user %s with pbkdf2 hash", username)
-                    nxt = request.args.get("next") or request.form.get("next") or "/"
-                    return redirect(nxt)
-                else:
-                    logger.warning("pbkdf2 password mismatch for user %s", username)
-                    return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
-                
-            # Si c'est un ancien hash scrypt, rediriger vers la page de migration
-            elif stored.startswith("scrypt:"):
-                logger.info("User %s has legacy scrypt hash, redirecting to migration", username)
-                return redirect(url_for("auth.migrate_password", username=username, next=request.args.get("next", "/")))
-                
-            # Fallback pour les mots de passe en clair (très anciens)
+            ok = check_password_hash(stored, password)
+            logger.debug("pbkdf2 check result: %s", ok)
+            if ok:
+                session["user"] = username
+                session["role"] = u.get("role", "user")
+                logger.info("Login successful for user %s with pbkdf2 hash", username)
+                nxt = request.args.get("next") or request.form.get("next") or "/"
+                return redirect(nxt)
             else:
-                logger.debug("Trying plaintext comparison for user %s", username)
-                if stored == password:
-                    ok = True
-                    # Migrer immédiatement vers pbkdf2
-                    users[username]["password"] = generate_password_hash(password)
-                    save_users_dict(users)
-                    logger.info("Migrated user %s from plaintext to pbkdf2", username)
-                    
-                    session["user"] = username
-                    session["role"] = u.get("role", "user")
-                    nxt = request.args.get("next") or request.form.get("next") or "/"
-                    return redirect(nxt)
-                else:
-                    logger.debug("Plaintext comparison failed")
-                    
+                logger.warning("pbkdf2 password mismatch for user %s", username)
+                return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
         except Exception:
             logger.exception("Password verify error for user %s", username)
-            ok = False
-        
-        # Si on arrive ici, c'est que l'authentification a échoué
-        logger.warning("Login failed: password mismatch for user %s", username)
-        return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
+            return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
             
     return render_template("login.html", next=request.args.get("next", "/"))
 

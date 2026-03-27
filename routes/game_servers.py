@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, current_app
-import os
 import traceback
 import json
 

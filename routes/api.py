@@ -1,7 +1,12 @@
 from flask import Blueprint, jsonify, session, request
 import subprocess
 import re
-from utils.users import load_users, save_users_dict, generate_password_hash, check_password_hash  # imported if needed for future
+import logging
+import traceback
+from utils.users import load_users, save_users_dict
+from werkzeug.security import generate_password_hash, check_password_hash
+
+logger = logging.getLogger(__name__)
 api_bp = Blueprint('api', __name__)
 
 @api_bp.route("/api/services/<service_name>/<action>", methods=["POST"])

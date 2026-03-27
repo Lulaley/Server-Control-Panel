@@ -159,8 +159,20 @@ def minecraft_control(server):
 
 @minecraft_bp.route("/api/minecraft/logs/<server>")
 def minecraft_logs(server):
-    # Chemin du fichier de log Minecraft
-    log_path = f"/var/log/{server}.log"
+    # Trouver le dossier du serveur et utiliser le fichier latest.log
+    server_dir = find_server_dir(server)
+    log_path = None
+    
+    # Priorité au fichier latest.log dans le dossier logs du serveur
+    if server_dir:
+        latest_log_path = os.path.join(server_dir, "logs", "latest.log")
+        if os.path.exists(latest_log_path):
+            log_path = latest_log_path
+    
+    # Fallback vers l'ancien système si latest.log n'est pas trouvé
+    if not log_path:
+        log_path = f"/var/log/{server}.log"
+    
     logs = ""
     purged = False
     removed_count = 0
@@ -241,7 +253,19 @@ def minecraft_logs(server):
 
 @minecraft_bp.route("/api/minecraft/players/<server>")
 def minecraft_players(server):    
-    log_path = f"/var/log/{server}.log"
+    # Trouver le dossier du serveur et utiliser le fichier latest.log
+    server_dir = find_server_dir(server)
+    log_path = None
+    
+    # Priorité au fichier latest.log dans le dossier logs du serveur
+    if server_dir:
+        latest_log_path = os.path.join(server_dir, "logs", "latest.log")
+        if os.path.exists(latest_log_path):
+            log_path = latest_log_path
+    
+    # Fallback vers l'ancien système si latest.log n'est pas trouvé
+    if not log_path:
+        log_path = f"/var/log/{server}.log"
     
     print(f"DEBUG: Checking players for server {server}")
     print(f"DEBUG: Log path: {log_path}")
