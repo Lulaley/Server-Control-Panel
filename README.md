@@ -44,3 +44,15 @@ python controlWeb.py
 
 - Les fichiers sensibles dans `config/` (comptes, reset, mail, etc.) ne doivent pas être commit.
 - Utiliser `config/services_config.example.json` comme base pour la configuration locale.
+
+## Contributing
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+
+## License
+
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
+
+## Auteurs
+
+- [Lulaley](https://github.com/Lulaley) - Développeur principal
