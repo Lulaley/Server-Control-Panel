@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+    {% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+    <div class="site-box" style="max-width:1000px;margin:24px auto;">
+        <h1>Sécurité — Adresses IP bloquées</h1>
+
+        <!-- Ban form -->
+        <div style="margin-bottom:24px;padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:8px;">
+            <h2 style="margin-top:0;font-size:1.1rem;">Bloquer une adresse IP</h2>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+                <div>
+                    <label for="ban-ip" style="display:block;margin-bottom:4px;">Adresse IP</label>
+                    <input id="ban-ip" type="text" placeholder="192.168.1.1" style="padding:6px 10px;border-radius:4px;border:1px solid #555;background:#111;color:#eee;min-width:180px;">
+                </div>
+                <div>
+                    <label for="ban-reason" style="display:block;margin-bottom:4px;">Raison</label>
+                    <input id="ban-reason" type="text" placeholder="Brute-force manuel" style="padding:6px 10px;border-radius:4px;border:1px solid #555;background:#111;color:#eee;min-width:240px;">
+                </div>
+                <button id="btn-ban" class="styled-select" style="padding:6px 18px;">Bloquer</button>
+            </div>
+            <div id="ban-msg" style="margin-top:8px;font-size:0.9rem;"></div>
+        </div>
+
+        <!-- Blocked IPs table -->
+        <h2 style="font-size:1.1rem;">IPs actuellement bloquées</h2>
+        <div id="blocked-container">Chargement...</div>
+
+        <!-- Security log -->
+        <h2 style="font-size:1.1rem;margin-top:32px;">Journal de sécurité
+            <select id="log-lines" style="margin-left:12px;padding:4px 8px;background:#111;color:#eee;border:1px solid #555;border-radius:4px;">
+                <option value="50">50 lignes</option>
+                <option value="100" selected>100 lignes</option>
+                <option value="200">200 lignes</option>
+                <option value="500">500 lignes</option>
+            </select>
+            <button id="btn-refresh-log" class="styled-select" style="margin-left:8px;padding:4px 14px;font-size:0.85rem;">Actualiser</button>
+        </h2>
+        <pre id="security-log" style="background:#0a0a0f;color:#c8ffc8;font-size:0.78rem;padding:16px;border-radius:6px;max-height:420px;overflow:auto;white-space:pre-wrap;word-break:break-all;">Chargement...</pre>
+
+        <p><a href="/admin/pending" class="styled-select">← Retour à l'administration</a></p>
+    </div>
+
+    <script>
+        async function loadBlocked() {
+            const res = await fetch('/api/admin/blocked-ips');
+            const container = document.getElementById('blocked-container');
+            if (!res.ok) {
+                container.textContent = 'Erreur lors du chargement.';
+                return;
+            }
+            const data = await res.json();
+            const list = data.blocked_ips || [];
+            if (!list.length) {
+                container.innerHTML = '<p style="opacity:0.6;">Aucune adresse IP bloquée.</p>';
+                return;
+            }
+            let html = '<table style="width:100%;border-collapse:collapse;">';
+            html += '<tr style="text-align:left;border-bottom:1px solid #333;"><th style="padding:8px">IP</th><th style="padding:8px">Raison</th><th style="padding:8px">Bloquée par</th><th style="padding:8px">Date</th><th style="padding:8px">Action</th></tr>';
+            list.forEach(entry => {
+                html += `<tr style="border-bottom:1px solid #222;">
+                    <td style="padding:8px;font-family:monospace;">${escHtml(entry.ip || '')}</td>
+                    <td style="padding:8px;">${escHtml(entry.reason || '')}</td>
+                    <td style="padding:8px;">${escHtml(entry.banned_by || '')}</td>
+                    <td style="padding:8px;font-size:0.85rem;">${escHtml(entry.banned_at || '')}</td>
+                    <td style="padding:8px;">
+                        <button class="unban-btn styled-select" data-ip="${escHtml(entry.ip || '')}" style="padding:3px 12px;font-size:0.85rem;background:#c0392b;">Débloquer</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</table>';
+            container.innerHTML = html;
+            document.querySelectorAll('.unban-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const ip = btn.dataset.ip;
+                    if (!confirm(`Débloquer l'IP ${ip} ?`)) return;
+                    const r = await fetch(`/api/admin/blocked-ips/${encodeURIComponent(ip)}`, { method: 'DELETE' });
+                    if (r.ok) {
+                        loadBlocked();
+                    } else {
+                        const j = await r.json().catch(() => ({}));
+                        alert('Erreur : ' + (j.error || r.status));
+                    }
+                });
+            });
+        }
+
+        async function loadLog() {
+            const lines = document.getElementById('log-lines').value;
+            const res = await fetch(`/api/admin/security-log?lines=${lines}`);
+            const pre = document.getElementById('security-log');
+            if (!res.ok) {
+                pre.textContent = 'Erreur lors du chargement du journal.';
+                return;
+            }
+            const data = await res.json();
+            pre.textContent = (data.lines || []).join('\n') || '(journal vide)';
+            pre.scrollTop = pre.scrollHeight;
+        }
+
+        function escHtml(str) {
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        document.getElementById('btn-ban').addEventListener('click', async () => {
+            const ip = document.getElementById('ban-ip').value.trim();
+            const reason = document.getElementById('ban-reason').value.trim() || 'Bloqué manuellement';
+            const msg = document.getElementById('ban-msg');
+            if (!ip) { msg.textContent = 'IP requise.'; msg.style.color = '#e74c3c'; return; }
+            const res = await fetch('/api/admin/blocked-ips', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ip, reason }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                msg.textContent = `IP ${ip} bloquée avec succès.`;
+                msg.style.color = '#2ecc71';
+                document.getElementById('ban-ip').value = '';
+                document.getElementById('ban-reason').value = '';
+                loadBlocked();
+            } else {
+                msg.textContent = 'Erreur : ' + (data.error || res.status);
+                msg.style.color = '#e74c3c';
+            }
+        });
+
+        document.getElementById('btn-refresh-log').addEventListener('click', loadLog);
+        document.getElementById('log-lines').addEventListener('change', loadLog);
+
+        loadBlocked();
+        loadLog();
+    </script>
+
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, g, make_response
 import os
 import logging
 import traceback
@@ -11,6 +11,8 @@ from werkzeug.security import generate_password_hash
 import secrets
 import importlib.util
 import sys
+from datetime import timedelta
+from extensions import csrf
 
 # Éviter les imports multiples
 if not hasattr(Flask, '_controlWeb_initialized'):
@@ -38,6 +40,33 @@ logger = logging.getLogger(__name__)
 
 # ensure flask app logger also in debug
 controlWeb = Flask(__name__)
+controlWeb.logger.setLevel(logging.DEBUG)
+
+# ---------------------------------------------------------------------------
+# Warn loudly if running in debug / development mode
+# ---------------------------------------------------------------------------
+if os.getenv("FLASK_DEBUG") == "1" or os.getenv("FLASK_ENV") == "development":
+    logger.warning(
+        "WARNING: Flask is running in DEBUG/DEVELOPMENT mode. "
+        "This MUST NOT be used in production."
+    )
+
+# ---------------------------------------------------------------------------
+# Session security configuration
+# ---------------------------------------------------------------------------
+controlWeb.config["SESSION_COOKIE_HTTPONLY"] = True
+controlWeb.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+# Only enforce Secure cookie when HTTPS is explicitly enabled via env var
+if os.getenv("HTTPS_ENABLED", "").lower() in ("1", "true", "yes"):
+    controlWeb.config["SESSION_COOKIE_SECURE"] = True
+controlWeb.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=2)
+
+# ---------------------------------------------------------------------------
+# CSRF protection — initialise with app (API blueprints are exempt below)
+# ---------------------------------------------------------------------------
+controlWeb.config["WTF_CSRF_CHECK_DEFAULT"] = True
+controlWeb.config["WTF_CSRF_TIME_LIMIT"] = 3600  # 1 hour token validity
+csrf.init_app(controlWeb)
 controlWeb.logger.setLevel(logging.DEBUG)
 
 # Enregistrer les Blueprints de manière robuste (import + enregistrement en try/except)
@@ -80,6 +109,21 @@ try_register('routes.api', 'api_bp', "")
 try_register('routes.hytale', 'hytale_bp', "")
 try_register('routes.game_servers', 'game_servers_bp', "")
 
+# Exempt pure-API blueprints from CSRF — they are protected by session auth + SameSite=Lax.
+# The auth blueprint form routes (login, signup, etc.) DO use CSRF tokens (added in templates).
+# The auth blueprint JSON API sub-routes are also protected via @csrf.exempt in routes/auth.py.
+try:
+    from routes.api import api_bp as _api_bp
+    csrf.exempt(_api_bp)
+except Exception:
+    logger.warning("Could not apply CSRF exemption to api_bp")
+
+try:
+    from routes.admin import admin_bp as _admin_bp
+    csrf.exempt(_admin_bp)
+except Exception:
+    logger.warning("Could not apply CSRF exemption to admin_bp")
+
 # route minimale restante
 @controlWeb.route("/about")
 def about():
@@ -93,18 +137,49 @@ if not SECRET or SECRET == "change-me-in-production":
     raise RuntimeError("FLASK_SECRET environment variable must be set to a strong random value in production.")
 controlWeb.secret_key = SECRET
 
+# robots.txt — disallow all crawlers
+@controlWeb.route("/robots.txt")
+def robots_txt():
+    resp = make_response("User-agent: *\nDisallow: /\n", 200)
+    resp.headers["Content-Type"] = "text/plain"
+    return resp
+
+# ---------------------------------------------------------------------------
+# CSP nonce generation — one nonce per request stored in g
+# ---------------------------------------------------------------------------
+@controlWeb.before_request
+def _generate_csp_nonce():
+    g.csp_nonce = secrets.token_hex(16)
+
 # Hook global pour forcer login (exemptions gérées ici)
 @controlWeb.before_request
 def _ensure_login():
     try:
         path = request.path or ""
         logger.debug("Processing request for path: %s", path)
-        
+
+        # Check permanent IP ban first
+        from utils.security import is_ip_permanently_banned
+        ip = request.remote_addr or ""
+        if ip and is_ip_permanently_banned(ip):
+            logger.warning("Blocked permanently banned IP: %s path=%s", ip, path)
+            if path.startswith("/api"):
+                return jsonify({"error": "forbidden"}), 403
+            return "Access denied", 403
+
+        # Check temporary lockout (only relevant for login — checked inside login route,
+        # but block all traffic from locked-out IPs to prevent enumeration)
+        from utils.security import is_ip_locked_out
+        locked, _ = is_ip_locked_out(ip)
+        if locked and path in ("/login",) and request.method == "POST":
+            # The login route itself handles the lockout message; let it through
+            pass
+
         # Exemptions complètes (pas de redirection)
         exempt_paths = [
             "/static", "/_ping", "/favicon.ico",
             "/login", "/logout", "/signup",
-            "/migrate-password", "/reset-password"
+            "/migrate-password", "/reset-password", "/robots.txt"
         ]
         # Added /api/machine to allow public machine info polling
         exempt_exact = ["/", "/api/main-color", "/api/machine"]
@@ -112,7 +187,19 @@ def _ensure_login():
         # Vérifier exemptions
         if any(path.startswith(p) for p in exempt_paths) or path in exempt_exact:
             return None
-            
+
+        # Session idle timeout: invalidate sessions that have been idle too long
+        import time as _time
+        if session.get("user"):
+            last_active = session.get("_last_active", 0)
+            now = _time.time()
+            idle_timeout = 2 * 3600  # 2 hours in seconds
+            if last_active and (now - last_active) > idle_timeout:
+                logger.info("Session expired due to inactivity for user %s", session.get("user"))
+                session.clear()
+            else:
+                session["_last_active"] = now
+                
         # Si utilisateur connecté, continuer
         if session.get("user"):
             logger.debug("User authenticated: %s", session.get("user"))
@@ -149,6 +236,41 @@ def index():
             return redirect(url_for("auth.login"))
         except Exception:
             return redirect("/login")
+
+# ---------------------------------------------------------------------------
+# Security headers — injected on every response
+# ---------------------------------------------------------------------------
+@controlWeb.after_request
+def _add_security_headers(response):
+    nonce = getattr(g, "csp_nonce", "")
+    nonce_src = f"'nonce-{nonce}'" if nonce else ""
+
+    csp_parts = [
+        "default-src 'none'",
+        f"script-src 'self' https://cdn.jsdelivr.net {nonce_src}",
+        "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'",
+        "img-src 'self' data: blob:",
+        "connect-src 'self'",
+        "font-src 'self' https://cdn.jsdelivr.net",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+    ]
+    response.headers["Content-Security-Policy"] = "; ".join(csp_parts)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = (
+        "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    )
+    if os.getenv("HTTPS_ENABLED", "").lower() in ("1", "true", "yes"):
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+    # Remove server identification headers
+    response.headers.pop("Server", None)
+    response.headers.pop("X-Powered-By", None)
+    return response
 
 # rendre la session disponible dans les templates
 @controlWeb.context_processor
@@ -194,7 +316,8 @@ def inject_user():
         'can_control_services': session.get('role') in ('admin', 'manager'),
         'safe_url_for': safe_url_for,  # Version sûre de url_for pour les templates
         'url_for': safe_url_for,  # Remplacer url_for par la version sûre
-        'avatar_url': avatar_url
+        'avatar_url': avatar_url,
+        'csp_nonce': getattr(g, 'csp_nonce', ''),
     }
 
 # --- nouveau: injecter machine_info globalement pour tous les templates ---
@@ -256,7 +379,9 @@ def not_found_error(e):
     # Si c'est une tentative d'accès à une page d'auth manquante, rediriger vers login
     if request.path in ['/signup', '/reset-password']:
         return redirect('/login')
-    return "Page not found", 404
+    if request.path.startswith("/api"):
+        return jsonify({"error": "not_found"}), 404
+    return render_template("error.html", code=404, message="Page introuvable"), 404
 
 @controlWeb.errorhandler(500)
 def internal_server_error(e):
@@ -264,7 +389,16 @@ def internal_server_error(e):
     logger.error("Request path: %s", request.path)
     logger.error("Request method: %s", request.method)
     logger.error("Traceback: %s", traceback.format_exc())
-    return "Internal server error - check logs for details", 500
+    if request.path.startswith("/api"):
+        return jsonify({"error": "internal_error"}), 500
+    return render_template("error.html", code=500, message="Erreur interne du serveur"), 500
+
+@controlWeb.errorhandler(403)
+def forbidden_error(e):
+    logger.warning("403 error: %s for path %s", e, request.path)
+    if request.path.startswith("/api"):
+        return jsonify({"error": "forbidden"}), 403
+    return render_template("error.html", code=403, message="Accès refusé"), 403
 
 # ---------- NEW: user color API (uses session['user']) ----------
 CONFIG_USERS = os.path.normpath(os.path.join(os.path.dirname(__file__), 'config', 'users.json'))

@@ -33,21 +33,18 @@
             gap: 6px;
         }
     </style>
-    <script>
-        // filepath: /home/Server-Control-Panel-V2/flask-template/templates/head.html
+    <script nonce="{{ csp_nonce }}">
         const USER_AVATAR_URL = {{ (avatar_url|default(url_for('static', filename='images/utilisateur.png'))) | tojson }};
         const PROFILE_PATH = {{ url_for('profile') | tojson }};
 
         (function injectNavbarAvatar(){
             const MAX_RETRIES = 3;
-            const RETRY_DELAY_MS = 300; // espacement entre tentatives
+            const RETRY_DELAY_MS = 300;
             let tries = 0;
 
             function tryInsert(){
                 tries++;
                 try {
-                    console && console.debug && console.debug('[avatar] tryInsert', {tries, PROFILE_PATH, USER_AVATAR_URL});
-                    // chercher lien correspondant
                     let anchor = document.querySelector(`a[href="${PROFILE_PATH}"]`) || null;
                     if(!anchor){
                         const anchors = Array.from(document.querySelectorAll('a'));
@@ -63,7 +60,6 @@
                         }) || null;
                     }
 
-                    // fallback : chercher élément nav ou header et insérer à la fin
                     let parentForFallback = null;
                     if(!anchor){
                         parentForFallback = document.querySelector('nav') || document.querySelector('header') || document.body;
@@ -84,7 +80,6 @@
                         img.className = 'navbar-avatar';
                         anchor.parentNode.insertBefore(img, anchor);
                         anchor.classList.add('navbar-avatar-link');
-                        console && console.debug && console.debug('[avatar] inserted before anchor', anchor);
                         return;
                     }
 
@@ -95,18 +90,13 @@
                         img.loading = 'lazy';
                         img.className = 'navbar-avatar';
                         parentForFallback.insertBefore(img, parentForFallback.firstChild);
-                        console && console.debug && console.debug('[avatar] inserted fallback into', parentForFallback.tagName);
                         return;
                     }
 
-                    // si échec et on peut réessayer
                     if(tries < MAX_RETRIES){
                         setTimeout(tryInsert, RETRY_DELAY_MS);
-                    } else {
-                        console && console.debug && console.debug('[avatar] insertion failed after retries');
                     }
                 } catch (e){
-                    console && console.error && console.error('[avatar] injection error', e);
                     if(tries < MAX_RETRIES) setTimeout(tryInsert, RETRY_DELAY_MS);
                 }
             }

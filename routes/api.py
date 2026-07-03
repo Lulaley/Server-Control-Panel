@@ -3,11 +3,30 @@ import subprocess
 import re
 import logging
 import traceback
+import json
+import os
 from utils.users import load_users, save_users_dict
+from utils.security import validate_password, validate_username
 from werkzeug.security import generate_password_hash, check_password_hash
 
 logger = logging.getLogger(__name__)
 api_bp = Blueprint('api', __name__)
+
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_SERVICES_CONFIG = os.path.join(_BASE_DIR, "config", "services_config.json")
+
+
+def _get_allowed_service_names() -> set:
+    """Load service name allowlist from services_config.json if it exists."""
+    try:
+        if os.path.exists(_SERVICES_CONFIG):
+            with open(_SERVICES_CONFIG, "r", encoding="utf-8") as f:
+                services = json.load(f) or []
+            return {s.get("name") for s in services if s.get("name")}
+    except Exception:
+        logger.warning("Could not load services_config.json for allowlist validation")
+    return set()
+
 
 @api_bp.route("/api/services/<service_name>/<action>", methods=["POST"])
 def api_service_control(service_name, action):
@@ -18,6 +37,10 @@ def api_service_control(service_name, action):
         return jsonify({"error": "invalid_action", "message": "Action non valide"}), 400
     if not re.match(r'^[a-zA-Z0-9_.-]+$', service_name):
         return jsonify({"error": "invalid_service_name", "message": "Nom de service invalide"}), 400
+    # Validate against allowlist when config is present
+    allowed = _get_allowed_service_names()
+    if allowed and service_name not in allowed:
+        return jsonify({"error": "unknown_service", "message": "Service non reconnu"}), 400
     try:
         cmd = ["sudo", "systemctl", action, service_name]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -79,9 +102,10 @@ def change_password():
             
         if new_password != confirm_password:
             return jsonify({"error": "Les nouveaux mots de passe ne correspondent pas"}), 400
-            
-        if len(new_password) < 6:
-            return jsonify({"error": "Le nouveau mot de passe doit contenir au moins 6 caractères"}), 400
+
+        valid_p, err_p = validate_password(new_password)
+        if not valid_p:
+            return jsonify({"error": err_p}), 400
         
         # Charger les utilisateurs et vérifier le mot de passe actuel
         users = load_users()
@@ -101,9 +125,8 @@ def change_password():
             password_ok = verify_scrypt_hash(stored_password, current_password)
             logger.debug("scrypt password check result: %s", password_ok)
         else:
-            # Fallback pour les anciens mots de passe en clair
-            password_ok = (stored_password == current_password)
-            logger.debug("plaintext password check result: %s", password_ok)
+            password_ok = False
+            logger.debug("plaintext password rejected")
         
         if not password_ok:
             logger.warning("Password verification failed for user %s", username)
@@ -152,9 +175,10 @@ def change_username():
         # Validation
         if not new_username or not current_password:
             return jsonify({"error": "Tous les champs sont requis"}), 400
-            
-        if len(new_username) < 3:
-            return jsonify({"error": "Le nom d'utilisateur doit contenir au moins 3 caractères"}), 400
+
+        valid_u, err_u = validate_username(new_username)
+        if not valid_u:
+            return jsonify({"error": err_u}), 400
             
         if new_username == current_username:
             return jsonify({"error": "Le nouveau nom d'utilisateur doit être différent"}), 400
@@ -177,7 +201,7 @@ def change_username():
             from utils.users import verify_scrypt_hash
             password_ok = verify_scrypt_hash(stored_password, current_password)
         else:
-            password_ok = (stored_password == current_password)
+            password_ok = False
         
         if not password_ok:
             return jsonify({"error": "Mot de passe incorrect"}), 400
