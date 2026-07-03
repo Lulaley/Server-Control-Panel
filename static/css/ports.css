@@ -1,0 +1,74 @@
+/* Style pour la page d'état des ports admin */
+.admin-ports-container {
+    margin: 2rem auto;
+    max-width: 900px;
+    background: var(--main-bg, #181c2f);
+    border-radius: 18px;
+    box-shadow: 0 2px 16px 0 #0005;
+    padding: 2rem 2.5rem;
+}
+.admin-ports-container h2 {
+    color: var(--main-color, #781db4);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.ports-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #23284a;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.ports-table th, .ports-table td {
+    padding: 0.7rem 1rem;
+    text-align: center;
+}
+.ports-table th {
+    background: var(--main-color, #781db4);
+    color: #fff;
+    font-weight: 600;
+}
+.ports-table tr {
+    transition: background 0.2s;
+}
+.ports-table tr:hover {
+    background: #2e3357;
+}
+.ports-table td {
+    color: #e0e0e0;
+    font-size: 1.05em;
+}
+.status-used {
+    color: #4caf50;
+    font-weight: bold;
+}
+.status-free {
+    color: #ff9800;
+    font-weight: bold;
+}
+.status-delete {
+    color: #f44336;
+    font-weight: bold;
+}
+.port-badge {
+    display: inline-block;
+    min-width: 48px;
+    padding: 0.2em 0.7em;
+    border-radius: 8px;
+    font-size: 0.98em;
+    font-weight: 500;
+    background: #23284a;
+    margin: 0 2px;
+}
+.port-used {
+    background: #4caf50;
+    color: #fff;
+}
+.port-free {
+    background: #ff9800;
+    color: #fff;
+}
+.port-delete {
+    background: #f44336;
+    color: #fff;
+}
