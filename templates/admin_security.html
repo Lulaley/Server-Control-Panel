@@ -42,7 +42,7 @@
         <p><a href="/admin/pending" class="styled-select">← Retour à l'administration</a></p>
     </div>
 
-    <script>
+    <script nonce="{{ csp_nonce }}">
         async function loadBlocked() {
             const res = await fetch('/api/admin/blocked-ips');
             const container = document.getElementById('blocked-container');

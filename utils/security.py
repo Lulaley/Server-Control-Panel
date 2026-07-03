@@ -172,9 +172,12 @@ def _save_blocked_ips(entries: list) -> bool:
 
 
 def _is_valid_ip(ip: str) -> bool:
-    ipv4 = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
-    ipv6 = re.compile(r'^[0-9a-fA-F:]{2,39}$')
-    return bool(ipv4.match(ip) or ipv6.match(ip))
+    import ipaddress
+    try:
+        ipaddress.ip_address(ip)
+        return True
+    except ValueError:
+        return False
 
 
 def get_blocked_ips() -> list:

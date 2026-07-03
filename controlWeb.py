@@ -660,11 +660,14 @@ logger.info("Secret key configured: %s", bool(controlWeb.secret_key))
 # Protection contre l'exécution multiple
 if __name__ == '__main__':
     logger.info("Starting Flask app...")
+    _debug = os.getenv("FLASK_DEBUG", "0") == "1"
+    _host = os.getenv("FLASK_HOST", "0.0.0.0")
+    _port = int(os.getenv("FLASK_PORT", "5000"))
     cert_path = "/home/web_server/certs/certificate.crt"
     key_path = "/home/web_server/certs/private.key"
     if os.path.exists(cert_path) and os.path.exists(key_path):
         logger.info(f"Using SSL context: cert={cert_path}, key={key_path}")
-        controlWeb.run(debug=True, host='0.0.0.0', port=5000, ssl_context=(cert_path, key_path))
+        controlWeb.run(debug=_debug, host=_host, port=_port, ssl_context=(cert_path, key_path))
     else:
         logger.warning("Certificat SSL ou clé privée manquants, lancement sans HTTPS !")
-        controlWeb.run(debug=True, host='0.0.0.0', port=5000)
+        controlWeb.run(debug=_debug, host=_host, port=_port)
