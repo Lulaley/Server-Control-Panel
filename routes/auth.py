@@ -4,6 +4,11 @@ from utils.users import (
     load_users, save_users_dict, load_pending, save_pending,
     load_reset_requests, save_reset_requests
 )
+from utils.security import (
+    record_failed_login, record_successful_login, record_logout,
+    is_ip_locked_out, validate_username, validate_password,
+)
+from extensions import csrf
 import logging
 import traceback
 
@@ -17,8 +22,14 @@ def signup():
         username = (data.get("username") or "").strip()
         password = (data.get("password") or "").strip()
         role = (data.get("role") or "user").strip()
-        if not username or not password:
-            return render_template("signup.html", error="Utilisateur et mot de passe requis.")
+
+        valid_u, err_u = validate_username(username)
+        if not valid_u:
+            return render_template("signup.html", error=err_u)
+        valid_p, err_p = validate_password(password)
+        if not valid_p:
+            return render_template("signup.html", error=err_p)
+
         users = load_users()
         pending = load_pending()
         if username in users or any(p.get("username") == username for p in pending):
@@ -38,20 +49,30 @@ def login():
         data = request.form or {}
         username = (data.get("username") or "").strip()
         password = data.get("password", "")
-        logger.info("Login attempt for username=%r", username)
-        
+        ip = request.remote_addr or "unknown"
+        logger.info("Login attempt for username=%r ip=%s", username, ip)
+
+        # Check temporary IP lockout before doing any work
+        locked, remaining = is_ip_locked_out(ip)
+        if locked:
+            logger.warning("Login blocked for locked-out ip=%s remaining=%ds", ip, remaining)
+            return render_template(
+                "login.html",
+                error=f"Trop de tentatives. Réessayez dans {remaining} secondes.",
+                next=request.args.get("next", "/"),
+            )
+
         u = users.get(username)
-        # Toujours retourner le même message d'erreur, que l'utilisateur existe ou non
+        # Always return the same error message whether user exists or not
         if not u:
-            logger.warning("Login failed: user %r not found", username)
-            # Délai pour ralentir l'énumération
-            import time; time.sleep(1)
+            logger.warning("Login failed: user %r not found ip=%s", username, ip)
+            record_failed_login(ip, username)
             return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
 
         stored = u.get("password", "")
         logger.debug("Stored password starts with: %s", stored[:20] if stored else "EMPTY")
 
-        # Refuser toute connexion avec un hash faible ou mot de passe en clair
+        # Refuse login with weak or plain-text hash — force migration
         if not stored.startswith("pbkdf2:"):
             logger.warning("User %s has weak or legacy password hash, forcing migration", username)
             return redirect(url_for("auth.migrate_password", username=username, next=request.args.get("next", "/")))
@@ -60,16 +81,19 @@ def login():
             ok = check_password_hash(stored, password)
             logger.debug("pbkdf2 check result: %s", ok)
             if ok:
+                record_successful_login(ip, username)
                 session["user"] = username
                 session["role"] = u.get("role", "user")
                 logger.info("Login successful for user %s with pbkdf2 hash", username)
                 nxt = request.args.get("next") or request.form.get("next") or "/"
                 return redirect(nxt)
             else:
-                logger.warning("pbkdf2 password mismatch for user %s", username)
+                logger.warning("pbkdf2 password mismatch for user %s ip=%s", username, ip)
+                record_failed_login(ip, username)
                 return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
         except Exception:
             logger.exception("Password verify error for user %s", username)
+            record_failed_login(ip, username)
             return render_template("login.html", error="Identifiants invalides", next=request.args.get("next", "/"))
             
     return render_template("login.html", next=request.args.get("next", "/"))
@@ -192,6 +216,9 @@ def migrate_password():
 
 @auth_bp.route("/logout")
 def logout():
+    ip = request.remote_addr or "unknown"
+    username = session.get("user") or "anonymous"
+    record_logout(ip, username)
     session.clear()
     return redirect(url_for("auth.login"))
 
@@ -217,6 +244,7 @@ def reset_password():
 def profile():
     return render_template("profile.html")
 
+@csrf.exempt
 @auth_bp.route("/api/whoami")
 def api_whoami():
     user = session.get("user")
@@ -226,6 +254,7 @@ def api_whoami():
     return jsonify({"user": user, "role": role})
 
 # User color API
+@csrf.exempt
 @auth_bp.route("/api/user/main-color", methods=["GET", "POST"])
 def api_user_main_color():
     user = session.get("user")
@@ -248,6 +277,7 @@ def api_user_main_color():
     return jsonify({"success": False, "error": "Utilisateur non trouvé"}), 404
 
 # Change username/password endpoints
+@csrf.exempt
 @auth_bp.route("/api/user/change-username", methods=["POST"])
 def api_change_username():
     current_username = session.get("user")
@@ -258,6 +288,9 @@ def api_change_username():
     current_password = data.get("current_password", "")
     if not new_username or not current_password:
         return jsonify({"error": "Nouveau nom d'utilisateur et mot de passe actuel requis"}), 400
+    valid_u, err_u = validate_username(new_username)
+    if not valid_u:
+        return jsonify({"error": err_u}), 400
     users = load_users()
     current_user = users.get(current_username)
     if not current_user:
@@ -268,7 +301,7 @@ def api_change_username():
         password_valid = check_password_hash(stored_password, current_password)
     except Exception:
         password_valid = False
-    if not password_valid and stored_password != current_password:
+    if not password_valid:
         return jsonify({"error": "Mot de passe actuel incorrect"}), 400
     if new_username in users and new_username != current_username:
         return jsonify({"error": "Ce nom d'utilisateur est déjà utilisé"}), 400
@@ -283,6 +316,7 @@ def api_change_username():
     session["user"] = new_username
     return jsonify({"status": "success", "message": "Nom d'utilisateur modifié avec succès"})
 
+@csrf.exempt
 @auth_bp.route("/api/user/change-password", methods=["POST"])
 def api_change_password():
     username = session.get("user")
@@ -296,8 +330,9 @@ def api_change_password():
         return jsonify({"error": "Tous les champs sont requis"}), 400
     if new_password != confirm_password:
         return jsonify({"error": "Les nouveaux mots de passe ne correspondent pas"}), 400
-    if len(new_password) < 6:
-        return jsonify({"error": "Le nouveau mot de passe doit contenir au moins 6 caractères"}), 400
+    valid_p, err_p = validate_password(new_password)
+    if not valid_p:
+        return jsonify({"error": err_p}), 400
     users = load_users()
     user = users.get(username)
     if not user:
@@ -308,7 +343,7 @@ def api_change_password():
         password_valid = check_password_hash(stored_password, current_password)
     except Exception:
         password_valid = False
-    if not password_valid and stored_password != current_password:
+    if not password_valid:
         return jsonify({"error": "Mot de passe actuel incorrect"}), 400
     users[username]["password"] = generate_password_hash(new_password)
     if not save_users_dict(users):

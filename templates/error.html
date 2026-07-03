@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur {{ code }} - Server Control Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <style>
+        .error-container {
+            max-width: 480px;
+            margin: 80px auto;
+            text-align: center;
+            padding: 40px 24px;
+        }
+        .error-code {
+            font-size: 4rem;
+            font-weight: bold;
+            opacity: 0.4;
+            margin-bottom: 12px;
+        }
+        .error-message {
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">{{ code }}</div>
+        <div class="error-message">{{ message }}</div>
+        <a href="/" class="btn">Retour à l'accueil</a>
+    </div>
+</body>
+</html>
