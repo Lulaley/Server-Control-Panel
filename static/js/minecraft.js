@@ -2,11 +2,67 @@ let currentSelectedServer = null;
 let currentPlayerForAction = null;
 
 // Chargement initial
+// Récupère un paramètre d'URL
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+    const results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Page Minecraft chargée, initialisation...');
-    loadServers();
+    const preselectServer = getParameterByName('server');
+    loadServersWithPreselect(preselectServer);
     setupRconForm();
 });
+
+// Charge les serveurs et sélectionne si besoin
+function loadServersWithPreselect(preselectServer) {
+    fetch('/api/minecraft/servers')
+        .then(response => response.json())
+        .then(data => {
+            const serverSelect = document.getElementById('server-select');
+            if (!serverSelect) {
+                console.error('Élément server-select non trouvé!');
+                return;
+            }
+            serverSelect.innerHTML = '<option value="">-- Choisir un serveur --</option>';
+            if (data.servers && data.servers.length > 0) {
+                data.servers.forEach(server => {
+                    const option = document.createElement('option');
+                    option.value = server;
+                    option.textContent = server;
+                    serverSelect.appendChild(option);
+                });
+                if (preselectServer && data.servers.includes(preselectServer)) {
+                    serverSelect.value = preselectServer;
+                    currentSelectedServer = preselectServer;
+                    // Déclenche manuellement l'événement de changement
+                    serverSelect.dispatchEvent(new Event('change'));
+                    // Charge explicitement les infos pour garantir l'affichage
+                    updateServerStatus(preselectServer);
+                    loadServerLogs(preselectServer);
+                    loadServerPlayers(preselectServer);
+                }
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Aucun serveur disponible';
+                serverSelect.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des serveurs:', error);
+            const serverSelect = document.getElementById('server-select');
+            if (serverSelect) {
+                serverSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+            }
+        });
+}
 
 // Charger la liste des serveurs
 function loadServers() {
