@@ -53,85 +53,78 @@ def _call_and_json(fn, *args, **kwargs):
         current_app.logger.debug("call error: %s", traceback.format_exc())
         return None
 
-@game_servers_bp.route('/games')
+
+# --- Ajout utilitaire générique pour tous les jeux/services ---
+def build_groups_from_services(service_sources):
+    """
+    service_sources: liste de tuples (game, list_of_services, status_fn, logs_fn)
+    Chaque service doit avoir un champ 'id' unique et stable (utilisé par l'API du jeu)
+    """
+    groups = {}
+    for game, service_list, status_fn, logs_fn in service_sources:
+        game_key = game.lower()
+        groups.setdefault(game_key, [])
+        if service_list:
+            for srv in service_list:
+                srv_id = srv.get('id') or srv.get('name')
+                status_j = _call_and_json(status_fn, srv_id) if status_fn else {}
+                logs_j = _call_and_json(logs_fn, srv_id) if logs_fn else {}
+                last_log = _last_line_from_logs_text(logs_j.get("logs") if isinstance(logs_j, dict) else None)
+                groups[game_key].append({
+                    "id": srv_id,
+                    "name": srv.get('name', srv_id),
+                    "host": srv.get('host'),
+                    "port": srv.get('port'),
+                    "status": status_j.get("status", "unknown") if isinstance(status_j, dict) else "unknown",
+                    "last_log": last_log,
+                    "url": srv.get('url', f"/server/{srv_id}")
+                })
+    return groups
+
+
+@game_servers_bp.route('/games', methods=['GET'])
 def games():
-    groups = {"minecraft": [], "satisfactory": [], "hytale": []}
-    # Minecraft
     try:
-        import routes.minecraft as mc
-        mc_list = _call_and_json(mc.minecraft_servers)
-        if mc_list and isinstance(mc_list, dict):
-            for name in mc_list.get("servers", []):
-                status_j = _call_and_json(mc.minecraft_status, name) or {}
-                logs_j = _call_and_json(mc.minecraft_logs, name) or {}
-                last_log = None
-                # minecraft_logs returns {"logs": "..."}
-                last_log = _last_line_from_logs_text(logs_j.get("logs") if isinstance(logs_j, dict) else None)
-                groups["minecraft"].append({
-                    "id": name,
-                    "name": name,
-                    "host": None,
-                    "port": None,
-                    "status": status_j.get("status", "unknown") if isinstance(status_j, dict) else "unknown",
-                    "last_log": last_log,
-                    "url": f"/server/{name}"
-                })
-    except Exception:
-        current_app.logger.debug("Minecraft import failed: %s", traceback.format_exc())
-    # Satisfactory
-    try:
-        import routes.satisfactory as sat
-        sat_list = _call_and_json(sat.api_satisfactorys_list)
-        if sat_list and isinstance(sat_list, dict):
-            for name in sat_list.get("satisfactorys", []):
-                status_j = _call_and_json(sat.api_satisfactorys_status, name) or {}
-                logs_j = _call_and_json(sat.api_satisfactorys_logs, name) or {}
-                last_log = _last_line_from_logs_text(logs_j.get("logs") if isinstance(logs_j, dict) else None)
-                groups["satisfactory"].append({
-                    "id": name,
-                    "name": name,
-                    "host": None,
-                    "port": None,
-                    "status": status_j.get("status", "unknown") if isinstance(status_j, dict) else "unknown",
-                    "last_log": last_log,
-                    "url": f"/server/{name}"
-                })
-    except Exception:
-        current_app.logger.debug("Satisfactory import failed: %s", traceback.format_exc())
-    # Hytale
-    try:
-        import routes.hytale as hyt
-        hyt_list = _call_and_json(hyt.api_hytales_list)
-        if hyt_list and isinstance(hyt_list, dict):
-            for name in hyt_list.get("hytales", []):
-                status_j = _call_and_json(hyt.api_hytales_status, name) or {}
-                logs_j = _call_and_json(hyt.api_hytales_logs, name) or {}
-                last_log = _last_line_from_logs_text(logs_j.get("logs") if isinstance(logs_j, dict) else None)
-                groups["hytale"].append({
-                    "id": name,
-                    "name": name,
-                    "host": None,
-                    "port": None,
-                    "status": status_j.get("status", "unknown") if isinstance(status_j, dict) else "unknown",
-                    "last_log": last_log,
-                    "url": f"/server/{name}"
-                })
-    except Exception:
-        current_app.logger.debug("Hytale import failed: %s", traceback.format_exc())
+        # Construction générique
+        service_sources = []
+        try:
+            import routes.minecraft as mc
+            mc_list = _call_and_json(mc.minecraft_servers)
+            mc_services = []
+            if mc_list and isinstance(mc_list, dict):
+                for name in mc_list.get("servers", []):
+                    mc_services.append({"id": name, "name": name})
+            service_sources.append(("minecraft", mc_services, mc.minecraft_status, mc.minecraft_logs))
+        except Exception:
+            current_app.logger.debug("Minecraft import failed: %s", traceback.format_exc())
+        try:
+            import routes.satisfactory as sat
+            sat_list = _call_and_json(sat.api_satisfactorys_list)
+            sat_services = []
+            if sat_list and isinstance(sat_list, dict):
+                for name in sat_list.get("satisfactorys", []):
+                    sat_services.append({"id": name, "name": name})
+            service_sources.append(("satisfactory", sat_services, sat.api_satisfactorys_status, sat.api_satisfactorys_logs))
+        except Exception:
+            current_app.logger.debug("Satisfactory import failed: %s", traceback.format_exc())
+        try:
+            import routes.hytale as hyt
+            hyt_list = _call_and_json(hyt.api_hytales_list)
+            hyt_services = []
+            if hyt_list and isinstance(hyt_list, dict):
+                for name in hyt_list.get("hytales", []):
+                    hyt_services.append({"id": name, "name": name})
+            service_sources.append(("hytale", hyt_services, hyt.api_hytales_status, hyt.api_hytales_logs))
+        except Exception:
+            current_app.logger.debug("Hytale import failed: %s", traceback.format_exc())
 
-    # Fallback: si aucun groupe rempli, utiliser SAMPLE_SERVERS (utile en dev)
-    if not any(groups[g] for g in groups):
-        for s in SAMPLE_SERVERS:
-            g = (s.get("game") or "").lower()
-            if g in groups:
-                groups[g].append({
-                    "id": s.get("id"),
-                    "name": s.get("name"),
-                    "host": s.get("host"),
-                    "port": s.get("port"),
-                    "status": "online" if s.get("host") else "offline",
-                    "last_log": None,
-                    "url": s.get("url", f"/server/{s.get('id')}")
-                })
+        # Fallback: si aucun groupe rempli, utiliser SAMPLE_SERVERS (utile en dev)
+        if not service_sources or not any(len(services) > 0 for (_, services, *_ ) in service_sources):
+            for s in SAMPLE_SERVERS:
+                service_sources.append((s.get("game", "minecraft"), [s], None, None))
 
-    return render_template('games.html', groups=groups)
+        groups = build_groups_from_services(service_sources)
+        return render_template('games.html', groups=groups)
+    except Exception as e:
+        # Affiche l'erreur dans la page pour debug
+        return f"<h1>Erreur interne</h1><pre>{traceback.format_exc()}</pre>", 500

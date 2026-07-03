@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+    {% include 'head.html' %}
+<body>
+    {% include 'navbar.html' %}
+        <div id="ports-table-wrapper">
+            <table class="ports-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Status</th>
+                        <th>WAN</th>
+                        <th>LAN</th>
+                        <th>RCON</th>
+                        <th>Autres</th>
+                    </tr>
+                </thead>
+                <tbody id="ports-table-body">
+                    <!-- Rempli dynamiquement -->
+                </tbody>
+            </table>
+    </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ports.css') }}">
+    <script src="{{ url_for('static', filename='js/admin_ports.js') }}"></script>
+</body>
+</html>
